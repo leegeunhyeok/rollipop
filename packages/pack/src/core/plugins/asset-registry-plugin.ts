@@ -13,7 +13,7 @@ export function assetRegistryPlugin(options: AssetRegistryPluginOptions): rolldo
     name: 'rollipop:asset-registry',
     load: {
       filter: {
-        id: new RegExp(`.(${assetExtensions.join('|')})$`),
+        id: new RegExp(`\\.(?:${assetExtensions.join('|')})$`),
       },
       handler(id) {
         this.debug(`Asset ${id} found`);

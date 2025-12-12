@@ -6,6 +6,7 @@ async function main() {
 
   await bundler.build({
     dev: true,
+    cache: true,
     platform: 'ios',
     outDir: 'dist',
   });
