@@ -8,7 +8,8 @@
   "scripts": {
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --deny-warnings --fix",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "build:all": "yarn workspaces foreach --all run build"
   },
   "devDependencies": {
     "@types/node": "^22",

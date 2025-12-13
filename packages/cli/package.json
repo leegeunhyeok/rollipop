@@ -1,8 +1,7 @@
 {
-  "name": "rollipop",
+  "name": "@rollipop/cli",
   "version": "0.0.0",
   "type": "module",
-  "bin": "./bin/index.js",
   "exports": {
     ".": {
       "import": {
@@ -17,13 +16,12 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "bin",
     "dist"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/leegeunhyeok/rollipop.git",
-    "directory": "packages/rollipop"
+    "directory": "packages/cli"
   },
   "author": "leegeunhyeok <dev.ghlee@gmail.com> (https://github.com/leegeunhyeok)",
   "license": "MIT",
@@ -31,10 +29,18 @@
     "url": "https://github.com/leegeunhyeok/rollipop/issues"
   },
   "homepage": "https://github.com/leegeunhyeok/rollipop#readme",
-  "dependencies": {
-    "@rollipop/cli": "workspace:*"
+  "scripts": {
+    "prepare": "yarn build",
+    "typecheck": "tsc --noEmit",
+    "build": "tsdown"
   },
   "devDependencies": {
+    "tsdown": "^0.17.2",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@commander-js/extra-typings": "^14.0.0",
+    "@rollipop/pack": "workspace:*",
+    "commander": "^14.0.2"
   }
 }

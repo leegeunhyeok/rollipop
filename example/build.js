@@ -8,7 +8,7 @@ async function main() {
     dev: true,
     cache: false,
     platform: 'ios',
-    outDir: 'dist',
+    outfile: 'dist/bundle.js',
   });
 }
 

@@ -1442,6 +1442,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@commander-js/extra-typings@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "@commander-js/extra-typings@npm:14.0.0"
+  peerDependencies:
+    commander: ~14.0.0
+  checksum: 10c0/b064889e254e1c895886ec8148ac6e0d9bfa3c0336b9ee58124178308819dcf008f15e2a7abdc89b6c1ac3bdbd8003d8cfdaf363971d41dcce64b28c9714af12
+  languageName: node
+  linkType: hard
+
 "@emnapi/core@npm:^1.4.3, @emnapi/core@npm:^1.7.1":
   version: 1.7.1
   resolution: "@emnapi/core@npm:1.7.1"
@@ -2948,6 +2957,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollipop/cli@workspace:*, @rollipop/cli@workspace:packages/cli":
+  version: 0.0.0-use.local
+  resolution: "@rollipop/cli@workspace:packages/cli"
+  dependencies:
+    "@commander-js/extra-typings": "npm:^14.0.0"
+    "@rollipop/pack": "workspace:*"
+    commander: "npm:^14.0.2"
+    tsdown: "npm:^0.17.2"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rollipop/pack@workspace:*, @rollipop/pack@workspace:packages/pack":
   version: 0.0.0-use.local
   resolution: "@rollipop/pack@workspace:packages/pack"
@@ -4379,6 +4400,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^14.0.2":
+  version: 14.0.2
+  resolution: "commander@npm:14.0.2"
+  checksum: 10c0/245abd1349dbad5414cb6517b7b5c584895c02c4f7836ff5395f301192b8566f9796c82d7bd6c92d07eba8775fe4df86602fca5d86d8d10bcc2aded1e21c2aeb
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.20.0":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
@@ -5341,6 +5369,7 @@ __metadata:
     react-native: "npm:0.83.0"
     react-native-safe-area-context: "npm:^5.5.2"
     react-test-renderer: "npm:19.2.0"
+    rollipop: "workspace:^"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
@@ -9100,11 +9129,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"rollipop@workspace:packages/rollipop":
+"rollipop@workspace:^, rollipop@workspace:packages/rollipop":
   version: 0.0.0-use.local
   resolution: "rollipop@workspace:packages/rollipop"
   dependencies:
+    "@rollipop/cli": "workspace:*"
     typescript: "npm:^5.9.3"
+  bin:
+    rollipop: ./bin/index.js
   languageName: unknown
   linkType: soft
 

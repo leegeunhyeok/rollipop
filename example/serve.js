@@ -11,7 +11,7 @@ http
     }
 
     if (req.url.startsWith('/index.bundle?')) {
-      const bundle = fs.readFileSync('dist/index.bundle.ios.js');
+      const bundle = fs.readFileSync('dist/bundle.js');
       res.setHeader('Content-Type', 'application/javascript');
       res.statusCode = 200;
       res.end(bundle);

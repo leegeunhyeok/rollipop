@@ -25,7 +25,7 @@ export async function resolveRolldownOptions(
   buildOptions: BuildOptions,
 ) {
   const { resolver, transformer, serializer, reactNative } = config;
-  const { platform, dev, cache = true } = buildOptions;
+  const { platform, dev, cache = true, minify = false } = buildOptions;
   const supportedExtensions = [...resolver.sourceExtensions, ...resolver.assetExtensions];
   const platforms = [platform, resolver.preferNativePlatform ? 'native' : null].filter(isNotNil);
   const resolveExtensions = [
@@ -100,8 +100,8 @@ export async function resolveRolldownOptions(
       `var ${GLOBAL_IDENTIFIER}=typeof globalThis!=='undefined'?globalThis:typeof global !== 'undefined'?global:typeof window!=='undefined'?window:this;`,
       polyfillContents,
     ].join('\n'),
+    minify,
     format: 'iife',
-    minify: false,
     keepNames: true,
   };
 

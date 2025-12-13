@@ -7,8 +7,12 @@ type Key = string;
 
 export class FileSystemCache implements Cache<Key, string> {
   constructor(private readonly cacheDirectory: string) {
-    if (!fs.existsSync(cacheDirectory)) {
-      fs.mkdirSync(cacheDirectory, { recursive: true });
+    this.ensureCacheDirectory();
+  }
+
+  private ensureCacheDirectory() {
+    if (!fs.existsSync(this.cacheDirectory)) {
+      fs.mkdirSync(this.cacheDirectory, { recursive: true });
     }
   }
 
@@ -20,11 +24,16 @@ export class FileSystemCache implements Cache<Key, string> {
     }
   }
 
-  set(key: Key, value: string): void {
+  set(key: Key, value: string) {
     try {
       fs.writeFileSync(path.join(this.cacheDirectory, key), value);
     } catch {
       throw new Error('Failed to write cache file');
     }
+  }
+
+  clear() {
+    fs.rmSync(this.cacheDirectory, { recursive: true, force: true });
+    this.ensureCacheDirectory();
   }
 }
