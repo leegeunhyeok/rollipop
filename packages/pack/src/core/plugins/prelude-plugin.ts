@@ -2,14 +2,10 @@ import fs from 'node:fs';
 import * as rolldown from 'rolldown';
 import { shim } from './shim';
 
+const IS_ENTRY = Symbol('IS_ENTRY');
+
 export interface PreludePluginOptions {
   modulePaths: string[];
-}
-
-interface PreludePluginModuleInfo extends rolldown.ModuleInfo {
-  meta: {
-    isEntry: true;
-  };
 }
 
 export function preludePlugin(options: PreludePluginOptions): rolldown.Plugin {
@@ -31,7 +27,7 @@ export function preludePlugin(options: PreludePluginOptions): rolldown.Plugin {
     resolveId: {
       handler: (source, _importer, extraOptions) => {
         if (extraOptions.isEntry) {
-          return { id: source, meta: { isEntry: true } };
+          return { id: source, meta: { [IS_ENTRY]: true } };
         }
       },
     },
@@ -43,7 +39,7 @@ export function preludePlugin(options: PreludePluginOptions): rolldown.Plugin {
 
         const moduleInfo = this.getModuleInfo(id);
 
-        if (moduleInfo && isPreludePluginModuleInfo(moduleInfo)) {
+        if (moduleInfo && isEntry(moduleInfo.meta)) {
           this.debug(`Prelude plugin found entry ${id}`);
           const originSource = fs.readFileSync(id, 'utf-8');
           const modifiedSource = [preludeImportStatements, originSource].join('\n');
@@ -57,8 +53,10 @@ export function preludePlugin(options: PreludePluginOptions): rolldown.Plugin {
   };
 }
 
-function isPreludePluginModuleInfo(
-  moduleInfo: rolldown.ModuleInfo,
-): moduleInfo is PreludePluginModuleInfo {
-  return 'isEntry' in moduleInfo.meta;
+type PreludePluginMeta = rolldown.CustomPluginOptions & {
+  isEntry: true;
+};
+
+function isEntry(meta: rolldown.CustomPluginOptions): meta is PreludePluginMeta {
+  return IS_ENTRY in meta;
 }

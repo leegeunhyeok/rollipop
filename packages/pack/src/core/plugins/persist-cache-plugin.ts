@@ -5,6 +5,7 @@ import { BundlerContext } from 'src/core/types';
 import { shim } from './shim';
 
 const CACHE_HIT = Symbol('CACHE_HIT');
+const CACHE_HITS = Symbol('CACHE_HITS');
 
 export interface PersistCachePluginOptions {
   enabled: boolean;
@@ -23,9 +24,16 @@ export function persistCachePlugin(
     `\\.(?:${options.sourceExtensions.filter((extension) => extension !== 'json').join('|')})$`,
   );
   const excludePattern = /@oxc-project\+runtime/;
+  let cacheHits = 0;
 
   return {
     name: 'rollipop:persist-cache',
+    buildStart() {
+      cacheHits = 0;
+    },
+    buildEnd() {
+      this.debug(`Cache hits: ${cacheHits}`);
+    },
     load: {
       order: 'pre',
       filter: {
@@ -39,6 +47,7 @@ export function persistCachePlugin(
         const cache = context.cache.get(key);
 
         if (cache != null) {
+          cacheHits++;
           return { code: cache, moduleType: 'tsx', meta: { [CACHE_HIT]: true } };
         }
       },
@@ -54,7 +63,8 @@ export function persistCachePlugin(
       handler(code, id) {
         const moduleInfo = this.getModuleInfo(id);
 
-        if (!isCacheHit(moduleInfo)) {
+        // To avoid the re-caching
+        if (!(moduleInfo && isCacheHit(moduleInfo.meta))) {
           const key = getCacheKey(id, context.buildHash);
           context.cache.set(key, code);
         }
@@ -73,7 +83,7 @@ persistCachePlugin.enhance = function enhance(plugin: rolldown.Plugin): rolldown
     plugin.transform = function (code, id, meta) {
       const moduleInfo = this.getModuleInfo(id);
 
-      if (isCacheHit(moduleInfo)) {
+      if (moduleInfo && isCacheHit(moduleInfo.meta)) {
         return;
       }
 
@@ -87,7 +97,7 @@ persistCachePlugin.enhance = function enhance(plugin: rolldown.Plugin): rolldown
       handler(code, id, meta) {
         const moduleInfo = this.getModuleInfo(id);
 
-        if (isCacheHit(moduleInfo)) {
+        if (moduleInfo && isCacheHit(moduleInfo.meta)) {
           return;
         }
 
@@ -104,6 +114,11 @@ export function getCacheKey(id: string, buildHash: string) {
   return xxhash(`${id}${buildHash}${mtimeMs}`);
 }
 
-export function isCacheHit(moduleInfo: rolldown.ModuleInfo | null) {
-  return moduleInfo?.meta?.[CACHE_HIT as unknown as string] === true;
+type PersistCachePluginMeta = rolldown.CustomPluginOptions & {
+  [CACHE_HIT]: true;
+  [CACHE_HITS]: number;
+};
+
+export function isCacheHit(meta: rolldown.CustomPluginOptions): meta is PersistCachePluginMeta {
+  return CACHE_HIT in meta;
 }
