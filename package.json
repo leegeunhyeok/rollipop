@@ -9,7 +9,7 @@
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --deny-warnings --fix",
     "format": "oxfmt",
-    "build:all": "yarn workspaces foreach --all run build"
+    "build:all": "yarn workspaces foreach --all --topological-dev run build"
   },
   "devDependencies": {
     "@types/node": "^22",

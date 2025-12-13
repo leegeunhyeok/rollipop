@@ -23,7 +23,7 @@ const SECONDARY_COLOR = '#BBDEFB';
 const BASE_GRADIENT_COLORS = [PRIMARY_COLOR, SECONDARY_COLOR];
 const PADDING = 20;
 
-export function printLogo() {
+function printLogo() {
   let maxLogoWidth = 0;
   const padding = ' '.repeat(PADDING);
   const gradientColors = [...BASE_GRADIENT_COLORS];
@@ -58,3 +58,15 @@ export function printLogo() {
 
   console.log(''); // empty line
 }
+
+export const Logo = {
+  _printed: false,
+  printLogo,
+  printLogoOnce: () => {
+    if (Logo._printed) {
+      return;
+    }
+    Logo._printed = true;
+    printLogo();
+  },
+};

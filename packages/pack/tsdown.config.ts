@@ -6,4 +6,5 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   platform: 'node',
   fixedExtension: false,
+  dts: true,
 });

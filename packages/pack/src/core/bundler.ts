@@ -1,9 +1,9 @@
 import path from 'node:path';
 
+import { Logo } from '@rollipop/common';
 import { invariant, pick } from 'es-toolkit';
 import * as rolldown from 'rolldown';
 
-import { printLogo } from '../common/print-logo';
 import { ensureSharedDataPath } from '../common/shared-data';
 import type { ResolvedConfig } from '../config/defaults';
 import { md5 } from '../utils/hash';
@@ -13,6 +13,7 @@ import { resolveRolldownOptions } from './rolldown';
 import type { BuildOptions } from './types';
 
 export class Bundler {
+  private static logoPrinted = false;
   private readonly sharedDataPath: string;
   private readonly cachePath: string;
   private readonly cache: FileSystemCache;
@@ -23,7 +24,7 @@ export class Bundler {
   static createServer(bundler: Bundler) {}
 
   constructor(private readonly config: ResolvedConfig) {
-    printLogo();
+    Logo.printLogoOnce();
     this.sharedDataPath = ensureSharedDataPath(this.config.root);
     this.cachePath = path.join(this.sharedDataPath, 'cache');
     this.cache = new FileSystemCache(this.cachePath);

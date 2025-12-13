@@ -2962,8 +2962,20 @@ __metadata:
   resolution: "@rollipop/cli@workspace:packages/cli"
   dependencies:
     "@commander-js/extra-typings": "npm:^14.0.0"
+    "@rollipop/common": "workspace:*"
     "@rollipop/pack": "workspace:*"
     commander: "npm:^14.0.2"
+    tsdown: "npm:^0.17.2"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@rollipop/common@workspace:*, @rollipop/common@workspace:packages/common":
+  version: 0.0.0-use.local
+  resolution: "@rollipop/common@workspace:packages/common"
+  dependencies:
+    chalk: "npm:^5.6.2"
+    gradient-string: "npm:^3.0.0"
     tsdown: "npm:^0.17.2"
     typescript: "npm:^5.9.3"
   languageName: unknown
@@ -2979,16 +2991,15 @@ __metadata:
     "@babel/plugin-transform-flow-strip-types": "npm:^7.27.1"
     "@node-rs/xxhash": "npm:^1.7.6"
     "@react-native/babel-plugin-codegen": "npm:^0.83.0"
+    "@rollipop/common": "workspace:*"
     "@swc/core": "npm:^1.15.3"
     "@types/babel__core": "npm:^7"
     "@types/babel__generator": "npm:^7"
     babel-plugin-syntax-hermes-parser: "npm:^0.32.1"
     c12: "npm:^3.3.2"
-    chalk: "npm:^5.6.2"
     dedent: "npm:^1.7.0"
     es-toolkit: "npm:^1.42.0"
     flow-remove-types: "npm:^2.293.0"
-    gradient-string: "npm:^3.0.0"
     hermes-parser: "npm:^0.32.1"
     rolldown: "npm:1.0.0-beta.54"
     tsdown: "npm:^0.17.2"
