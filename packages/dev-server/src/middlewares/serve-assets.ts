@@ -56,7 +56,7 @@ export const serveAssets = fp<ServeAssetPluginOptions>(
           const assetData = await handle.readFile();
           const { size } = await handle.stat();
 
-          reply
+          await reply
             .header('Content-Type', mime.getType(assetPath) ?? '')
             .header('Content-Length', size)
             .send(assetData);
@@ -66,7 +66,7 @@ export const serveAssets = fp<ServeAssetPluginOptions>(
             error,
             'Failed to serve asset (scale assets resolving is not implemented yet)',
           );
-          reply.status(500).send();
+          await reply.status(500).send();
         } finally {
           await handle?.close();
         }

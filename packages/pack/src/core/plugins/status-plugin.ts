@@ -4,10 +4,16 @@ export interface StatusPluginOptions {
   onStart?: () => void;
   onEnd?: (result: StatusPluginEndResult) => void;
   onResolve?: (id: string) => void;
-  onTransform?: (transformedModules: number) => void;
+  onTransform?: (result: StatusPluginTransformResult) => void;
+}
+
+export interface StatusPluginTransformResult {
+  id: string;
+  transformedModules: number;
 }
 
 export interface StatusPluginEndResult {
+  transformedModules: number;
   duration: number;
   hasErrors: boolean;
 }
@@ -24,7 +30,11 @@ export function statusPlugin(options?: StatusPluginOptions): rolldown.Plugin {
       options?.onStart?.();
     },
     buildEnd(error) {
-      options?.onEnd?.({ duration: performance.now() - startedAt, hasErrors: Boolean(error) });
+      options?.onEnd?.({
+        transformedModules,
+        duration: performance.now() - startedAt,
+        hasErrors: Boolean(error),
+      });
     },
     resolveId: {
       order: 'post',
@@ -34,9 +44,8 @@ export function statusPlugin(options?: StatusPluginOptions): rolldown.Plugin {
     },
     transform: {
       order: 'post',
-      handler() {
-        transformedModules++;
-        options?.onTransform?.(transformedModules);
+      handler(_code, id) {
+        options?.onTransform?.({ id, transformedModules: ++transformedModules });
       },
     },
   };

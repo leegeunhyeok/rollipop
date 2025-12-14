@@ -42,16 +42,17 @@
     "vitest": "^4.0.15"
   },
   "dependencies": {
-    "@fastify/compress": "^8.3.0",
-    "@fastify/websocket": "^11.2.0",
+    "@fastify/middie": "^9.0.3",
+    "@react-native-community/cli-server-api": "^20.0.2",
+    "@react-native/dev-middleware": "^0.83.0",
     "@rollipop/common": "workspace:*",
     "@rollipop/pack": "workspace:^",
+    "es-toolkit": "^1.43.0",
     "fastify": "^5.6.2",
     "fastify-plugin": "^5.1.0",
     "json-schema-to-ts": "^3.1.1",
     "mime": "^4.1.0",
-    "open": "^11.0.0",
-    "raw-body": "^3.0.2",
+    "url": "^0.11.4",
     "ws": "^8.18.3"
   }
 }

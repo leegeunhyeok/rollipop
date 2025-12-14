@@ -4,6 +4,7 @@ import { DEFAULT_HOST, DEFAULT_PORT, runServer } from '@rollipop/dev-server';
 import { loadConfig } from '@rollipop/pack';
 
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
+import { TerminalReporter } from '../../terminal-reporter';
 
 export const command = new Command('start')
   .description('Start the React Native development server.')
@@ -49,5 +50,6 @@ export const command = new Command('start')
       https: options.https,
       key: options.key,
       cert: options.cert,
+      reporter: new TerminalReporter({ clientLogs: options.clientLogs }),
     });
   });

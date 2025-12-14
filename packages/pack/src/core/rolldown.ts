@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import { logger } from '@rollipop/common';
+import { Logger, logger } from '@rollipop/common';
 import { isNotNil } from 'es-toolkit';
 import type * as rolldown from 'rolldown';
 
@@ -19,6 +19,8 @@ import {
   status,
 } from './plugins';
 import { BuildOptions, BundlerContext } from './types';
+
+const rolldownLogger = new Logger('rolldown');
 
 export interface RolldownOptions {
   input?: rolldown.InputOptions;
@@ -96,24 +98,24 @@ export async function resolveRolldownOptions(
           progressBar.start();
           progressBarRenderer.start();
         },
-        onEnd(result) {
-          progressBar.update(result).end();
+        onEnd({ transformedModules, ...state }) {
+          progressBar.setTotal(transformedModules).update(state).end();
           progressBarRenderer.release();
+          totalModules = transformedModules;
           context.storage.set({
             ...data,
-            build: { ...data.build, [context.buildHash]: { totalModules } },
+            build: {
+              ...data.build,
+              [context.buildHash]: { totalModules },
+            },
           });
         },
-        onResolve(id) {
-          progressBar.update({ id });
-          progressBarRenderer.render();
-        },
-        onTransform(transformedModules) {
+        onTransform({ id, transformedModules }) {
           if (totalModules < transformedModules) {
             totalModules = transformedModules;
             progressBar.setTotal(totalModules);
           }
-          progressBar.setCurrent(transformedModules);
+          progressBar.setCurrent(transformedModules).update({ id });
           progressBarRenderer.render();
         },
       }),
@@ -127,6 +129,24 @@ export async function resolveRolldownOptions(
       pluginTimings: false,
     },
     logLevel: isDebugEnabled() ? 'debug' : 'info',
+    onLog(level, log) {
+      const { message, code } = log;
+      const logArgs = [code, message].filter(isNotNil);
+
+      switch (level) {
+        case 'debug':
+          rolldownLogger.debug(...logArgs);
+          break;
+
+        case 'info':
+          rolldownLogger.info(...logArgs);
+          break;
+
+        case 'warn':
+          rolldownLogger.warn(...logArgs);
+          break;
+      }
+    },
   };
 
   const polyfillContents = loadPolyfills(config.serializer?.polyfills ?? [])

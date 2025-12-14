@@ -1,5 +1,6 @@
 import chalk, { type ChalkInstance } from 'chalk';
 import dayjs from 'dayjs';
+import { invariant } from 'es-toolkit';
 
 import { isDebugEnabled } from './debug';
 
@@ -71,6 +72,32 @@ export class Logger {
   error(...args: unknown[]) {
     this.print('error', ...args);
   }
+
+  child(scope: string) {
+    invariant(this.scope, 'Logger must have a scope to create a child logger');
+    return new Logger(`${this.scope}:${scope}`);
+  }
 }
 
 export const logger = new Logger();
+
+export interface LoggerFilterOptions {
+  level: LogLevel;
+  filter: (args: unknown[]) => unknown[];
+}
+
+export function loggerFilter(logger: Logger, options: LoggerFilterOptions): Logger {
+  const originalLog = logger[options.level];
+
+  logger[options.level] = (...args: unknown[]) => {
+    const filteredArgs = options.filter(args);
+
+    if (filteredArgs.length === 0) {
+      return;
+    }
+
+    originalLog(...filteredArgs);
+  };
+
+  return logger;
+}
