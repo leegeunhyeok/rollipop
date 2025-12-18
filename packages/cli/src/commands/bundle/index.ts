@@ -1,8 +1,9 @@
 import { Command } from '@commander-js/extra-typings';
-import { logger, resetCache } from '@rollipop/common';
+import { resetCache } from '@rollipop/common';
 import { Bundler, loadConfig } from '@rollipop/core';
 
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
+import { logger } from '../../logger';
 import { parseBoolean } from '../../utils';
 
 export const command = new Command('build')

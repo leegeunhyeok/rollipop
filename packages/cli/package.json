@@ -40,9 +40,11 @@
   },
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",
+    "@inquirer/prompts": "^8.1.0",
     "@rollipop/common": "workspace:*",
     "@rollipop/core": "workspace:*",
     "@rollipop/dev-server": "workspace:*",
-    "commander": "^14.0.2"
+    "commander": "^14.0.2",
+    "es-toolkit": "^1.43.0"
   }
 }

@@ -1,11 +1,12 @@
 import path from 'node:path';
 
-import { Logo, getCachePath, FileStorage, logger } from '@rollipop/common';
+import { Logo, getCachePath, FileStorage } from '@rollipop/common';
 import { invariant, merge } from 'es-toolkit';
 import * as rolldown from 'rolldown';
 import { dev, DevOptions, type DevEngine } from 'rolldown/experimental';
 
 import type { ResolvedConfig } from '../config/defaults';
+import { logger } from '../logger';
 import { getId } from '../utils/id';
 import { FileSystemCache } from './cache/file-system-cache';
 import { getOverrideOptionsForDevServer, resolveRolldownOptions } from './rolldown';

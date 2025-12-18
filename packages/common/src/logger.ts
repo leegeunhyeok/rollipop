@@ -7,6 +7,9 @@ import { isDebugEnabled } from './debug';
 export type LogLevel = 'trace' | 'debug' | 'log' | 'info' | 'warn' | 'error';
 
 export class Logger {
+  private static blocked = false;
+  private static queuedMessages: unknown[][] = [];
+
   static Colors = {
     trace: chalk.gray,
     debug: chalk.blue,
@@ -16,8 +19,22 @@ export class Logger {
     error: chalk.red,
   } satisfies Record<LogLevel, ChalkInstance>;
 
-  private format: string = 'YYYY-MM-DD HH:mm:ss.SSS';
+  private format: string = 'HH:mm:ss.SSS';
   private debugEnabled: boolean;
+
+  static block() {
+    this.blocked = true;
+  }
+
+  static unblock(flush = true) {
+    this.blocked = false;
+    if (flush) {
+      for (const args of Logger.queuedMessages) {
+        console.log(...args);
+      }
+    }
+    Logger.queuedMessages.length = 0;
+  }
 
   constructor(private readonly scope?: string) {
     this.debugEnabled = isDebugEnabled();
@@ -41,9 +58,15 @@ export class Logger {
 
     if (this.scope) {
       const scope = chalk.magenta(this.scope);
-      console.log(timestamp, level, scope, ...args);
+      args = [timestamp, level, scope, ...args];
     } else {
-      console.log(timestamp, level, ...args);
+      args = [timestamp, level, ...args];
+    }
+
+    if (Logger.blocked) {
+      Logger.queuedMessages.push(args);
+    } else {
+      console.log(...args);
     }
   }
 
@@ -78,8 +101,6 @@ export class Logger {
     return new Logger(`${this.scope}:${scope}`);
   }
 }
-
-export const logger = new Logger();
 
 export interface LoggerFilterOptions {
   level: LogLevel;

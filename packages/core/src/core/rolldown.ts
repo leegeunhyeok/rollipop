@@ -90,7 +90,7 @@ export async function resolveRolldownOptions(
 
   const statusPreset =
     config.terminal.status === 'progress'
-      ? statusPresets.progressBar(context, platform)
+      ? statusPresets.progressBar(context, `[${platform}, ${buildOptions.dev ? 'dev' : 'prod'}]`)
       : statusPresets.compat();
 
   const inputOptions: rolldown.InputOptions = {

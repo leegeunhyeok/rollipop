@@ -4,23 +4,16 @@ import path from 'node:path';
 import { merge } from 'es-toolkit';
 
 import { getSharedDataPath } from './fs';
+import { FileStorageData } from './types';
 
-export interface Data {
-  build: {
-    [buildHash: string]: {
-      totalModules: number;
-    };
-  };
-}
-
-const DEFAULT_DATA: Data = {
+const DEFAULT_DATA: FileStorageData = {
   build: {},
 };
 
 export class FileStorage {
   private static instance: FileStorage | null = null;
   private dataFilePath: string;
-  private data: Data;
+  private data: FileStorageData;
 
   static getInstance(basePath: string) {
     if (FileStorage.instance == null) {
@@ -43,7 +36,7 @@ export class FileStorage {
     return this.data;
   }
 
-  set(data: Partial<Data>) {
+  set(data: Partial<FileStorageData>) {
     this.data = merge(this.data, data);
     fs.writeFileSync(this.dataFilePath, JSON.stringify(this.data, null, 2));
   }

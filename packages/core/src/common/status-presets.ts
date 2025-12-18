@@ -8,6 +8,8 @@ import { ProgressBarRenderer } from './progress-bar';
 
 function progressBar(context: BundlerContext, label: string): StatusPluginOptions {
   let totalModules = getBuildTotalModules(context.storage, context.id);
+  let unknownTotalModules = totalModules === 0;
+
   const progressBarRenderer = ProgressBarRenderer.getInstance();
   const progressBar = progressBarRenderer.register(context.id, {
     label,
@@ -23,10 +25,11 @@ function progressBar(context: BundlerContext, label: string): StatusPluginOption
       progressBar.setTotal(transformedModules).update(state).end();
       progressBarRenderer.release();
       totalModules = transformedModules;
+      unknownTotalModules = false;
       setBuildTotalModules(context.storage, context.id, totalModules);
     },
     onTransform({ id, transformedModules }) {
-      if (totalModules < transformedModules) {
+      if (!unknownTotalModules && totalModules < transformedModules) {
         totalModules = transformedModules;
         progressBar.setTotal(totalModules);
       }

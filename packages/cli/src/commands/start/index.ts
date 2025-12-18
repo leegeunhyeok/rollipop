@@ -1,10 +1,13 @@
 import { Command } from '@commander-js/extra-typings';
-import { logger, resetCache } from '@rollipop/common';
-import { DEFAULT_HOST, DEFAULT_PORT, runServer } from '@rollipop/dev-server';
+import { resetCache } from '@rollipop/common';
 import { loadConfig } from '@rollipop/core';
+import { DEFAULT_HOST, DEFAULT_PORT, runServer } from '@rollipop/dev-server';
 
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
+import { DebuggerOpener } from '../../debugger';
+import { logger } from '../../logger';
 import { TerminalReporter } from '../../terminal-reporter';
+import { setupInteractiveMode } from './setup-interactive-mode';
 
 export const command = new Command('start')
   .description('Start the React Native development server.')
@@ -44,7 +47,8 @@ export const command = new Command('start')
       logger.info('The transform cache was reset');
     }
 
-    await runServer(config, {
+    let debuggerOpened = false;
+    const server = await runServer(config, {
       projectRoot: cwd,
       port: options.port,
       host: options.host,
@@ -52,5 +56,22 @@ export const command = new Command('start')
       key: options.key,
       cert: options.cert,
       reporter: new TerminalReporter({ clientLogs: options.clientLogs }),
+      onDeviceConnected: () => {
+        if (debuggerOpened === false && debuggerOpener.isAutoOpenEnabled()) {
+          debuggerOpener.open().catch((error) => {
+            logger.error('Failed to open debugger', { error });
+          });
+          debuggerOpened = true;
+        }
+      },
     });
+
+    const debuggerOpener = new DebuggerOpener(cwd, server.instance.listeningOrigin);
+
+    if (options.interactive) {
+      setupInteractiveMode({
+        broadcast: (message, params) => server.message.broadcast(message, params),
+        debuggerOpener,
+      });
+    }
   });

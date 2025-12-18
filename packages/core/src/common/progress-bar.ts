@@ -5,7 +5,6 @@ import { ellipsisLeft, StreamManager } from '../utils/terminal';
 
 const BAR_LENGTH = 25;
 const BLOCK_CHAR = '█';
-const BLOCK_CHAR2 = '█';
 
 export interface ProgressBarOptions {
   label: string;
@@ -68,7 +67,8 @@ export class ProgressBar {
   render() {
     const { state, label, current, total } = this;
 
-    const progress = (current / total) * 100;
+    const unknownTotal = total === 0;
+    const progress = unknownTotal ? 0 : (current / total) * 100;
     let line1 = '';
     let line2 = '';
 
@@ -76,23 +76,26 @@ export class ProgressBar {
       const icon = state.hasErrors ? chalk.red('✘') : chalk.green('✔');
       const durationInSeconds = (state.duration / 1000).toFixed(2);
 
-      line1 = `${icon} ${label}`;
+      line1 = `${icon} Build completed ${chalk.gray(label)}`;
       line2 = chalk.grey(`  Built in ${durationInSeconds}s (${current}/${total} modules)`);
     } else {
-      const width = progress * (BAR_LENGTH / 100);
+      const width = unknownTotal ? 0 : progress * (BAR_LENGTH / 100);
       const bg = chalk.white(BLOCK_CHAR);
-      const fg = chalk.cyan(BLOCK_CHAR2);
+      const fg = chalk.cyan(BLOCK_CHAR);
       const bar = range(BAR_LENGTH)
         .map((n) => (n < width ? fg : bg))
         .join('');
 
+      const percentageLabel = unknownTotal ? 'calculating...' : `${progress.toFixed(2)}%`;
+      const moduleCountLabel = unknownTotal ? `${current} modules` : `${current}/${total} modules`;
+
       line1 = [
         chalk.cyan('●'),
-        chalk.cyan(label),
         bar,
         'build in progress',
-        `(${progress.toFixed(2)}%)`,
-        chalk.gray(`${current}/${total} modules`),
+        `(${percentageLabel})`,
+        chalk.gray(moduleCountLabel),
+        chalk.gray(label),
       ].join(' ');
       line2 = state?.id ? '  ' + chalk.grey(ellipsisLeft(state?.id, this.columns)) : '';
     }
@@ -158,6 +161,7 @@ export class ProgressBarRenderer {
     if (this.progressBars.values().every((progressBar) => progressBar.done)) {
       this._render();
       this.streamManager.done();
+      console.log();
     }
   }
 

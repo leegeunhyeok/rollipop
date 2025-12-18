@@ -11,6 +11,6 @@ export * from './config';
 // HMR Types
 export type * from './types/hmr';
 
-// Re-export rolldown
+// Re-export `rolldown`
 export * as rolldown from 'rolldown';
 export * as rolldownExperimental from 'rolldown/experimental';

@@ -1,3 +1,4 @@
+import EventEmitter from 'node:events';
 import { IncomingMessage } from 'node:http';
 import { Duplex } from 'node:stream';
 import url from 'url';
@@ -13,12 +14,20 @@ export type WebSocketClient = ws.WebSocket & {
   id: number;
 };
 
-export abstract class WebSocketServer {
+export interface WebSocketEventMap {
+  connection: [WebSocketClient];
+  message: [WebSocketClient, ws.RawData];
+  error: [WebSocketClient, Error];
+  close: [WebSocketClient];
+}
+
+export abstract class WebSocketServer extends EventEmitter {
   protected clientId = 0;
   protected wss: ws.WebSocketServer;
   protected logger: Logger;
 
   constructor(name: string, options?: ws.ServerOptions) {
+    super();
     const logger = devServerLogger.child(name);
     const wss = new ws.WebSocketServer(options);
 
@@ -29,17 +38,21 @@ export abstract class WebSocketServer {
       });
 
       this.onConnection(client);
+      this.emit('connection', client);
 
       client.on('message', (data) => {
         this.onMessage(client, data);
+        this.emit('message', client, data);
       });
 
       client.on('error', (error) => {
         this.onError(client, error);
+        this.emit('error', client, error);
       });
 
       client.on('close', () => {
         this.onClose(client);
+        this.emit('close', client);
       });
     });
 

@@ -7,4 +7,7 @@ export * from './fs';
 export * from './debug';
 export * from './storage';
 
+export type * from './types';
+
+// Re-export `chalk`
 export { chalk };

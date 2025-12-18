@@ -1,8 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { logger } from '@rollipop/common';
-
+import { logger } from '../../logger';
 import type { Cache } from './cache';
 
 type Key = string;

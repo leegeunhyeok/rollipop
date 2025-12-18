@@ -27,6 +27,10 @@ export async function runServer(
     host = DEFAULT_HOST,
     https = false,
     reporter,
+    onDeviceConnected,
+    onDeviceMessage,
+    onDeviceConnectionError,
+    onDeviceDisconnected,
   } = options;
 
   if (https) {
@@ -88,14 +92,6 @@ export async function runServer(
     },
   });
 
-  const hmrServer = new HMRServer({
-    instanceManager,
-    reportEvent: (event) => {
-      reportEvent?.(event);
-      reporter?.update(event);
-    },
-  });
-
   await fastify.register(import('@fastify/middie'));
 
   fastify
@@ -106,20 +102,30 @@ export async function runServer(
     .register(serveAssets, { projectRoot, host, port, https })
     .setErrorHandler(errorHandler);
 
-  return fastify.listen({ port, host }).then(() => {
-    fastify.server.on(
-      'upgrade',
-      getWebSocketUpgradeHandler({
-        ...communityWebsocketEndpoints,
-        ...websocketEndpoints,
-        '/hot': hmrServer.server,
-      }),
-    );
+  const hmrServer = new HMRServer({
+    instanceManager,
+    reportEvent: (event) => {
+      reportEvent?.(event);
+      reporter?.update(event);
+    },
+  })
+    .on('connection', (client) => onDeviceConnected?.(client))
+    .on('message', (client, data) => onDeviceMessage?.(client, data))
+    .on('error', (client, error) => onDeviceConnectionError?.(client, error))
+    .on('close', (client) => onDeviceDisconnected?.(client));
 
-    return {
-      instance: fastify,
-      message: { broadcast },
-      events: { reportEvent },
-    };
-  });
+  fastify.server.on(
+    'upgrade',
+    getWebSocketUpgradeHandler({
+      ...communityWebsocketEndpoints,
+      ...websocketEndpoints,
+      '/hot': hmrServer.server,
+    }),
+  );
+
+  return fastify.listen({ port, host }).then(() => ({
+    instance: fastify,
+    message: { broadcast },
+    events: { reportEvent },
+  }));
 }

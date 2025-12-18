@@ -4,6 +4,9 @@
  */
 
 import type { FastifyInstance } from 'fastify';
+import type * as ws from 'ws';
+
+import { WebSocketClient } from './wss/server';
 
 export interface ServerOptions {
   projectRoot: string;
@@ -13,6 +16,10 @@ export interface ServerOptions {
   key?: string;
   cert?: string;
   reporter?: Reporter;
+  onDeviceConnected?: (client: WebSocketClient) => void;
+  onDeviceMessage?: (client: WebSocketClient, data: ws.RawData) => void;
+  onDeviceConnectionError?: (client: WebSocketClient, error: Error) => void;
+  onDeviceDisconnected?: (client: WebSocketClient) => void;
 }
 
 export interface DevServer {
