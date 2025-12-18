@@ -5,7 +5,7 @@ import {
   type ResolvedConfig,
   Bundler,
   rolldownExperimental,
-} from '@rollipop/pack';
+} from '@rollipop/core';
 import { invariant } from 'es-toolkit';
 
 import { logger } from './logger';

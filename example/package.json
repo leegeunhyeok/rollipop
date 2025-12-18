@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@react-native/new-app-screen": "0.83.0",
-    "@rollipop/pack": "workspace:*",
+    "@rollipop/core": "workspace:*",
     "react": "19.2.0",
     "react-native": "0.83.0",
     "react-native-safe-area-context": "^5.5.2",

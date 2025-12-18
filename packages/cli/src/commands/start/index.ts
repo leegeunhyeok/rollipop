@@ -1,7 +1,7 @@
 import { Command } from '@commander-js/extra-typings';
 import { logger, resetCache } from '@rollipop/common';
 import { DEFAULT_HOST, DEFAULT_PORT, runServer } from '@rollipop/dev-server';
-import { loadConfig } from '@rollipop/pack';
+import { loadConfig } from '@rollipop/core';
 
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
 import { TerminalReporter } from '../../terminal-reporter';

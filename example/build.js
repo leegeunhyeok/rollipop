@@ -1,4 +1,4 @@
-const { Bundler, loadConfig } = require('@rollipop/pack');
+const { Bundler, loadConfig } = require('@rollipop/core');
 
 async function main() {
   const config = await loadConfig(process.cwd());

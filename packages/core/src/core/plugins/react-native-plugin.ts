@@ -120,7 +120,7 @@ function reactNativePlugin(options: ReactNativePluginOptions): rolldown.Plugin[]
     },
   };
 
-  const hmrClientImplement = fs.readFileSync(require.resolve('@rollipop/pack/hmr-client'), 'utf-8');
+  const hmrClientImplement = fs.readFileSync(require.resolve('@rollipop/core/hmr-client'), 'utf-8');
   const replaceHMRClientPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-replace-hmr-client',
     transform: {

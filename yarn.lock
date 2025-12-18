@@ -3153,8 +3153,8 @@ __metadata:
   dependencies:
     "@commander-js/extra-typings": "npm:^14.0.0"
     "@rollipop/common": "workspace:*"
+    "@rollipop/core": "workspace:*"
     "@rollipop/dev-server": "workspace:*"
-    "@rollipop/pack": "workspace:*"
     commander: "npm:^14.0.2"
     tsdown: "npm:^0.18.1"
     typescript: "npm:^5.9.3"
@@ -3175,33 +3175,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rollipop/dev-server@workspace:*, @rollipop/dev-server@workspace:packages/dev-server":
+"@rollipop/core@workspace:*, @rollipop/core@workspace:packages/core":
   version: 0.0.0-use.local
-  resolution: "@rollipop/dev-server@workspace:packages/dev-server"
-  dependencies:
-    "@fastify/middie": "npm:^9.0.3"
-    "@react-native-community/cli-server-api": "npm:^20.0.2"
-    "@react-native/dev-middleware": "npm:^0.83.0"
-    "@rollipop/common": "workspace:*"
-    "@rollipop/pack": "workspace:*"
-    "@types/ws": "npm:^8"
-    ajv: "npm:^8.17.1"
-    es-toolkit: "npm:^1.43.0"
-    fastify: "npm:^5.6.2"
-    fastify-plugin: "npm:^5.1.0"
-    json-schema-to-ts: "npm:^3.1.1"
-    mime: "npm:^4.1.0"
-    tsdown: "npm:^0.18.1"
-    typescript: "npm:^5.9.3"
-    url: "npm:^0.11.4"
-    vitest: "npm:^4.0.15"
-    ws: "npm:^8.18.3"
-  languageName: unknown
-  linkType: soft
-
-"@rollipop/pack@workspace:*, @rollipop/pack@workspace:packages/pack":
-  version: 0.0.0-use.local
-  resolution: "@rollipop/pack@workspace:packages/pack"
+  resolution: "@rollipop/core@workspace:packages/core"
   dependencies:
     "@babel/core": "npm:^7.28.5"
     "@babel/generator": "npm:^7.28.5"
@@ -3227,6 +3203,30 @@ __metadata:
     tsdown: "npm:^0.18.1"
     typescript: "npm:^5.9.3"
     wrap-ansi: "npm:^9.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@rollipop/dev-server@workspace:*, @rollipop/dev-server@workspace:packages/dev-server":
+  version: 0.0.0-use.local
+  resolution: "@rollipop/dev-server@workspace:packages/dev-server"
+  dependencies:
+    "@fastify/middie": "npm:^9.0.3"
+    "@react-native-community/cli-server-api": "npm:^20.0.2"
+    "@react-native/dev-middleware": "npm:^0.83.0"
+    "@rollipop/common": "workspace:*"
+    "@rollipop/core": "workspace:*"
+    "@types/ws": "npm:^8"
+    ajv: "npm:^8.17.1"
+    es-toolkit: "npm:^1.43.0"
+    fastify: "npm:^5.6.2"
+    fastify-plugin: "npm:^5.1.0"
+    json-schema-to-ts: "npm:^3.1.1"
+    mime: "npm:^4.1.0"
+    tsdown: "npm:^0.18.1"
+    typescript: "npm:^5.9.3"
+    url: "npm:^0.11.4"
+    vitest: "npm:^4.0.15"
+    ws: "npm:^8.18.3"
   languageName: unknown
   linkType: soft
 
@@ -6208,7 +6208,7 @@ __metadata:
     "@react-native/metro-config": "npm:0.83.0"
     "@react-native/new-app-screen": "npm:0.83.0"
     "@react-native/typescript-config": "npm:0.83.0"
-    "@rollipop/pack": "workspace:*"
+    "@rollipop/core": "workspace:*"
     "@types/jest": "npm:^29.5.13"
     "@types/node": "npm:^22"
     "@types/react": "npm:^19.2.0"

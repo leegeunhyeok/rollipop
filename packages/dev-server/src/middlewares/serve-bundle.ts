@@ -1,4 +1,4 @@
-import type { BuildOptions } from '@rollipop/pack';
+import type { BuildOptions } from '@rollipop/core';
 import fp from 'fastify-plugin';
 import { asConst, type FromSchema } from 'json-schema-to-ts';
 

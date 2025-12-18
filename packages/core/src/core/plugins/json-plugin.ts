@@ -29,17 +29,7 @@ function jsonToEsm(data: Record<string, unknown>) {
     return `export const ${key} = ${JSON.stringify(value)};`;
   });
 
-  let dataIdent = '__data__';
-  let index = 0;
-  while (keys.has(dataIdent)) {
-    dataIdent = `__data__${index++}`;
-  }
-
-  return [
-    ...fields,
-    `const ${dataIdent} = ${JSON.stringify(data)};`,
-    `export { ${dataIdent} as default };`,
-  ].join('\n');
+  return [...fields, `export default ${JSON.stringify(data)};`].join('\n');
 }
 
 export { jsonPlugin as json };

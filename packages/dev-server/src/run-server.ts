@@ -2,7 +2,7 @@ import url from 'url';
 
 import { createDevServerMiddleware } from '@react-native-community/cli-server-api';
 import { createDevMiddleware } from '@react-native/dev-middleware';
-import type { ResolvedConfig } from '@rollipop/pack';
+import type { ResolvedConfig } from '@rollipop/core';
 import Fastify from 'fastify';
 
 import { DEFAULT_HOST, DEFAULT_PORT } from './constants';

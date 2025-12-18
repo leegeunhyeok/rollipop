@@ -41,8 +41,8 @@
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",
     "@rollipop/common": "workspace:*",
+    "@rollipop/core": "workspace:*",
     "@rollipop/dev-server": "workspace:*",
-    "@rollipop/pack": "workspace:*",
     "commander": "^14.0.2"
   }
 }

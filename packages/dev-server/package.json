@@ -46,7 +46,7 @@
     "@react-native-community/cli-server-api": "^20.0.2",
     "@react-native/dev-middleware": "^0.83.0",
     "@rollipop/common": "workspace:*",
-    "@rollipop/pack": "workspace:*",
+    "@rollipop/core": "workspace:*",
     "ajv": "^8.17.1",
     "es-toolkit": "^1.43.0",
     "fastify": "^5.6.2",

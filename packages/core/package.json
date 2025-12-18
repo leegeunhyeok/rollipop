@@ -1,5 +1,5 @@
 {
-  "name": "@rollipop/pack",
+  "name": "@rollipop/core",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -27,7 +27,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/leegeunhyeok/rollipop.git",
-    "directory": "packages/pack"
+    "directory": "packages/core"
   },
   "author": "leegeunhyeok <dev.ghlee@gmail.com> (https://github.com/leegeunhyeok)",
   "license": "MIT",

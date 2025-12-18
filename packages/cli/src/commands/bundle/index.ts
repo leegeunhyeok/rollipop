@@ -1,6 +1,6 @@
 import { Command } from '@commander-js/extra-typings';
 import { logger, resetCache } from '@rollipop/common';
-import { Bundler, loadConfig } from '@rollipop/pack';
+import { Bundler, loadConfig } from '@rollipop/core';
 
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
 import { parseBoolean } from '../../utils';

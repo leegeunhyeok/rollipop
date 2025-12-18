@@ -50,7 +50,7 @@ export function getDefaultConfig(
               code: stripFlowSyntax(fs.readFileSync(path, 'utf-8')),
             }) satisfies Polyfill,
         ),
-        isDevServer ? require.resolve('@rollipop/pack/hmr-shims') : undefined,
+        isDevServer ? require.resolve('@rollipop/core/hmr-shims') : undefined,
       ].filter(isNotNil),
     },
     watcher: {

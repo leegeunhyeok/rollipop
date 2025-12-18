@@ -220,7 +220,7 @@ async function applyFinalizer(
 
 export function getOverrideOptionsForDevServer(devServerOptions: DevServerOptions) {
   const hotRuntimeImplement = fs.readFileSync(
-    require.resolve('@rollipop/pack/hmr-runtime'),
+    require.resolve('@rollipop/core/hmr-runtime'),
     'utf-8',
   );
 

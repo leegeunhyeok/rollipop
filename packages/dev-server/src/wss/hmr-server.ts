@@ -1,8 +1,12 @@
-import { HMRServerMessage, rolldownExperimental, type HMRClientMessage } from '@rollipop/pack';
+import {
+  HMRServerMessage,
+  rolldownExperimental,
+  type HMRClientMessage,
+  type HMRServerError,
+} from '@rollipop/core';
 import { invariant } from 'es-toolkit';
 import type * as ws from 'ws';
 
-import { HMRServerError } from '../../../pack/src/types/hmr';
 import { BundlerDevEngine, InstanceManager } from '../instance-manager';
 import { ReportableEvent } from '../types';
 import { WebSocketClient, WebSocketServer } from './server';
