@@ -2,4 +2,4 @@
 
 import { run } from '@rollipop/cli';
 
-run();
+run(process.argv);

@@ -2,7 +2,6 @@
   "name": "rollipop",
   "version": "0.0.0",
   "type": "module",
-  "bin": "./bin/index.js",
   "exports": {
     ".": {
       "import": {
@@ -17,7 +16,6 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "bin",
     "dist"
   ],
   "repository": {
@@ -31,10 +29,18 @@
     "url": "https://github.com/leegeunhyeok/rollipop/issues"
   },
   "homepage": "https://github.com/leegeunhyeok/rollipop#readme",
+  "scripts": {
+    "prepare": "yarn build",
+    "typecheck": "tsc --noEmit",
+    "build": "tsdown"
+  },
   "dependencies": {
-    "@rollipop/cli": "workspace:*"
+    "@rollipop/common": "workspace:*",
+    "@rollipop/core": "workspace:*",
+    "@rollipop/dev-server": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
   }
 }

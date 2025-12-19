@@ -17,7 +17,7 @@ import { isDevServerRunning } from './utils/is-dev-server-running';
 import { HMRServer } from './wss/hmr-server';
 import { getWebSocketUpgradeHandler } from './wss/server';
 
-export async function runServer(
+export async function createDevServer(
   config: ResolvedConfig,
   options: ServerOptions,
 ): Promise<DevServer> {
@@ -123,9 +123,9 @@ export async function runServer(
     }),
   );
 
-  return fastify.listen({ port, host }).then(() => ({
+  return {
     instance: fastify,
     message: { broadcast },
     events: { reportEvent },
-  }));
+  };
 }

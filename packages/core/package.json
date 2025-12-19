@@ -47,17 +47,17 @@
     "@babel/plugin-syntax-typescript": "^7.27.1",
     "@babel/plugin-transform-flow-strip-types": "^7.27.1",
     "@node-rs/xxhash": "^1.7.6",
-    "@react-native/babel-plugin-codegen": "^0.83.0",
-    "@rolldown/pluginutils": "1.0.0-beta.54",
+    "@react-native/babel-plugin-codegen": "^0.83.1",
+    "@rolldown/pluginutils": "catalog:rolldown",
     "@rollipop/common": "workspace:*",
-    "@swc/core": "^1.15.3",
-    "babel-plugin-syntax-hermes-parser": "^0.32.1",
-    "c12": "^3.3.2",
-    "dedent": "^1.7.0",
-    "es-toolkit": "^1.42.0",
-    "flow-remove-types": "^2.293.0",
-    "hermes-parser": "^0.32.1",
-    "rolldown": "1.0.0-beta.55",
+    "@swc/core": "^1.15.7",
+    "babel-plugin-syntax-hermes-parser": "^0.33.0",
+    "c12": "^3.3.3",
+    "dedent": "^1.7.1",
+    "es-toolkit": "catalog:",
+    "flow-remove-types": "^2.295.0",
+    "hermes-parser": "^0.33.0",
+    "rolldown": "catalog:rolldown",
     "wrap-ansi": "^9.0.2"
   },
   "devDependencies": {
@@ -66,8 +66,8 @@
     "@types/react-refresh": "^0",
     "@types/ws": "^8",
     "react-refresh": "^0.18.0",
-    "tsdown": "^0.18.1",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.16"
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

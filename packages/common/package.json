@@ -36,14 +36,14 @@
     "build": "tsdown"
   },
   "devDependencies": {
-    "tsdown": "^0.18.1",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
     "chalk": "^5.6.2",
     "dayjs": "^1.11.19",
-    "es-toolkit": "^1.43.0",
+    "es-toolkit": "catalog:",
     "gradient-string": "^3.0.0"
   }
 }

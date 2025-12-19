@@ -1,7 +1,5 @@
 import { Command } from '@commander-js/extra-typings';
-import { resetCache } from '@rollipop/common';
-import { loadConfig } from '@rollipop/core';
-import { DEFAULT_HOST, DEFAULT_PORT, runServer } from '@rollipop/dev-server';
+import { Rollipop, DEFAULT_HOST, DEFAULT_PORT } from 'rollipop';
 
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
 import { DebuggerOpener } from '../../debugger';
@@ -12,8 +10,8 @@ import { setupInteractiveMode } from './setup-interactive-mode';
 export const command = new Command('start')
   .description('Start the React Native development server.')
   .option('--config <string>', 'Path to the CLI configuration file')
-  .option('--port <number>', 'Port to start the development server on', Number, DEFAULT_PORT)
   .option('--host <string>', 'Host to start the development server on', DEFAULT_HOST)
+  .option('--port <number>', 'Port to start the development server on', Number, DEFAULT_PORT)
   .option('--projectRoot <path>', 'Path to a custom project root', '')
   .option('--reset-cache', 'Removes cached files')
   .option('--https', 'Enables https connections to the server')
@@ -36,19 +34,19 @@ export const command = new Command('start')
   .option('--custom-log-reporter-path', UNSUPPORTED_OPTION_DESCRIPTION)
   .action(async (options) => {
     const cwd = process.cwd();
-    const config = await loadConfig({
+    const config = await Rollipop.loadConfig({
       cwd,
       configFile: options.config,
       context: { command: 'start' },
     });
 
     if (options.resetCache) {
-      resetCache(cwd);
+      Rollipop.resetCache(cwd);
       logger.info('The transform cache was reset');
     }
 
     let debuggerOpened = false;
-    const server = await runServer(config, {
+    const server = await Rollipop.runServer(config, {
       projectRoot: cwd,
       port: options.port,
       host: options.host,

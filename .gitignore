@@ -16,3 +16,6 @@ node_modules
 dist
 
 .rollipop
+
+# misc
+.DS_Store

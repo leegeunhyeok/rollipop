@@ -1,4 +1,4 @@
-import { defineConfig } from '@rollipop/core';
+import { defineConfig } from 'rollipop';
 
 export default defineConfig({
   entry: 'index.js',

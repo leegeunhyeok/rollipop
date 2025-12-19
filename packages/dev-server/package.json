@@ -37,18 +37,18 @@
   },
   "devDependencies": {
     "@types/ws": "^8",
-    "tsdown": "^0.18.1",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@fastify/middie": "^9.0.3",
     "@react-native-community/cli-server-api": "^20.0.2",
-    "@react-native/dev-middleware": "^0.83.0",
+    "@react-native/dev-middleware": "^0.83.1",
     "@rollipop/common": "workspace:*",
     "@rollipop/core": "workspace:*",
     "ajv": "^8.17.1",
-    "es-toolkit": "^1.43.0",
+    "es-toolkit": "catalog:",
     "fastify": "^5.6.2",
     "fastify-plugin": "^5.1.0",
     "json-schema-to-ts": "^3.1.1",

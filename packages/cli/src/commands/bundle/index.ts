@@ -1,6 +1,5 @@
 import { Command } from '@commander-js/extra-typings';
-import { resetCache } from '@rollipop/common';
-import { Bundler, loadConfig } from '@rollipop/core';
+import { Rollipop } from 'rollipop';
 
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
 import { logger } from '../../logger';
@@ -52,14 +51,14 @@ export const command = new Command('build')
   .option('--resolver-option <string...>', UNSUPPORTED_OPTION_DESCRIPTION)
   .action(async (options) => {
     const cwd = process.cwd();
-    const config = await loadConfig({
+    const config = await Rollipop.loadConfig({
       cwd,
       configFile: options.config,
       context: { command: 'bundle' },
     });
 
     if (options.resetCache) {
-      resetCache(cwd);
+      Rollipop.resetCache(cwd);
       logger.info('The transform cache was reset');
     }
 
@@ -67,13 +66,11 @@ export const command = new Command('build')
       config.entry = options.entryFile;
     }
 
-    const bundler = new Bundler(config, {
+    await Rollipop.runBuild(config, {
       platform: options.platform,
       dev: options.dev,
       minify: options.minify,
       cache: options.cache,
       outfile: options.bundleOutput,
     });
-
-    await bundler.build();
   });

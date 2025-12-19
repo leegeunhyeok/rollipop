@@ -1,5 +1,5 @@
 import { Logger } from '@rollipop/common';
-import type { ReportableEvent, Reporter } from '@rollipop/dev-server';
+import type { ReportableEvent, Reporter } from 'rollipop';
 
 export interface TerminalReporterOptions {
   clientLogs: boolean;
