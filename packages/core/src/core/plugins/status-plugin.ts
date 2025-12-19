@@ -5,6 +5,7 @@ export interface StatusPluginOptions {
   onEnd?: (result: StatusPluginEndResult) => void;
   onResolve?: (id: string) => void;
   onTransform?: (result: StatusPluginTransformResult) => void;
+  onWatchChange?: (id: string) => void;
 }
 
 export interface StatusPluginTransformResult {
@@ -48,6 +49,9 @@ function statusPlugin(options?: StatusPluginOptions): rolldown.Plugin {
         ++transformedModules;
         options?.onTransform?.({ id, transformedModules });
       },
+    },
+    watchChange(id) {
+      options?.onWatchChange?.(id);
     },
   };
 }

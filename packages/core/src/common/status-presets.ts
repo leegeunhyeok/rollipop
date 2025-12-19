@@ -6,7 +6,14 @@ import { logger } from '../logger';
 import { getBuildTotalModules, setBuildTotalModules } from '../utils/storage';
 import { ProgressBarRenderer } from './progress-bar';
 
+enum ProgressFlags {
+  None = 0b0000,
+  BuildInProgress = 0b0001,
+  WatchChange = 0b0010,
+}
+
 function progressBar(context: BundlerContext, label: string): StatusPluginOptions {
+  let flags = ProgressFlags.None;
   let totalModules = getBuildTotalModules(context.storage, context.id);
   let unknownTotalModules = totalModules === 0;
 
@@ -16,25 +23,43 @@ function progressBar(context: BundlerContext, label: string): StatusPluginOption
     total: totalModules,
   });
 
+  const renderProgress = (id: string, transformedModules: number) => {
+    if (!unknownTotalModules && totalModules < transformedModules) {
+      totalModules = transformedModules;
+      progressBar.setTotal(totalModules);
+    }
+    progressBar.setCurrent(transformedModules).update({ id });
+    progressBarRenderer.render();
+  };
+
   return {
     onStart() {
+      flags = ProgressFlags.BuildInProgress;
       progressBar.start();
       progressBarRenderer.start();
     },
     onEnd({ transformedModules, ...state }) {
-      progressBar.setTotal(transformedModules).update(state).end();
-      progressBarRenderer.release();
+      flags = ProgressFlags.None;
       totalModules = transformedModules;
       unknownTotalModules = false;
+
+      progressBar.setTotal(transformedModules).update(state).end();
+      progressBarRenderer.release();
       setBuildTotalModules(context.storage, context.id, totalModules);
     },
     onTransform({ id, transformedModules }) {
-      if (!unknownTotalModules && totalModules < transformedModules) {
-        totalModules = transformedModules;
-        progressBar.setTotal(totalModules);
+      switch (true) {
+        case Boolean(flags & ProgressFlags.BuildInProgress):
+          renderProgress(id, transformedModules);
+          break;
+
+        case Boolean(flags & ProgressFlags.WatchChange):
+          logger.debug('Transformed changed file', { id });
+          break;
       }
-      progressBar.setCurrent(transformedModules).update({ id });
-      progressBarRenderer.render();
+    },
+    onWatchChange() {
+      flags = flags | ProgressFlags.WatchChange;
     },
   };
 }
