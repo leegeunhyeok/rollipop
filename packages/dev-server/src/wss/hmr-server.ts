@@ -16,13 +16,16 @@ export interface HMRServerOptions {
   reportEvent: (event: ReportableEvent) => void;
 }
 
-type HMRBinding = (updates: rolldownExperimental.BindingClientHmrUpdate[]) => void;
+interface Bindings {
+  hmrUpdates: (updates: rolldownExperimental.BindingClientHmrUpdate[]) => void;
+  watchChange: () => void;
+}
 
 export class HMRServer extends WebSocketServer {
   private bundlerPool: BundlerPool;
   private reportEvent: HMRServerOptions['reportEvent'];
   private instances: Map<number, BundlerDevEngine> = new Map();
-  private bindings: Map<number, HMRBinding> = new Map();
+  private bindings: Map<number, Bindings> = new Map();
 
   constructor({ bundlerPool, reportEvent }: HMRServerOptions) {
     super('hmr', { noServer: true });
@@ -58,11 +61,20 @@ export class HMRServer extends WebSocketServer {
     const existingBindings = this.bindings.get(client.id);
 
     if (existingBindings == null) {
-      const binding = (updates: rolldownExperimental.BindingClientHmrUpdate[]) => {
+      const handleHmrUpdates = (updates: rolldownExperimental.BindingClientHmrUpdate[]) => {
         void this.handleUpdates(client, updates);
       };
-      instance.addListener('hmrUpdates', binding);
-      this.bindings.set(client.id, binding);
+
+      const handleWatchChange = () => {
+        this.send(client, JSON.stringify({ type: 'hmr:update-start' }));
+      };
+
+      instance.addListener('hmrUpdates', handleHmrUpdates);
+      instance.addListener('watchChange', handleWatchChange);
+      this.bindings.set(client.id, {
+        hmrUpdates: handleHmrUpdates,
+        watchChange: handleWatchChange,
+      });
       this.logger.trace(`HMR event binding established (clientId: ${client.id})`);
     }
   }
@@ -130,6 +142,7 @@ export class HMRServer extends WebSocketServer {
     } satisfies HMRServerMessage;
 
     this.send(client, JSON.stringify(updateMessage));
+    this.send(client, JSON.stringify({ type: 'hmr:update-done' }));
     this.done(client);
   }
 
@@ -167,7 +180,8 @@ export class HMRServer extends WebSocketServer {
     const instance = this.instances.get(client.id);
 
     if (binding != null && instance != null) {
-      instance.removeListener('hmrUpdates', binding);
+      instance.removeListener('hmrUpdates', binding.hmrUpdates);
+      instance.removeListener('watchChange', binding.watchChange);
     }
 
     if (instance != null) {
