@@ -51,6 +51,8 @@
     "@react-native/babel-plugin-codegen": "^0.83.1",
     "@rolldown/pluginutils": "catalog:rolldown",
     "@rollipop/common": "workspace:*",
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0",
     "@swc/core": "^1.15.7",
     "babel-plugin-syntax-hermes-parser": "^0.33.0",
     "c12": "^3.3.3",

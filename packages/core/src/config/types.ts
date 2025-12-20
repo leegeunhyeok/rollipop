@@ -27,6 +27,7 @@ export type ResolverConfig = Omit<NonNullable<rolldown.InputOptions['resolve']>,
 };
 
 export type TransformerConfig = Omit<TransformOptions, 'plugins'> & {
+  svg?: boolean;
   flow?: FlowConfig;
 };
 

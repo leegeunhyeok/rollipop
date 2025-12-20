@@ -11,7 +11,7 @@ import { statusPresets } from '../common/status-presets';
 import { Polyfill, ResolvedConfig } from '../config';
 import { GLOBAL_IDENTIFIER } from '../constants';
 import { getGlobalVariables } from '../internal/react-native';
-import { prelude, persistCache, status, reactRefresh, reactNative, json } from './plugins';
+import { prelude, persistCache, status, reactRefresh, reactNative, json, svg } from './plugins';
 import { BuildOptions, BundlerContext } from './types';
 
 const rolldownLogger = new Logger('rolldown');
@@ -52,11 +52,18 @@ export async function resolveRolldownOptions(
   const { flow, ...rolldownTransform } = config.transformer;
   const { codegen, assetRegistryPath } = config.reactNative;
 
+  const resolvedSourceExtensions = config.transformer.svg
+    ? [...sourceExtensions, 'svg']
+    : sourceExtensions;
+  const resolvedAssetExtensions = config.transformer.svg
+    ? assetExtensions.filter((extension) => extension !== 'svg')
+    : assetExtensions;
+
   const mergedResolveOptions = merge(
     {
       extensions: getResolveExtensions({
-        sourceExtensions,
-        assetExtensions,
+        sourceExtensions: resolvedSourceExtensions,
+        assetExtensions: resolvedAssetExtensions,
         platform,
         preferNativePlatform,
       }),
@@ -117,9 +124,10 @@ export async function resolveRolldownOptions(
         codegenFilter: codegen.filter,
         flowFilter: flow.filter,
         assetsDir: buildOptions.assetsDir,
-        assetExtensions,
+        assetExtensions: resolvedAssetExtensions,
         assetRegistryPath,
       }),
+      svg({ enabled: config.transformer.svg }),
       json(),
       status(statusPreset),
       ...(devServerPlugins ?? []),

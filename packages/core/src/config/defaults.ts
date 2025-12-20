@@ -35,6 +35,7 @@ export function getDefaultConfig(
       preferNativePlatform: true,
     },
     transformer: {
+      svg: true,
       flow: {
         filter: {
           id: /\.jsx?$/,

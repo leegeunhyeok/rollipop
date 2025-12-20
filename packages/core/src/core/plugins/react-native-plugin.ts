@@ -39,6 +39,7 @@ function reactNativePlugin(
   const codegenPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-codegen',
     transform: {
+      order: 'pre',
       filter: codegenFilter,
       handler(code, id) {
         this.debug(`Transforming codegen native component ${id}`);
@@ -79,6 +80,7 @@ function reactNativePlugin(
   const stripFlowSyntaxPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-strip-flow-syntax',
     transform: {
+      order: 'pre',
       filter: flowFilter,
       handler(code, id) {
         if (getFlags(this, id) & TransformFlags.SKIP_FLOW) {
