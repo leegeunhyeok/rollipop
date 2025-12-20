@@ -104,5 +104,4 @@ export function setupInteractiveMode(options: SetupInteractiveModeOptions) {
   console.log(
     `${keyLabel} Toggle auto opening developer tools on startup ${`${chalk.gray.bold(autoOpenStatus)}`}`,
   );
-  console.log();
 }

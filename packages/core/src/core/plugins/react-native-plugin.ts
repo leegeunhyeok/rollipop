@@ -6,17 +6,19 @@ import { exactRegex } from '@rolldown/pluginutils';
 import type * as rolldown from 'rolldown';
 
 import { blockScoping, stripFlowSyntax } from '../../common/transformer';
+import { ResolvedConfig } from '../../config';
 import { DEFAULT_HMR_CLIENT_PATH } from '../../constants';
-import { getAssetData } from '../assets';
+import { AssetData, copyAssetsToDestination, resolveScaledAssets } from '../assets';
 import type { BuildMode } from '../types';
 import { persistCache } from './persist-cache-plugin';
 
 export interface ReactNativePluginOptions {
-  root: string;
-  mode: BuildMode;
+  platform: string;
   dev: boolean;
+  mode: BuildMode;
   flowFilter: rolldown.HookFilter;
   codegenFilter: rolldown.HookFilter;
+  assetsDir?: string;
   assetExtensions: string[];
   assetRegistryPath: string;
 }
@@ -26,8 +28,12 @@ enum TransformFlags {
   NONE = 0,
 }
 
-function reactNativePlugin(options: ReactNativePluginOptions): rolldown.Plugin[] {
-  const { root, mode, flowFilter, codegenFilter, assetExtensions, assetRegistryPath } = options;
+function reactNativePlugin(
+  config: ResolvedConfig,
+  options: ReactNativePluginOptions,
+): rolldown.Plugin[] {
+  const { mode, flowFilter, codegenFilter, assetsDir, assetExtensions, assetRegistryPath } =
+    options;
   const assetExtensionRegex = new RegExp(`\\.(?:${assetExtensions.join('|')})$`);
 
   const codegenPlugin: rolldown.Plugin = {
@@ -105,16 +111,24 @@ function reactNativePlugin(options: ReactNativePluginOptions): rolldown.Plugin[]
     },
   };
 
+  const assets: AssetData[] = [];
   const assetPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-asset',
     load: {
       filter: {
         id: assetExtensionRegex,
       },
-      handler(id) {
+      async handler(id) {
         this.debug(`Asset ${id} found`);
 
-        const assetData = getAssetData(id);
+        const assetData = await resolveScaledAssets({
+          projectRoot: config.root,
+          assetPath: id,
+          platform: options.platform,
+          preferNativePlatform: config.resolver.preferNativePlatform,
+        });
+
+        assets.push(assetData);
 
         return {
           code: `
@@ -125,13 +139,33 @@ function reactNativePlugin(options: ReactNativePluginOptions): rolldown.Plugin[]
         };
       },
     },
+    buildStart() {
+      assets.length = 0;
+    },
+    async buildEnd(error) {
+      if (error || mode === 'serve') {
+        return;
+      }
+
+      if (assetsDir == null) {
+        this.warn('`assetsDir` is not set, skipping assets copying');
+      } else {
+        this.debug(`Copying assets to ${assetsDir}`);
+        await copyAssetsToDestination({
+          assets,
+          assetsDir,
+          platform: options.platform,
+          preferNativePlatform: config.resolver.preferNativePlatform,
+        });
+      }
+    },
   };
 
   const hmrClientImplement = fs.readFileSync(require.resolve('@rollipop/core/hmr-client'), 'utf-8');
   const hmrClientPath = require.resolve(
     process.env.ROLLIPOP_HMR_CLIENT_PATH ?? DEFAULT_HMR_CLIENT_PATH,
     {
-      paths: [root],
+      paths: [config.root],
     },
   );
 

@@ -110,12 +110,13 @@ export async function resolveRolldownOptions(
     plugins: [
       prelude({ modulePaths: preludePaths }),
       persistCache({ enabled: cache, sourceExtensions }, context),
-      reactNative({
+      reactNative(config, {
         dev,
-        root: config.root,
+        platform,
         mode: context.mode,
         codegenFilter: codegen.filter,
         flowFilter: flow.filter,
+        assetsDir: buildOptions.assetsDir,
         assetExtensions,
         assetRegistryPath,
       }),

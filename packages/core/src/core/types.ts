@@ -9,6 +9,7 @@ export interface BuildOptions {
   minify?: boolean;
   cache?: boolean;
   outfile?: string;
+  assetsDir?: string;
 }
 
 export type DevEngineOptions = DevOptions & {

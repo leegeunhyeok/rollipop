@@ -58,6 +58,7 @@
     "es-toolkit": "catalog:",
     "flow-remove-types": "^2.295.0",
     "hermes-parser": "^0.33.0",
+    "image-size": "^2.0.2",
     "rolldown": "catalog:rolldown",
     "wrap-ansi": "^9.0.2"
   },

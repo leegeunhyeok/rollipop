@@ -72,5 +72,6 @@ export const command = new Command('build')
       minify: options.minify,
       cache: options.cache,
       outfile: options.bundleOutput,
+      assetsDir: options.assetsDest,
     });
   });

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { DEV_SERVER_ASSET_PATH } from '@rollipop/common';
+import { AssetUtils } from '@rollipop/core';
 import fp from 'fastify-plugin';
 import { asConst, type FromSchema } from 'json-schema-to-ts';
 import mime from 'mime';
@@ -16,6 +17,7 @@ const queryParamSchema = asConst({
       type: 'string',
     },
   },
+  required: ['platform'],
 });
 
 type QueryParams = FromSchema<typeof queryParamSchema>;
@@ -25,11 +27,12 @@ export interface ServeAssetPluginOptions {
   https: boolean;
   host: string;
   port: number;
+  preferNativePlatform: boolean;
 }
 
 const plugin = fp<ServeAssetPluginOptions>(
   (fastify, options) => {
-    const { projectRoot, host, port, https } = options;
+    const { projectRoot, host, port, https, preferNativePlatform } = options;
     const baseUrl = https ? `https://${host}:${port}` : `http://${host}:${port}`;
 
     function resolveAsset(asset: string) {
@@ -45,14 +48,19 @@ const plugin = fp<ServeAssetPluginOptions>(
         const { url, query } = request;
         const { pathname } = new URL(url, baseUrl);
         const assetPath = resolveAsset(
-          pathname.replace(new RegExp(`^/${DEV_SERVER_ASSET_PATH}`), ''),
+          pathname.replace(new RegExp(`^/${DEV_SERVER_ASSET_PATH}/?`), ''),
         );
-
-        fastify.log.trace({ url, query }, 'received asset request');
 
         let handle: fs.promises.FileHandle | null = null;
         try {
-          handle = await fs.promises.open(assetPath, 'r');
+          handle = await fs.promises.open(
+            AssetUtils.resolveAssetPath(
+              assetPath,
+              { platform: query.platform, preferNativePlatform },
+              1,
+            ),
+            'r',
+          );
           const assetData = await handle.readFile();
           const { size } = await handle.stat();
 

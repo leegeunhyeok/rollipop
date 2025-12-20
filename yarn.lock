@@ -3483,6 +3483,7 @@ __metadata:
     es-toolkit: "catalog:"
     flow-remove-types: "npm:^2.295.0"
     hermes-parser: "npm:^0.33.0"
+    image-size: "npm:^2.0.2"
     react-refresh: "npm:^0.18.0"
     rolldown: "catalog:rolldown"
     tsdown: "catalog:"
@@ -7252,6 +7253,15 @@ __metadata:
   bin:
     image-size: bin/image-size.js
   checksum: 10c0/f8b3c19d4476513f1d7e55c3e6db80997b315444743e2040d545cbcaee59be03d2eb40c46be949a8372697b7003fdb0c04925d704390a7f606bc8181e25c0ed4
+  languageName: node
+  linkType: hard
+
+"image-size@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "image-size@npm:2.0.2"
+  bin:
+    image-size: bin/image-size.js
+  checksum: 10c0/f09dd0f7cf8511cd20e4f756bdb5a7cb6d2240de3323f41bde266bed8373392a293892bf12e907e2995f52833fd88dd27cf6b1a52ab93968afc716cb78cd7b79
   languageName: node
   linkType: hard
 

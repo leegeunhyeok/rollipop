@@ -86,13 +86,15 @@ export class ProgressBar {
         .map((n) => (n < width ? fg : bg))
         .join('');
 
-      const percentageLabel = unknownTotal ? 'calculating...' : `${progress.toFixed(2)}%`;
+      const progressLabel = unknownTotal
+        ? chalk.gray('(calculating...)')
+        : `(${progress.toFixed(2)}%)`;
       const moduleCountLabel = unknownTotal ? `${current} modules` : `${current}/${total} modules`;
 
       line1 = [
         chalk.cyan('●'),
         bar,
-        `(${percentageLabel})`,
+        progressLabel,
         chalk.gray(moduleCountLabel),
         chalk.gray(label),
       ].join(' ');
@@ -148,6 +150,7 @@ export class ProgressBarRenderer {
   }
 
   start() {
+    console.log();
     this.streamManager.listen();
     this._render();
   }

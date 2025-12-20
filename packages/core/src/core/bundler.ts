@@ -9,7 +9,7 @@ import type { ResolvedConfig } from '../config/defaults';
 import { createId } from '../utils/id';
 import { FileSystemCache } from './cache/file-system-cache';
 import { getOverrideOptionsForDevServer, resolveRolldownOptions } from './rolldown';
-import type { BuildOptions, BundlerContext, DevEngineOptions } from './types';
+import type { BuildMode, BuildOptions, BundlerContext, DevEngineOptions } from './types';
 
 export class Bundler {
   static async devEngine(
@@ -17,10 +17,11 @@ export class Bundler {
     buildOptions: Omit<BuildOptions, 'dev' | 'outfile'>,
     devEngineOptions: DevEngineOptions,
   ) {
+    const mode = 'serve';
     const resolvedBuildOptions = { ...buildOptions, dev: true };
-    const contextBase = Bundler.createContext(config, resolvedBuildOptions);
+    const contextBase = Bundler.createContext(mode, config, resolvedBuildOptions);
     const { input = {}, output = {} } = await resolveRolldownOptions(
-      { ...contextBase, mode: 'serve' },
+      { ...contextBase, mode },
       config,
       resolvedBuildOptions,
     );
@@ -38,8 +39,12 @@ export class Bundler {
     return createId(config, buildOptions);
   }
 
-  private static createContext(config: ResolvedConfig, buildOptions: BuildOptions) {
-    const id = Bundler.createId(config, buildOptions);
+  private static createContext(
+    mode: BuildMode,
+    config: ResolvedConfig,
+    buildOptions: BuildOptions,
+  ) {
+    const id = `${mode}:${Bundler.createId(config, buildOptions)}`;
     const cache = new FileSystemCache(path.join(getCachePath(config.root), id));
     const storage = FileStorage.getInstance(config.root);
     const context: Omit<BundlerContext, 'mode'> = { id, cache, storage };
@@ -52,10 +57,11 @@ export class Bundler {
   }
 
   async build(buildOptions: BuildOptions) {
-    const contextBase = Bundler.createContext(this.config, buildOptions);
+    const mode = 'build';
+    const contextBase = Bundler.createContext(mode, this.config, buildOptions);
     const { config } = this;
     const { input, output } = await resolveRolldownOptions(
-      { ...contextBase, mode: 'build' },
+      { ...contextBase, mode },
       config,
       buildOptions,
     );

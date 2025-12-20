@@ -5,6 +5,9 @@ export type * from './core/types';
 // Plugins
 export * as plugins from './core/plugins';
 
+// Assets
+export * as AssetUtils from './core/assets';
+
 // Config
 export * from './config';
 

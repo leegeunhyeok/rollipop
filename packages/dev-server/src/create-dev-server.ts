@@ -85,7 +85,13 @@ export async function createDevServer(
     .use(devMiddleware)
     .register(symbolicate, { getBundler })
     .register(serveBundle, { getBundler })
-    .register(serveAssets, { projectRoot, host, port, https })
+    .register(serveAssets, {
+      projectRoot,
+      host,
+      port,
+      https,
+      preferNativePlatform: config.resolver.preferNativePlatform,
+    })
     .setErrorHandler(errorHandler);
 
   const hmrServer = new HMRServer({
