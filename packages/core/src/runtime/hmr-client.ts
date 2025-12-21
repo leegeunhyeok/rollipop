@@ -245,12 +245,12 @@ class HMRClient implements HMRClientNativeInterface {
 
   private handleConnectionError(error: Error, origin: string) {
     let errorMessage =
-      'Cannot connect to Metro.\n\n' +
+      'Cannot connect to Rollipop.\n\n' +
       'Try the following to fix the issue:\n' +
-      '- Ensure that Metro is running and available on the same network';
+      '- Ensure that Rollipop is running and available on the same network';
 
     if (Platform.OS === 'ios') {
-      errorMessage += '- Ensure that the Metro URL is correctly set in AppDelegate';
+      errorMessage += '- Ensure that the Rollipop URL is correctly set in AppDelegate';
     } else {
       errorMessage +=
         `- Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n` +
@@ -304,15 +304,15 @@ class HMRClient implements HMRClientNativeInterface {
     const isNormalOrUnsetCloseReason = code === 1000 || code === 1005;
 
     const message = isNormalOrUnsetCloseReason
-      ? 'Disconnected from Metro.'
-      : `Disconnected from Metro (${code}: "${reason}").`;
+      ? 'Disconnected from Rollipop.'
+      : `Disconnected from Rollipop (${code}: "${reason}").`;
 
     this.unavailableMessage ??=
       message +
       '\n\n' +
       'To reconnect:\n' +
-      '- Ensure that Metro is running and available on the same network\n' +
-      '- Reload this app (will trigger further help if Metro cannot be connected to)\n';
+      '- Ensure that Rollipop is running and available on the same network\n' +
+      '- Reload this app (will trigger further help if Rollipop cannot be connected to)\n';
 
     this.showUnavailableMessageIfNeeded();
   }
