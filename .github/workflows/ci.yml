@@ -73,6 +73,7 @@ jobs:
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
+          commit: 'chore: version packages'
           version: yarn changeset version
           publish: yarn workspaces foreach --all --no-private exec yarn npm publish --provenance --access public
         env:
