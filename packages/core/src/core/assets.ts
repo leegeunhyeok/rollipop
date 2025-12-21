@@ -61,13 +61,15 @@ const SCALE_PATTERN = '@(\\d+\\.?\\d*)x';
 /**
  * key: platform,
  * value: allowed scales
+ *
+ * @see https://github.com/facebook/react-native/blob/0.83-stable/packages/community-cli-plugin/src/commands/bundle/filterPlatformAssetScales.js#L11
  */
 const ALLOW_SCALES: Partial<Record<string, number[]>> = {
   ios: [1, 2, 3],
 };
 
 /**
- * @see {@link https://developer.android.com/training/multiscreen/screendensities#TaskProvideAltBmp}
+ * @see https://developer.android.com/training/multiscreen/screendensities#TaskProvideAltBmp
  */
 const ANDROID_ASSET_QUALIFIER: Record<number, string> = {
   0.75: 'ldpi',
@@ -91,7 +93,7 @@ export async function resolveScaledAssets(options: ResolveScaledAssetsOptions): 
   const extension = path.extname(assetPath);
   const relativePath = path.relative(projectRoot, assetPath);
   const dirname = path.dirname(assetPath);
-  const filesInDir = fs.readdirSync(dirname);
+  const files = fs.readdirSync(dirname);
   const stripedBasename = stripSuffix(assetPath, context);
   const suffixPattern = platformSuffixPattern(context);
   const assetRegExp = new RegExp(
@@ -99,7 +101,7 @@ export async function resolveScaledAssets(options: ResolveScaledAssetsOptions): 
   );
   const scaledAssets: Partial<Record<AssetScale, string>> = {};
 
-  for (const file of filesInDir.sort(
+  for (const file of files.sort(
     (a, b) => getAssetPriority(b, context) - getAssetPriority(a, context),
   )) {
     const match = assetRegExp.exec(file);
@@ -117,6 +119,18 @@ export async function resolveScaledAssets(options: ResolveScaledAssetsOptions): 
   const imageData = fs.readFileSync(assetPath);
   const dimensions = imageSize(imageData);
 
+  const filteredScaledAssets = Object.entries(scaledAssets)
+    .map(([scale, file]) => ({ scale: parseFloat(scale) as AssetScale, file }))
+    .filter(({ scale }) => ALLOW_SCALES[platform]?.includes(scale) ?? true)
+    .reduce(
+      (acc, { scale, file }) => {
+        acc.files.push(file);
+        acc.scales.push(scale);
+        return acc;
+      },
+      { scales: [], files: [] } as { scales: AssetScale[]; files: string[] },
+    );
+
   return {
     __packager_asset: true,
     id: assetPath,
@@ -124,11 +138,8 @@ export async function resolveScaledAssets(options: ResolveScaledAssetsOptions): 
     type: extension.substring(1),
     width: dimensions.width,
     height: dimensions.height,
-    files: Object.values(scaledAssets),
-    scales: Object.keys(scaledAssets)
-      .map(parseFloat)
-      .filter((scale) => ALLOW_SCALES[platform]?.includes(scale) ?? true)
-      .sort((a, b) => a - b) as AssetScale[],
+    files: filteredScaledAssets.files,
+    scales: filteredScaledAssets.scales,
     fileSystemLocation: path.dirname(assetPath),
     httpServerLocation: path.join(DEV_SERVER_ASSET_PATH, path.dirname(relativePath)),
     hash: md5(imageData),
@@ -218,10 +229,13 @@ export function getSuffixedPath(
 }
 
 export function resolveAssetPath(assetPath: string, context: AssetContext, scale: AssetScale) {
-  const suffixedPath = getSuffixedPath(assetPath, context, {
-    scale,
-    platform: context.platform,
-  });
+  const suffixedPaths = [
+    getSuffixedPath(assetPath, context, { scale, platform: context.platform }),
+    context.preferNativePlatform
+      ? getSuffixedPath(assetPath, context, { scale, platform: 'native' })
+      : null,
+    getSuffixedPath(assetPath, context, { scale }),
+  ].filter(isNotNil);
 
   /**
    * When scale is 1, filename can be suffixed or non-suffixed(`image.png`).
@@ -240,13 +254,17 @@ export function resolveAssetPath(assetPath: string, context: AssetContext, scale
     try {
       fs.statSync(assetPath);
       return assetPath;
-    } catch {
-      fs.statSync(suffixedPath);
-      return suffixedPath;
-    }
+    } catch {}
   }
 
-  return suffixedPath;
+  for (const suffixedPath of suffixedPaths) {
+    try {
+      fs.statSync(suffixedPath);
+      return suffixedPath;
+    } catch {}
+  }
+
+  throw new Error(`cannot resolve asset path for ${assetPath}`);
 }
 
 interface CopyAssetsToDestinationOptions {

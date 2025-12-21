@@ -3586,6 +3586,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rollipop/core@workspace:packages/core"
   dependencies:
+    "@babel/code-frame": "npm:^7.27.1"
     "@babel/core": "npm:^7.28.5"
     "@babel/generator": "npm:^7.28.5"
     "@babel/plugin-syntax-typescript": "npm:^7.27.1"
@@ -3598,6 +3599,7 @@ __metadata:
     "@svgr/core": "npm:^8.1.0"
     "@svgr/plugin-jsx": "npm:^8.1.0"
     "@swc/core": "npm:^1.15.7"
+    "@types/babel__code-frame": "npm:^7"
     "@types/babel__core": "npm:^7"
     "@types/babel__generator": "npm:^7"
     "@types/react-refresh": "npm:^0"
@@ -3611,6 +3613,7 @@ __metadata:
     image-size: "npm:^2.0.2"
     react-refresh: "npm:^0.18.0"
     rolldown: "catalog:rolldown"
+    source-map: "npm:^0.7.6"
     tsdown: "catalog:"
     typescript: "catalog:"
     vitest: "catalog:"

@@ -4,27 +4,21 @@ import { generate } from '@babel/generator';
 import * as swc from '@swc/core';
 import flowRemoveTypes from 'flow-remove-types';
 import * as hermesParser from 'hermes-parser';
-import { SourceMap } from 'rolldown';
-
-import { combineSourceMaps } from '../utils/sourcemap';
 
 export function stripFlowSyntax(code: string, id: string) {
   const typeRemoved = flowRemoveTypes(code, { all: true, removeEmptyImports: true });
   const ast = hermesParser.parse(typeRemoved.toString(), { flow: 'all', babel: true });
   const generated = generate(ast, { sourceMaps: true, sourceFileName: path.basename(id) });
-  const combinedMap = combineSourceMaps([
-    generated.map,
-    typeRemoved.generateMap(),
-  ]) as unknown as SourceMap;
 
-  return { code: generated.code, map: combinedMap };
+  return { code: generated.code, map: generated.map };
 }
 
 export function blockScoping(code: string, id: string, dev: boolean) {
   const result = swc.transformSync(code, {
+    filename: path.basename(id),
     configFile: false,
     swcrc: false,
-    filename: path.basename(id),
+    sourceMaps: true,
     jsc: {
       target: 'es5',
       parser: {
