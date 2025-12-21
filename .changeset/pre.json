@@ -7,5 +7,7 @@
     "@rollipop/dev-server": "0.0.0",
     "rollipop": "0.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "happy-teeth-search"
+  ]
 }
