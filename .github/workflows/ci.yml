@@ -1,0 +1,80 @@
+name: CI
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  BASE_BRANCH: 'main'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  default-workflow:
+    name: Default Workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Tools
+        uses: jdx/mise-action@v3
+
+      - name: Setup Node
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build
+        run: yarn build:all
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Typecheck
+        run: yarn typecheck:all
+
+      - name: Test
+        run: yarn test:all
+
+  release:
+    needs: default-workflow
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Tools
+        uses: jdx/mise-action@v3
+
+      - name: Setup Node
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Create Release Pull Request
+        uses: changesets/action@v1
+        with:
+          version: yarn changeset version
+          publish: yarn workspaces foreach --all --no-private exec yarn npm publish --provenance --access public
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_BRANCH: ${{ env.BASE_BRANCH }}

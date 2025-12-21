@@ -9,10 +9,12 @@
     "typecheck:all": "yarn workspaces foreach --all --topological-dev run typecheck",
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --deny-warnings --fix",
-    "format": "oxfmt",
-    "build:all": "yarn workspaces foreach --all --topological-dev run build"
+    "test:all": "yarn workspaces foreach --all --topological-dev --no-private run test",
+    "build:all": "yarn workspaces foreach --all --topological-dev --no-private run build",
+    "format": "oxfmt"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.8",
     "@types/node": "^22",
     "oxfmt": "^0.17.0",
     "oxlint": "^1.32.0",

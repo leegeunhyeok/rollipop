@@ -1,0 +1,11 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@rollipop/common": "0.0.0",
+    "@rollipop/core": "0.0.0",
+    "@rollipop/dev-server": "0.0.0",
+    "rollipop": "0.0.0"
+  },
+  "changesets": []
+}
