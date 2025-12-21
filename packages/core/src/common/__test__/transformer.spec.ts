@@ -114,7 +114,7 @@ describe('blockScoping', () => {
   `;
 
   it('should block scope bindings', () => {
-    const { code, map: rawMap } = blockScoping(CODE_1, 'test.js', false);
+    const { code, map: rawMap } = blockScoping(CODE_1, 'test.js', false, true);
     const { evaluate } = evaluateContext();
     expect(code).not.toContain('let');
     expect(code).not.toContain('const');
@@ -125,7 +125,7 @@ describe('blockScoping', () => {
   });
 
   it('should return the correct source map', async () => {
-    const { code, map } = stripFlowSyntax(CODE_2, 'test.js');
+    const { code, map } = blockScoping(CODE_2, 'test.js', false, true);
     const { evaluate } = evaluateContext();
     const consumer = await new SourceMapConsumer(map!);
 

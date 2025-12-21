@@ -13,12 +13,20 @@ export function stripFlowSyntax(code: string, id: string) {
   return { code: generated.code, map: generated.map };
 }
 
-export function blockScoping(code: string, id: string, dev: boolean) {
+export function blockScoping(
+  code: string,
+  id: string,
+  dev: boolean,
+  UNSTABLE_enableSourceMap = false,
+) {
   const result = swc.transformSync(code, {
     filename: path.basename(id),
     configFile: false,
     swcrc: false,
-    sourceMaps: true,
+    // FIXME: Errors occurred when source map is enabled.
+    //
+    // `failed to read input source map: failed to find input source map file "xxx"`
+    sourceMaps: UNSTABLE_enableSourceMap,
     jsc: {
       target: 'es5',
       parser: {
@@ -40,6 +48,7 @@ export function blockScoping(code: string, id: string, dev: boolean) {
         privateFieldsAsProperties: true,
       },
     },
+
     isModule: true,
   });
 
