@@ -1,5 +1,13 @@
 # @rollipop/core
 
+## 0.1.0-alpha.1
+
+### Patch Changes
+
+- e21eeb5: ensure valid source mapping information is included in serve mode
+- 3d72e91: add `config` and `configResolved` for plugins
+  - @rollipop/common@0.1.0-alpha.1
+
 ## 0.1.0-alpha.0
 
 ### Minor Changes
