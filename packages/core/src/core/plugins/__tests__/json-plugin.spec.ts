@@ -2,8 +2,8 @@ import fs from 'node:fs';
 
 import { describe, expect, it, vi } from 'vitest';
 
+import { testPluginDriver } from '../../../testing/plugin-testing-utils';
 import { json } from '../json-plugin';
-import { testPluginDriver } from './plugin-testing-utils';
 
 describe('rollipop:json', () => {
   it('should transform JSON file to ES module', async () => {

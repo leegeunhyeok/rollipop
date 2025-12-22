@@ -3986,6 +3986,7 @@ __metadata:
     flow-remove-types: "npm:^2.295.0"
     hermes-parser: "npm:^0.33.0"
     image-size: "npm:^2.0.2"
+    magic-string: "npm:^0.30.21"
     react-refresh: "npm:^0.18.0"
     rolldown: "catalog:rolldown"
     source-map: "npm:^0.7.6"

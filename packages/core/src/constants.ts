@@ -1,9 +1,11 @@
 /**
  * @see `tsdown.config.ts`
  */
-declare const __ROLLIPOP_VERSION__: string;
+declare global {
+  var __ROLLIPOP_VERSION__: string;
+}
 
-export const ROLLIPOP_VERSION = __ROLLIPOP_VERSION__;
+export const ROLLIPOP_VERSION = globalThis.__ROLLIPOP_VERSION__;
 
 export const GLOBAL_IDENTIFIER = '__ROLLIPOP_GLOBAL__';
 

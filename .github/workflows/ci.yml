@@ -1,12 +1,5 @@
 name: CI
 
-permissions:
-  contents: write
-  id-token: write
-
-env:
-  BASE_BRANCH: 'main'
-
 on:
   push:
     branches:
@@ -45,37 +38,3 @@ jobs:
 
       - name: Test
         run: yarn test:all
-
-  release:
-    needs: default-workflow
-    name: Release
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-      pull-requests: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Tools
-        uses: jdx/mise-action@v3
-
-      - name: Setup Node
-        run: corepack enable
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Create Release Pull Request
-        uses: changesets/action@v1
-        with:
-          commit: 'chore: version packages'
-          version: yarn changeset version
-          publish: yarn workspaces foreach --all --no-private exec yarn npm publish --provenance --access public --tolerate-republish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BASE_BRANCH: ${{ env.BASE_BRANCH }}
