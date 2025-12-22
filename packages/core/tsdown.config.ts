@@ -28,7 +28,7 @@ export default defineConfig([
     format: ['esm', 'cjs'],
     platform: 'node',
     define: {
-      __ROLLIPOP_VERSION__: JSON.stringify(version),
+      'globalThis.__ROLLIPOP_VERSION__': JSON.stringify(version),
     },
     fixedExtension: false,
     dts: true,

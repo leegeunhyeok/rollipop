@@ -107,7 +107,7 @@ function reactNativePlugin(
     transform: {
       order: 'post',
       handler(code, id) {
-        const result = blockScoping(code, id, options.dev);
+        const result = blockScoping(code, id);
         return { code: result.code, map: result.map };
       },
     },
