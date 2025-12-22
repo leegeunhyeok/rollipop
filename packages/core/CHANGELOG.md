@@ -1,5 +1,12 @@
 # @rollipop/core
 
+## 0.1.0-alpha.1
+
+### Patch Changes
+
+- 11e6397: ensure valid source mapping information is included in serve mode
+  - @rollipop/common@0.1.0-alpha.1
+
 ## 0.1.0-alpha.0
 
 ### Minor Changes
