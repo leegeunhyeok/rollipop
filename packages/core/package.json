@@ -70,6 +70,7 @@
     "@types/babel__generator": "^7",
     "@types/react-refresh": "^0",
     "@types/ws": "^8",
+    "magic-string": "^0.30.21",
     "react-refresh": "^0.18.0",
     "source-map": "^0.7.6",
     "tsdown": "catalog:",

@@ -15,11 +15,11 @@ export interface ReactRefreshPluginOptions {
   exclude?: RegExp | string;
 }
 
-function reactRefreshPlugin(options?: ReactRefreshPluginOptions): rolldown.Plugin {
+function reactRefreshPlugin(options?: ReactRefreshPluginOptions): rolldown.Plugin[] {
   const { include = DEFAULT_INCLUDE_REGEX, exclude = DEFAULT_EXCLUDE_REGEX } = options ?? {};
 
-  return {
-    name: 'rollipop:react-refresh',
+  const reactRefreshTransform: rolldown.Plugin = {
+    name: 'rollipop:transform-react-refresh',
     transform: {
       filter: {
         id: {
@@ -27,11 +27,8 @@ function reactRefreshPlugin(options?: ReactRefreshPluginOptions): rolldown.Plugi
           exclude,
         },
       },
-      handler(code, id, meta) {
-        const { magicString } = meta;
-        invariant(magicString != null, 'magicString is not available');
-
-        const { code: transformedCode } = transformSync(id, code, {
+      handler(code, id) {
+        const result = transformSync(id, code, {
           sourcemap: true,
           jsx: {
             runtime: 'automatic',
@@ -43,18 +40,36 @@ function reactRefreshPlugin(options?: ReactRefreshPluginOptions): rolldown.Plugi
           },
         });
 
-        magicString.overwrite(0, magicString.length(), transformedCode);
+        return { code: result.code, map: result.map };
+      },
+    },
+  };
+
+  const reactRefreshBoundary: rolldown.Plugin = {
+    name: 'rollipop:react-refresh-boundary',
+    transform: {
+      filter: {
+        id: {
+          include,
+          exclude,
+        },
+      },
+      handler(code, id, meta) {
+        const { magicString } = meta;
+        invariant(magicString != null, 'magicString is not available');
 
         applyRefreshWrapper(magicString, {
           id,
-          hasRefresh: HAS_REFRESH_REGEX.test(transformedCode),
-          onlyReactComponent: ONLY_REACT_COMPONENT_REGEX.test(transformedCode),
+          hasRefresh: HAS_REFRESH_REGEX.test(code),
+          onlyReactComponent: ONLY_REACT_COMPONENT_REGEX.test(code),
         });
 
         return { code: magicString };
       },
     },
   };
+
+  return [reactRefreshTransform, reactRefreshBoundary];
 }
 
 interface ApplyRefreshWrapperOptions {

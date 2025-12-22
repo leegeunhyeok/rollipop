@@ -134,23 +134,25 @@ function getCodeFrame(
 
   try {
     const { lineNumber, column, file } = frame;
-
-    // FIXME: Frame file should be resolved to a local file path.
     const unresolved = file.startsWith('http');
-    const source = unresolved
-      ? bundle.code
-      : (sourceMapConsumer.sourceContentFor(frame.file) ?? '');
+    const source = unresolved ? bundle.code : sourceMapConsumer.sourceContentFor(frame.file);
+    const fileName = unresolved ? (url.parse(file).pathname ?? 'unknown') : file;
+    let content = '';
 
-    return {
-      content: codeFrameColumns(
+    if (source) {
+      content = codeFrameColumns(
         source,
         {
           start: { column, line: lineNumber },
         },
         { highlightCode: true },
-      ),
+      );
+    }
+
+    return {
+      content,
+      fileName,
       location: { column, row: lineNumber },
-      fileName: unresolved ? (url.parse(file).pathname ?? 'unknown') : file,
     };
   } catch {
     return null;
