@@ -37,6 +37,7 @@ export {
   type TerminalConfig,
   type RolldownConfig,
   type BuildOptions,
+  type Plugin,
   type Reporter,
   type ReportableEvent,
 } from '@rollipop/core';
@@ -48,6 +49,3 @@ export {
   type ServerOptions,
   type DevServer,
 } from '@rollipop/dev-server';
-
-// Re-export `rolldown`
-export type { Plugin } from 'rolldown';

@@ -58,3 +58,14 @@ export function worklet(): Plugin {
     },
   });
 }
+
+export function config(): Plugin {
+  return {
+    name: 'config',
+    configResolved(resolvedConfig) {
+      if (process.env.SHOW_CONFIG === '1') {
+        console.log(resolvedConfig);
+      }
+    },
+  };
+}

@@ -64,6 +64,7 @@ export async function resolveRolldownOptions(
 
   const mergedTransformOptions = merge(
     {
+      cwd: config.root,
       target: 'es2015',
       jsx: {
         runtime: 'automatic',

@@ -1,6 +1,7 @@
 import type * as rolldown from 'rolldown';
 import type { DevWatchOptions, TransformOptions } from 'rolldown/experimental';
 
+import type { Plugin } from '../core/plugins/types';
 import type { Reporter } from '../types';
 
 export interface Config {
@@ -43,7 +44,7 @@ export interface Config {
   /**
    * Plugins.
    */
-  plugins?: rolldown.Plugin[];
+  plugins?: Plugin[];
   /**
    * Rollipop provides default options for Rolldown, but you can override them by this option.
    *
@@ -76,7 +77,7 @@ export type ResolverConfig = Omit<NonNullable<rolldown.InputOptions['resolve']>,
   preferNativePlatform?: boolean;
 };
 
-export type TransformerConfig = Omit<TransformOptions, 'plugins'> & {
+export type TransformerConfig = Omit<TransformOptions, 'cwd' | 'plugins'> & {
   /**
    * Transform SVG assets files to React components using `@svgr/core`.
    *
