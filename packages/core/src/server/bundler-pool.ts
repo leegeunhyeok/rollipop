@@ -1,19 +1,17 @@
 import EventEmitter from 'node:events';
 
-import {
-  type BuildOptions,
-  type ResolvedConfig,
-  Bundler,
-  rolldownExperimental,
-} from '@rollipop/core';
 import { invariant } from 'es-toolkit';
+import * as rolldownExperimental from 'rolldown/experimental';
 
+import type { ResolvedConfig } from '../config';
+import { Bundler } from '../core/bundler';
+import type { BuildOptions } from '../core/types';
+import { getBaseBundleName } from '../utils/bundle';
+import { bindReporter } from '../utils/config';
+import { taskHandler } from '../utils/promise';
 import { InMemoryBundle } from './bundle';
 import { logger } from './logger';
-import { ServerOptions } from './types';
-import { getBaseBundleName } from './utils/bundle';
-import { bindReporter } from './utils/config';
-import { taskHandler } from './utils/promise';
+import type { ServerOptions } from './types';
 
 export interface DevServerOptions {
   host: string;

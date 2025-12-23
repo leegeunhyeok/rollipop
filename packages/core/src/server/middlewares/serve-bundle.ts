@@ -1,11 +1,11 @@
-import type { BuildOptions } from '@rollipop/core';
 import { invariant } from 'es-toolkit';
 import fp from 'fastify-plugin';
 import { asConst, type FromSchema } from 'json-schema-to-ts';
 
+import type { BuildOptions } from '../../core/types';
+import { BundleResponse } from '../../utils/response';
 import type { BundlerDevEngine } from '../bundler-pool';
 import { bundleRequestSchema, type BundleRequestSchema } from '../common/schema';
-import { BundleResponse } from '../utils/response';
 
 const routeParamSchema = asConst({
   type: 'object',

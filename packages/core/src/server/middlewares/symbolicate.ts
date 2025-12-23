@@ -1,14 +1,14 @@
 import url from 'url';
 
-import { BuildOptions } from '@rollipop/core';
 import { invariant } from 'es-toolkit';
 import fp from 'fastify-plugin';
 import { asConst, type FromSchema } from 'json-schema-to-ts';
 
-import { BundlerDevEngine } from '../bundler-pool';
+import type { BuildOptions } from '../../core/types';
+import { getBaseBundleName } from '../../utils/bundle';
+import type { BundlerDevEngine } from '../bundler-pool';
 import type { StackFrameInput } from '../symbolicate';
 import { symbolicate } from '../symbolicate';
-import { getBaseBundleName } from '../utils/bundle';
 
 const bodySchema = asConst({
   type: 'object',

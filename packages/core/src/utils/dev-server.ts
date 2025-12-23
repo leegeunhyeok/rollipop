@@ -1,6 +1,6 @@
 import http from 'node:http';
 
-import { logger } from '../logger';
+import { logger } from '../server/logger';
 
 interface AssertDevServerOptions {
   devServerUrl: string;

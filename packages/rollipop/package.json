@@ -41,7 +41,6 @@
     "@inquirer/prompts": "^8.1.0",
     "@rollipop/common": "workspace:*",
     "@rollipop/core": "workspace:*",
-    "@rollipop/dev-server": "workspace:*",
     "commander": "^14.0.2",
     "es-toolkit": "catalog:"
   },

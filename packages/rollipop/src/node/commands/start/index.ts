@@ -1,5 +1,5 @@
 import { Command } from '@commander-js/extra-typings';
-import { DEFAULT_HOST, DEFAULT_PORT } from '@rollipop/dev-server';
+import { DEFAULT_HOST, DEFAULT_PORT } from '@rollipop/core';
 import { noop } from 'es-toolkit';
 
 import { Rollipop } from '../../../index';

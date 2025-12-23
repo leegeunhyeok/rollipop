@@ -1,5 +1,5 @@
 import type { ResolvedConfig } from '@rollipop/core';
-import { createDevServer, DevServer, type ServerOptions } from '@rollipop/dev-server';
+import { createDevServer, DevServer, type ServerOptions } from '@rollipop/core';
 
 export async function runServer(
   config: ResolvedConfig,

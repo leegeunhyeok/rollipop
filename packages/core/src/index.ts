@@ -2,6 +2,9 @@
 export { Bundler } from './core/bundler';
 export type * from './core/types';
 
+// Dev server
+export * from './server';
+
 // Plugins
 export * as plugins from './core/plugins';
 export { PluginUtils } from './core/plugins/utils';

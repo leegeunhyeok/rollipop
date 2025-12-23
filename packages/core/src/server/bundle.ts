@@ -5,7 +5,7 @@ import {
   type IndexedSourceMapConsumer,
 } from 'source-map';
 
-import { replaceSourceMappingURL } from './utils/source-map';
+import { replaceSourceMappingURL } from '../utils/source-map';
 
 type SourceMapConsumerType = BasicSourceMapConsumer | IndexedSourceMapConsumer;
 

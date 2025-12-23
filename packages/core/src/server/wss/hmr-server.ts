@@ -1,15 +1,11 @@
-import {
-  HMRServerMessage,
-  rolldownExperimental,
-  type ReportableEvent,
-  type HMRClientMessage,
-  type HMRServerError,
-} from '@rollipop/core';
 import { invariant } from 'es-toolkit';
+import type * as rolldownExperimental from 'rolldown/experimental';
 import type * as ws from 'ws';
 
-import { BundlerDevEngine, type BundlerPool } from '../bundler-pool';
-import { WebSocketClient, WebSocketServer } from './server';
+import type { ReportableEvent } from '../../types';
+import type { HMRClientMessage, HMRServerError, HMRServerMessage } from '../../types/hmr';
+import type { BundlerDevEngine, BundlerPool } from '../bundler-pool';
+import { type WebSocketClient, WebSocketServer } from './server';
 
 export interface HMRServerOptions {
   bundlerPool: BundlerPool;
