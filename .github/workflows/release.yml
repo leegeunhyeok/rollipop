@@ -36,7 +36,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: yarn changeset version
-          publish: yarn workspaces foreach --all --no-private exec yarn npm publish --provenance --access public --tolerate-republish
+          publish: yarn workspaces foreach --all --no-private exec yarn npm publish --provenance --access public || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: ${{ env.BASE_BRANCH }}
