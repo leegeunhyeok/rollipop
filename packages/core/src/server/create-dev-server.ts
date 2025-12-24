@@ -5,6 +5,7 @@ import { createDevMiddleware } from '@react-native/dev-middleware';
 import Fastify from 'fastify';
 
 import type { ResolvedConfig } from '../config';
+import { createPluginContext } from '../core/plugins/context';
 import type { Plugin } from '../core/plugins/types';
 import type { AsyncResult, BuildOptions } from '../core/types';
 import { assertDevServerStatus } from '../utils/dev-server';
@@ -143,7 +144,8 @@ async function invokeConfigureServer(server: DevServer, plugins: Plugin[]) {
   const postConfigureServerHandlers: (() => AsyncResult<void>)[] = [];
 
   for (const plugin of plugins) {
-    const result = await plugin.configureServer?.(server);
+    const context = createPluginContext(plugin.name);
+    const result = await plugin.configureServer?.call(context, server);
 
     if (typeof result === 'function') {
       postConfigureServerHandlers.push(result);

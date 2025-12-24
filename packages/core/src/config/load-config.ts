@@ -3,6 +3,7 @@ import path from 'node:path';
 import * as c12 from 'c12';
 import { omit } from 'es-toolkit';
 
+import { createPluginContext } from '../core/plugins/context';
 import type { Plugin } from '../core/plugins/types';
 import { getDefaultConfig, ResolvedConfig } from './defaults';
 import { DefineConfigContext } from './define-config';
@@ -49,8 +50,10 @@ export async function resolvePluginConfig(baseConfig: Config, plugins: Plugin[])
   let mergedConfig: Config = omit(baseConfig, ['plugins', 'dangerously_overrideRolldownOptions']);
 
   for (const plugin of plugins) {
+    const context = createPluginContext(plugin.name);
+
     if (typeof plugin.config === 'function') {
-      const config = await plugin.config(mergedConfig);
+      const config = await plugin.config.call(context, mergedConfig);
       if (config != null) {
         mergedConfig = mergeConfig(mergedConfig, config);
       }
@@ -63,7 +66,10 @@ export async function resolvePluginConfig(baseConfig: Config, plugins: Plugin[])
 }
 
 export async function invokeConfigResolved(config: ResolvedConfig, plugins: Plugin[]) {
-  for (const plugin of plugins) {
-    await plugin.configResolved?.(config);
-  }
+  await Promise.all(
+    plugins.map((plugin) => {
+      const context = createPluginContext(plugin.name);
+      return plugin.configResolved?.call(context, config);
+    }),
+  );
 }
