@@ -40,7 +40,7 @@ export async function loadConfig(options: LoadConfigOptions = {}) {
   const pluginConfig = await resolvePluginConfig(userConfig, userConfig.plugins ?? []);
   const resolvedConfig = mergeConfig(defaultConfig, userConfig, pluginConfig);
 
-  await invokePluginConfigResolved(resolvedConfig, userConfig.plugins ?? []);
+  await invokeConfigResolved(resolvedConfig, userConfig.plugins ?? []);
 
   return resolvedConfig;
 }
@@ -62,7 +62,7 @@ export async function resolvePluginConfig(baseConfig: Config, plugins: Plugin[])
   return mergedConfig;
 }
 
-export async function invokePluginConfigResolved(config: ResolvedConfig, plugins: Plugin[]) {
+export async function invokeConfigResolved(config: ResolvedConfig, plugins: Plugin[]) {
   for (const plugin of plugins) {
     await plugin.configResolved?.(config);
   }

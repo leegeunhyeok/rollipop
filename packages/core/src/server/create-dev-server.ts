@@ -5,6 +5,7 @@ import { createDevMiddleware } from '@react-native/dev-middleware';
 import Fastify from 'fastify';
 
 import type { ResolvedConfig } from '../config';
+import type { Plugin } from '../core/plugins/types';
 import type { BuildOptions } from '../core/types';
 import { assertDevServerStatus } from '../utils/dev-server';
 import { BundlerPool } from './bundler-pool';
@@ -116,9 +117,20 @@ export async function createDevServer(
     }),
   );
 
-  return {
+  const devServer: DevServer = {
+    config,
     instance: fastify,
     message: { broadcast },
     events: { reportEvent },
   };
+
+  await invokeConfigureServer(devServer, config.plugins ?? []);
+
+  return devServer;
+}
+
+async function invokeConfigureServer(server: DevServer, plugins: Plugin[]) {
+  for (const plugin of plugins) {
+    await plugin.configureServer?.(server);
+  }
 }
