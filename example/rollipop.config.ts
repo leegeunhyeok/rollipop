@@ -1,8 +1,8 @@
 import { defineConfig } from 'rollipop';
 
-import { config, worklet } from './plugins';
+import { config, hot, worklet } from './plugins';
 
 export default defineConfig({
   entry: 'index.js',
-  plugins: [worklet(), config()],
+  plugins: [worklet(), config(), hot()],
 });

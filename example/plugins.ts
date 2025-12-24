@@ -69,3 +69,21 @@ export function config(): Plugin {
     },
   };
 }
+
+export function hot(): Plugin {
+  let count = 0;
+  return {
+    name: 'hot',
+    configureServer(server) {
+      setInterval(() => {
+        if (server.hot.clients.size === 0) {
+          return;
+        }
+
+        server.hot.sendAll(
+          JSON.stringify({ type: 'my-custom', message: `Hello, world! ${count++}` }),
+        );
+      }, 5_000);
+    },
+  };
+}

@@ -35,6 +35,14 @@ export default defineConfig([
   },
   {
     ...runtimeConfig,
+    entry: 'src/runtime.ts',
+    format: ['esm', 'cjs'],
+    platform: 'neutral',
+    fixedExtension: false,
+    dts: true,
+  },
+  {
+    ...runtimeConfig,
     entry: 'src/runtime/hmr-runtime.ts',
   },
   {

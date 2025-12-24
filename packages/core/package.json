@@ -16,6 +16,16 @@
         "default": "./dist/index.cjs"
       }
     },
+    "./runtime": {
+      "import": {
+        "types": "./dist/runtime.d.ts",
+        "default": "./dist/runtime.js"
+      },
+      "require": {
+        "types": "./dist/runtime.d.cts",
+        "default": "./dist/runtime.cjs"
+      }
+    },
     "./hmr-runtime": "./dist/hmr-runtime.js",
     "./hmr-client": "./dist/hmr-client.cjs",
     "./package.json": "./package.json"

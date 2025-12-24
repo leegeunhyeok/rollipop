@@ -48,6 +48,13 @@ export type HMRServerMessage =
       payload: HMRServerError;
     };
 
+export type HMRCustomServerMessage = {
+  type: string;
+  payload: unknown;
+};
+
+export type HMRCustomHandler = (message: HMRCustomServerMessage) => void;
+
 export interface HMRServerError {
   type: string;
   message: string;

@@ -9,9 +9,11 @@ vitest.mock('@react-native-community/cli-server-api', () => ({
     middleware: vi.fn(),
     websocketEndpoints: {},
     messageSocketEndpoint: {
+      server: {},
       broadcast: vi.fn(),
     },
     eventsSocketEndpoint: {
+      server: {},
       reportEvent: vi.fn(),
     },
   }),

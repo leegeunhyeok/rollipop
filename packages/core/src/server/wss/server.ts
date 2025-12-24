@@ -23,7 +23,7 @@ export interface WebSocketEventMap {
 
 export abstract class WebSocketServer extends EventEmitter {
   protected clientId = 0;
-  protected wss: ws.WebSocketServer;
+  protected wss: ws.Server;
   protected logger: Logger;
 
   constructor(name: string, options?: ws.ServerOptions) {
@@ -64,13 +64,13 @@ export abstract class WebSocketServer extends EventEmitter {
     return this.wss;
   }
 
-  protected send(client: ws.WebSocket, data: BufferLike) {
+  send(client: ws.WebSocket, data: BufferLike) {
     if (client.readyState === ws.WebSocket.OPEN) {
       client.send(data);
     }
   }
 
-  protected sendAll(data: BufferLike) {
+  sendAll(data: BufferLike) {
     this.wss.clients.forEach((client) => {
       if (client.readyState === ws.WebSocket.OPEN) {
         client.send(data);

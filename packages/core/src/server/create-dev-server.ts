@@ -54,8 +54,8 @@ export async function createDevServer(
   const {
     middleware: communityMiddleware,
     websocketEndpoints: communityWebsocketEndpoints,
-    messageSocketEndpoint: { broadcast },
-    eventsSocketEndpoint: { reportEvent },
+    messageSocketEndpoint: { server: messageServer, broadcast },
+    eventsSocketEndpoint: { server: eventsServer, reportEvent },
   } = createDevServerMiddleware({
     port,
     host,
@@ -80,14 +80,30 @@ export async function createDevServer(
     },
   });
 
+  const hmrServer = new HMRServer({
+    bundlerPool,
+    reportEvent: (event) => {
+      reportEvent?.(event);
+      config.reporter.update(event);
+    },
+  })
+    .on('connection', (client) => onDeviceConnected?.(client))
+    .on('message', (client, data) => onDeviceMessage?.(client, data))
+    .on('error', (client, error) => onDeviceConnectionError?.(client, error))
+    .on('close', (client) => onDeviceDisconnected?.(client));
+
   await fastify.register(import('@fastify/middie'));
 
   const devServer: DevServer = {
     config,
     instance: fastify,
     middlewares: { use: fastify.use.bind(fastify) },
-    message: { broadcast },
-    events: { reportEvent },
+    message: Object.assign(messageServer, { broadcast }),
+    events: Object.assign(eventsServer, { reportEvent }),
+    hot: Object.assign(hmrServer.server, {
+      send: hmrServer.send.bind(hmrServer),
+      sendAll: hmrServer.sendAll.bind(hmrServer),
+    }),
   };
 
   const { invokePostConfigureServer } = await invokeConfigureServer(
@@ -108,18 +124,6 @@ export async function createDevServer(
       preferNativePlatform: config.resolver.preferNativePlatform,
     })
     .setErrorHandler(errorHandler);
-
-  const hmrServer = new HMRServer({
-    bundlerPool,
-    reportEvent: (event) => {
-      reportEvent?.(event);
-      config.reporter.update(event);
-    },
-  })
-    .on('connection', (client) => onDeviceConnected?.(client))
-    .on('message', (client, data) => onDeviceMessage?.(client, data))
-    .on('error', (client, error) => onDeviceConnectionError?.(client, error))
-    .on('close', (client) => onDeviceDisconnected?.(client));
 
   fastify.server.on(
     'upgrade',
