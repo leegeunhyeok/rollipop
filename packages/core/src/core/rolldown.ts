@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 
-import { Logger } from '@rollipop/common';
 import { isNotNil, merge } from 'es-toolkit';
 import type * as rolldown from 'rolldown';
 import type { TransformOptions } from 'rolldown/experimental';
@@ -13,10 +12,9 @@ import { GLOBAL_IDENTIFIER } from '../constants';
 import { getGlobalVariables } from '../internal/react-native';
 import { ResolvedBuildOptions } from '../utils/build-options';
 import { prelude, status, reactRefresh, reactNative, json, svg } from './plugins';
+import { printPluginLog } from './plugins/context';
 import { withPersistCache } from './plugins/utils';
 import { BundlerContext } from './types';
-
-const rolldownLogger = new Logger('rolldown');
 
 export interface RolldownOptions {
   input?: rolldown.InputOptions;
@@ -134,22 +132,11 @@ export async function resolveRolldownOptions(
       pluginTimings: false,
     },
     logLevel: isDebugEnabled() ? 'debug' : 'info',
-    onLog(level, log) {
-      const { message, code } = log;
-      const logArgs = [code, message].filter(isNotNil);
-
-      switch (level) {
-        case 'debug':
-          rolldownLogger.debug(...logArgs);
-          break;
-
-        case 'info':
-          rolldownLogger.info(...logArgs);
-          break;
-
-        case 'warn':
-          rolldownLogger.warn(...logArgs);
-          break;
+    onLog(level, log, defaultHandler) {
+      if (log.code?.startsWith('PLUGIN_')) {
+        printPluginLog(level, log, log.plugin);
+      } else {
+        defaultHandler(level, log);
       }
     },
   };

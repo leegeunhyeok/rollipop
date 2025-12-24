@@ -3,11 +3,17 @@ import type * as rolldown from 'rolldown';
 import type { Config, ResolvedConfig } from '../../config';
 import type { DevServer } from '../../server';
 import type { AsyncResult } from '../types';
+import type { PluginContext } from './context';
 
 export type PluginConfig = Omit<Config, 'plugins' | 'dangerously_overrideRolldownOptions'>;
 
 export type Plugin = rolldown.Plugin & {
-  config?: PluginConfig | ((config: PluginConfig) => AsyncResult<PluginConfig | null | void>);
-  configResolved?: (config: ResolvedConfig) => AsyncResult<void>;
-  configureServer?: (server: DevServer) => AsyncResult<void | (() => AsyncResult<void>)>;
+  config?:
+    | PluginConfig
+    | ((this: PluginContext, config: PluginConfig) => AsyncResult<PluginConfig | null | void>);
+  configResolved?: (this: PluginContext, config: ResolvedConfig) => AsyncResult<void>;
+  configureServer?: (
+    this: PluginContext,
+    server: DevServer,
+  ) => AsyncResult<void | (() => AsyncResult<void>)>;
 };

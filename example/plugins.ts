@@ -77,7 +77,10 @@ export function hot(): Plugin {
     configureServer(server) {
       setInterval(() => {
         if (server.hot.clients.size === 0) {
+          this.debug('No clients connected, skipping sending message');
           return;
+        } else {
+          this.debug('Sending message to clients...');
         }
 
         server.hot.sendAll(
