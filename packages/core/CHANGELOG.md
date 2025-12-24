@@ -1,5 +1,13 @@
 # @rollipop/core
 
+## 0.1.0-alpha.3
+
+### Patch Changes
+
+- fe6a1db: npm oidc
+- Updated dependencies [fe6a1db]
+  - @rollipop/common@0.1.0-alpha.3
+
 ## 0.1.0-alpha.2
 
 ### Patch Changes
