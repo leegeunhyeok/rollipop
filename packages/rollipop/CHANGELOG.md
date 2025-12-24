@@ -1,5 +1,19 @@
 # rollipop
 
+## 0.1.0-alpha.2
+
+### Patch Changes
+
+- e8d32a7: improve `configureServer` hook
+- 5cee54c: supports custom HMR handler
+- 4768f8f: add `configureServer`
+- Updated dependencies [e8d32a7]
+- Updated dependencies [8118bc3]
+- Updated dependencies [5cee54c]
+- Updated dependencies [4768f8f]
+  - @rollipop/core@0.1.0-alpha.2
+  - @rollipop/common@0.1.0-alpha.2
+
 ## 0.1.0-alpha.1
 
 ### Patch Changes
