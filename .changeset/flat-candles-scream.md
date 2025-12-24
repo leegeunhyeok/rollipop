@@ -1,5 +1,4 @@
 ---
-"@rollipop/dev-server": patch
 "@rollipop/core": patch
 ---
 
