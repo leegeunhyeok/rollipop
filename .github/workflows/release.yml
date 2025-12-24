@@ -29,6 +29,9 @@ jobs:
       - name: Setup Node
         run: corepack enable
 
+      - name: Setup NPM
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: yarn install --immutable
 
@@ -36,7 +39,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: yarn changeset version
-          publish: yarn workspaces foreach --all --no-private exec yarn npm publish --provenance --access public --tolerate-republish
+          publish: yarn changeset publish --no-git-tag --tag latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: ${{ env.BASE_BRANCH }}
