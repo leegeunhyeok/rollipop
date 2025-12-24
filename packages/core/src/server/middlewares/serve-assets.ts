@@ -2,10 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { DEV_SERVER_ASSET_PATH } from '@rollipop/common';
-import { AssetUtils } from '@rollipop/core';
 import fp from 'fastify-plugin';
 import { asConst, type FromSchema } from 'json-schema-to-ts';
 import mime from 'mime';
+
+import * as AssetUtils from '../../core/assets';
 
 const queryParamSchema = asConst({
   type: 'object',

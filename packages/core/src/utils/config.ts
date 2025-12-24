@@ -1,8 +1,8 @@
 import EventEmitter from 'node:events';
 
-import { Reporter, ResolvedConfig } from '@rollipop/core';
-
-import { BundlerDevEngineEventMap } from '../bundler-pool';
+import type { ResolvedConfig } from '../config';
+import type { BundlerDevEngineEventMap } from '../server/bundler-pool';
+import type { Reporter } from '../types';
 
 export function bindReporter(
   config: ResolvedConfig,

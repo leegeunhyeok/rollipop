@@ -2,7 +2,7 @@ import { describe, it, expect, vitest } from 'vitest';
 
 import type { Plugin } from '../../core/plugins/types';
 import type { ResolvedConfig } from '../defaults';
-import { invokePluginConfigResolved, resolvePluginConfig } from '../load-config';
+import { invokeConfigResolved, resolvePluginConfig } from '../load-config';
 import type { Config } from '../types';
 
 describe('resolvePluginConfig', () => {
@@ -140,7 +140,7 @@ describe('resolvePluginConfig', () => {
   });
 });
 
-describe('invokePluginConfigResolved', () => {
+describe('invokeConfigResolved', () => {
   it('should invoke plugin config resolved', async () => {
     const resolvedConfig = {
       root: '/root',
@@ -161,7 +161,7 @@ describe('invokePluginConfigResolved', () => {
       },
     };
 
-    await invokePluginConfigResolved(resolvedConfig, [pluginA, pluginB]);
+    await invokeConfigResolved(resolvedConfig, [pluginA, pluginB]);
 
     expect(invoked).toHaveBeenCalledTimes(2);
     expect(invoked).toHaveBeenNthCalledWith(1, resolvedConfig);

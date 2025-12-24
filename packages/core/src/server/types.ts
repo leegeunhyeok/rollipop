@@ -6,7 +6,8 @@
 import type { FastifyInstance } from 'fastify';
 import type * as ws from 'ws';
 
-import { WebSocketClient } from './wss/server';
+import type { ResolvedConfig } from '../config';
+import type { WebSocketClient } from './wss/server';
 
 export interface ServerOptions {
   projectRoot: string;
@@ -22,12 +23,31 @@ export interface ServerOptions {
 }
 
 export interface DevServer {
+  /**
+   * The Fastify instance.
+   */
   instance: FastifyInstance;
+  /**
+   * Resolved Rollipop config.
+   */
+  config: ResolvedConfig;
+  /**
+   * The message websocket API.
+   */
   message: {
+    /**
+     * Broadcast a message to all connected devices.
+     */
     broadcast: (method: string, params?: Record<string, any>) => void;
   };
+  /**
+   * The events websocket API.
+   */
   events: {
-    reportEvent: (event: any) => void;
+    /**
+     * Report an event to the reporter.
+     */
+    reportEvent: (event: { type: string; [key: string]: unknown }) => void;
   };
 }
 

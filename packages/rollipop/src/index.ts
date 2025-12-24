@@ -26,6 +26,8 @@ export {
   defineConfig,
   mergeConfig,
   PluginUtils,
+  DEFAULT_HOST,
+  DEFAULT_PORT,
   type Config,
   type ResolvedConfig,
   type DefaultConfig,
@@ -40,12 +42,6 @@ export {
   type Plugin,
   type Reporter,
   type ReportableEvent,
-} from '@rollipop/core';
-
-// Re-export `@rollipop/dev-server`
-export {
-  DEFAULT_HOST,
-  DEFAULT_PORT,
   type ServerOptions,
   type DevServer,
-} from '@rollipop/dev-server';
+} from '@rollipop/core';

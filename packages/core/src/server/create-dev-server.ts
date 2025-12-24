@@ -2,9 +2,12 @@ import url from 'url';
 
 import { createDevServerMiddleware } from '@react-native-community/cli-server-api';
 import { createDevMiddleware } from '@react-native/dev-middleware';
-import type { BuildOptions, ResolvedConfig } from '@rollipop/core';
 import Fastify from 'fastify';
 
+import type { ResolvedConfig } from '../config';
+import type { Plugin } from '../core/plugins/types';
+import type { BuildOptions } from '../core/types';
+import { assertDevServerStatus } from '../utils/dev-server';
 import { BundlerPool } from './bundler-pool';
 import { DEFAULT_HOST, DEFAULT_PORT } from './constants';
 import { errorHandler } from './error';
@@ -13,7 +16,6 @@ import { serveAssets } from './middlewares/serve-assets';
 import { serveBundle } from './middlewares/serve-bundle';
 import { symbolicate } from './middlewares/symbolicate';
 import type { DevServer, ServerOptions } from './types';
-import { assertDevServerStatus } from './utils/dev-server';
 import { HMRServer } from './wss/hmr-server';
 import { getWebSocketUpgradeHandler } from './wss/server';
 
@@ -115,9 +117,20 @@ export async function createDevServer(
     }),
   );
 
-  return {
+  const devServer: DevServer = {
+    config,
     instance: fastify,
     message: { broadcast },
     events: { reportEvent },
   };
+
+  await invokeConfigureServer(devServer, config.plugins ?? []);
+
+  return devServer;
+}
+
+async function invokeConfigureServer(server: DevServer, plugins: Plugin[]) {
+  for (const plugin of plugins) {
+    await plugin.configureServer?.(server);
+  }
 }
