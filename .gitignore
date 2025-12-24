@@ -19,3 +19,5 @@ dist
 
 # misc
 .DS_Store
+
+package.tgz

@@ -1,5 +1,11 @@
 # @rollipop/common
 
+## 0.1.0-alpha.4
+
+### Patch Changes
+
+- fix yarn workspace
+
 ## 0.1.0-alpha.3
 
 ### Patch Changes

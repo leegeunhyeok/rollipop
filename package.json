@@ -11,7 +11,8 @@
     "lint:fix": "oxlint --type-aware --deny-warnings --fix",
     "test:all": "yarn workspaces foreach --all --topological-dev --no-private run test",
     "build:all": "yarn workspaces foreach --all --topological-dev --no-private run build",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "publish": ".scripts/publish.sh"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",

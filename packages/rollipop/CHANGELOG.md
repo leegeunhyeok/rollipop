@@ -1,5 +1,14 @@
 # rollipop
 
+## 0.1.0-alpha.4
+
+### Patch Changes
+
+- fix yarn workspace
+- Updated dependencies
+  - @rollipop/common@0.1.0-alpha.4
+  - @rollipop/core@0.1.0-alpha.4
+
 ## 0.1.0-alpha.3
 
 ### Patch Changes
