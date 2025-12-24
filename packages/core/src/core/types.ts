@@ -1,5 +1,5 @@
 import type { FileStorage } from '@rollipop/common';
-import { DevOptions } from 'rolldown/experimental';
+import type { DevOptions } from 'rolldown/experimental';
 
 import type { FileSystemCache } from './cache/file-system-cache';
 
@@ -59,3 +59,5 @@ export interface BundlerContext {
 }
 
 export type BuildMode = 'build' | 'serve';
+
+export type AsyncResult<T> = T | Promise<T>;

@@ -52,7 +52,6 @@ export const command = new Command('start')
 
     let debuggerOpened = false;
     const server = await Rollipop.runServer(config, {
-      projectRoot: cwd,
       port: options.port,
       host: options.host,
       https: options.https,
