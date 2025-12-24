@@ -39,7 +39,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: yarn changeset version
-          publish: yarn changeset publish --no-git-tag --tag latest
+          publish: yarn workspaces foreach --all --no-private exec yarn npm publish --provenance --access public --tolerate-republish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: ${{ env.BASE_BRANCH }}
