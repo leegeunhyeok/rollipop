@@ -1,3 +1,4 @@
+// oxlint-disable typescript-eslint(unbound-method)
 import { describe, expect, it, vi, vitest } from 'vitest';
 
 import { createTestConfig } from '../../testing/config';
