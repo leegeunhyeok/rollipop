@@ -6,7 +6,7 @@ import Fastify from 'fastify';
 
 import type { ResolvedConfig } from '../config';
 import type { Plugin } from '../core/plugins/types';
-import type { BuildOptions } from '../core/types';
+import type { AsyncResult, BuildOptions } from '../core/types';
 import { assertDevServerStatus } from '../utils/dev-server';
 import { BundlerPool } from './bundler-pool';
 import { DEFAULT_HOST, DEFAULT_PORT } from './constants';
@@ -21,10 +21,10 @@ import { getWebSocketUpgradeHandler } from './wss/server';
 
 export async function createDevServer(
   config: ResolvedConfig,
-  options: ServerOptions,
+  options?: ServerOptions,
 ): Promise<DevServer> {
+  const projectRoot = config.root;
   const {
-    projectRoot,
     port = DEFAULT_PORT,
     host = DEFAULT_HOST,
     https = false,
@@ -32,7 +32,7 @@ export async function createDevServer(
     onDeviceMessage,
     onDeviceConnectionError,
     onDeviceDisconnected,
-  } = options;
+  } = options ?? {};
 
   if (https) {
     throw new Error('HTTPS is not supported yet');
@@ -82,6 +82,19 @@ export async function createDevServer(
 
   await fastify.register(import('@fastify/middie'));
 
+  const devServer: DevServer = {
+    config,
+    instance: fastify,
+    middlewares: { use: fastify.use.bind(fastify) },
+    message: { broadcast },
+    events: { reportEvent },
+  };
+
+  const { invokePostConfigureServer } = await invokeConfigureServer(
+    devServer,
+    config.plugins ?? [],
+  );
+
   fastify
     .use(communityMiddleware)
     .use(devMiddleware)
@@ -117,20 +130,27 @@ export async function createDevServer(
     }),
   );
 
-  const devServer: DevServer = {
-    config,
-    instance: fastify,
-    message: { broadcast },
-    events: { reportEvent },
-  };
-
-  await invokeConfigureServer(devServer, config.plugins ?? []);
+  await invokePostConfigureServer();
 
   return devServer;
 }
 
 async function invokeConfigureServer(server: DevServer, plugins: Plugin[]) {
+  const postConfigureServerHandlers: (() => AsyncResult<void>)[] = [];
+
   for (const plugin of plugins) {
-    await plugin.configureServer?.(server);
+    const result = await plugin.configureServer?.(server);
+
+    if (typeof result === 'function') {
+      postConfigureServerHandlers.push(result);
+    }
   }
+
+  return {
+    invokePostConfigureServer: async () => {
+      for (const handler of postConfigureServerHandlers) {
+        await handler();
+      }
+    },
+  };
 }

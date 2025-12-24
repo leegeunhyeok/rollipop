@@ -5,12 +5,12 @@
 
 import type { FastifyInstance } from 'fastify';
 import type * as ws from 'ws';
-
+// Extend Fastify instance type with `@fastify/middie`.
+import '@fastify/middie';
 import type { ResolvedConfig } from '../config';
 import type { WebSocketClient } from './wss/server';
 
 export interface ServerOptions {
-  projectRoot: string;
   port?: number;
   host?: string;
   https?: boolean;
@@ -22,15 +22,28 @@ export interface ServerOptions {
   onDeviceDisconnected?: (client: WebSocketClient) => void;
 }
 
+export interface Middlewares {
+  /**
+   * Register a middleware to the Fastify instance.
+   *
+   * **NOTE**: This is a wrapper of `instance.use`.
+   */
+  use: FastifyInstance['use'];
+}
+
 export interface DevServer {
+  /**
+   * Resolved Rollipop config.
+   */
+  config: ResolvedConfig;
   /**
    * The Fastify instance.
    */
   instance: FastifyInstance;
   /**
-   * Resolved Rollipop config.
+   * `express` and `connect` style middleware registration API.
    */
-  config: ResolvedConfig;
+  middlewares: Middlewares;
   /**
    * The message websocket API.
    */

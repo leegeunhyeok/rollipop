@@ -5,7 +5,7 @@ export function resolvePackagePath(basePath: string, packageName: string) {
   let packagePath: string | null = null;
 
   try {
-    packagePath = resolvePackagePathWithNodeRequire(basePath, packageName);
+    packagePath = resolvePackagePathWithNodeRequire(basePath, packageName, 'package.json');
 
     if (packagePath) {
       return packagePath;
@@ -13,7 +13,7 @@ export function resolvePackagePath(basePath: string, packageName: string) {
   } catch {}
 
   try {
-    packagePath = resolvePackagePathWithNodeRequire(basePath, packageName, '');
+    packagePath = resolvePackagePathWithNodeRequire(basePath, packageName);
 
     if (packagePath) {
       return packagePath;
@@ -26,10 +26,11 @@ export function resolvePackagePath(basePath: string, packageName: string) {
 function resolvePackagePathWithNodeRequire(
   basePath: string,
   packageName: string,
-  lookupSubpath = 'package.json',
+  subpath?: string,
 ) {
-  const lookupPath = lookupSubpath ? `/${lookupSubpath}` : '';
-  const resolvedPath = require.resolve(`${packageName}${lookupPath}`, { paths: [basePath] });
+  const resolvedPath = require.resolve(subpath ? `${packageName}/${subpath}` : packageName, {
+    paths: [basePath],
+  });
   const root = path.parse(resolvedPath).root;
   let currentPath = path.dirname(resolvedPath);
 
