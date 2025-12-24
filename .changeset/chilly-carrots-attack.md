@@ -3,4 +3,4 @@
 "@rollipop/core": patch
 ---
 
-imptove `configureServer` hook
+improve `configureServer` hook
