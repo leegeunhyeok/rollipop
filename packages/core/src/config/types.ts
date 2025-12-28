@@ -62,7 +62,7 @@ export type ResolverConfig = Omit<NonNullable<rolldown.InputOptions['resolve']>,
    */
   sourceExtensions?: string[];
   /**
-   * Defaults to: `['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp', 'avif', 'ico', 'icns', 'icxl', 'webp']`
+   * Defaults to: `['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp', 'avif', 'ico', 'icns', 'icxl']`
    */
   assetExtensions?: string[];
   /**
@@ -77,7 +77,7 @@ export type ResolverConfig = Omit<NonNullable<rolldown.InputOptions['resolve']>,
   preferNativePlatform?: boolean;
 };
 
-export type TransformerConfig = Omit<TransformOptions, 'cwd' | 'plugins'> & {
+export type TransformerConfig = Omit<TransformOptions, 'cwd'  | 'lang' | 'sourceType' | 'plugins'> & {
   /**
    * Transform SVG assets files to React components using `@svgr/core`.
    *

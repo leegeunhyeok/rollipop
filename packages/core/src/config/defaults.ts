@@ -26,6 +26,7 @@ export function getDefaultConfig(basePath: string) {
       mainFields: DEFAULT_RESOLVER_MAIN_FIELDS,
       conditionNames: DEFAULT_RESOLVER_CONDITION_NAMES,
       preferNativePlatform: true,
+      symlinks: true,
     },
     transformer: {
       svg: true,

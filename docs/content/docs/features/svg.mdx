@@ -1,0 +1,21 @@
+---
+title: SVG Support
+---
+
+By default, Rollipop automatically transforms SVG assets into SVG components.
+
+## Pre-requisites
+
+To render SVGs in your application, you first need to add [react-native-svg]() native module to your application.
+
+## Configuration
+
+```ts title="rollipop.config.ts"
+import { defineConfig } from 'rollipop';
+
+export default defineConfig({
+  transformer: {
+    svg: true, // Defaults to `true`.
+  },
+});
+```

@@ -6,7 +6,7 @@ import { logger } from '../../logger';
 import { parseBoolean } from '../../utils';
 
 export const command = new Command('bundle')
-  .description('Build the bundle for the provided JavaScript entry file.')
+  .description('Build the bundle for the provided entry file.')
   .option('--config <string>', 'Path to the CLI configuration file')
   .requiredOption(
     '--entry-file <path>',

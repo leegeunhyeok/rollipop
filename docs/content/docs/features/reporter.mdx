@@ -1,0 +1,171 @@
+---
+title: Reporter
+---
+
+Reporters allow you to receive and handle build events, progress updates, and client logs from your Rollipop application. This is useful for custom logging, monitoring, or integrating with external tools.
+
+## Default Reporter
+
+Rollipop uses `TerminalReporter` by default, which logs client console messages to the terminal.
+
+```ts title="rollipop.config.ts"
+import { defineConfig } from 'rollipop';
+
+export default defineConfig({
+  // TerminalReporter is used by default
+  // No need to specify unless you want a custom reporter
+});
+```
+
+## Reporter Interface
+
+To create a custom reporter, implement the `Reporter` interface:
+
+```ts
+interface Reporter {
+  update(event: ReportableEvent): void;
+}
+```
+
+The `update` method is called whenever a reportable event occurs during the build process.
+
+## Event Types
+
+### Build Events
+
+#### `bundle_build_started`
+
+Emitted when a bundle build starts.
+
+```ts
+{
+  type: 'bundle_build_started';
+}
+```
+
+#### `bundle_build_done`
+
+Emitted when a bundle build completes successfully.
+
+```ts
+{
+  type: 'bundle_build_done';
+}
+```
+
+#### `bundle_build_failed`
+
+Emitted when a bundle build fails with an error.
+
+```ts
+{
+  type: 'bundle_build_failed';
+  error: Error;
+}
+```
+
+### Transform Events
+
+#### `transform`
+
+Emitted during module transformation, providing progress information.
+
+```ts
+{
+  type: 'transform';
+  id: string;                    // Module ID being transformed
+  totalModules: number | undefined;     // Total number of modules
+  transformedModules: number;    // Number of modules transformed
+}
+```
+
+### Watch Events
+
+#### `watch_change`
+
+Emitted when a file change is detected in watch mode.
+
+```ts
+{
+  type: 'watch_change';
+  id: string;  // Path of the changed file
+}
+```
+
+### Client Log Events
+
+#### `client_log`
+
+Emitted when the client application logs to the console. This is compatible with Metro's client log format.
+
+```ts
+{
+  type: 'client_log';
+  level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug' | 'error';
+  data: any[];  // Arguments passed to console method
+}
+```
+
+## Custom Reporter Example
+
+Here's an example of a custom reporter that sends build events to a monitoring service:
+
+```ts title="my-reporter.ts"
+import type { Reporter, ReportableEvent } from 'rollipop';
+
+export class MonitoringReporter implements Reporter {
+  update(event: ReportableEvent): void {
+    switch (event.type) {
+      case 'bundle_build_started':
+        this.sendMetric('build.started');
+        break;
+
+      case 'bundle_build_done':
+        this.sendMetric('build.completed');
+        break;
+
+      case 'bundle_build_failed':
+        this.sendMetric('build.failed', {
+          error: event.error.message,
+        });
+        break;
+
+      case 'transform':
+        if (event.totalModules) {
+          const progress = (event.transformedModules / event.totalModules) * 100;
+          this.sendMetric('build.progress', { progress });
+        }
+        break;
+
+      case 'watch_change':
+        console.log(`File changed: ${event.id}`);
+        break;
+
+      case 'client_log':
+        this.sendLog(event.level, event.data);
+        break;
+    }
+  }
+
+  private sendMetric(name: string, data?: any) {
+    // Send to your monitoring service
+    console.log(`[Metric] ${name}`, data);
+  }
+
+  private sendLog(level: string, data: any[]) {
+    // Send client logs to your logging service
+    console.log(`[Client ${level}]`, ...data);
+  }
+}
+```
+
+Use your custom reporter in the config:
+
+```ts title="rollipop.config.ts"
+import { defineConfig } from 'rollipop';
+import { MonitoringReporter } from './my-reporter';
+
+export default defineConfig({
+  reporter: new MonitoringReporter(),
+});
+```

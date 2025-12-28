@@ -1,0 +1,160 @@
+---
+title: Bundler API
+---
+
+The Bundler API provides programmatic access to Rollipop's bundling and development server functionality. This is useful for integrating Rollipop into custom build tools or workflows.
+
+## `loadConfig`
+
+Load and resolve the Rollipop configuration file.
+
+```ts
+function loadConfig(options?: LoadConfigOptions): Promise<ResolvedConfig>
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `options.cwd` | `string` | Current working directory (default: `process.cwd()`) |
+| `options.configFile` | `string` | Path to the configuration file |
+| `options.context` | `object` | Additional context to pass to the config |
+
+### Returns
+
+Returns a `Promise<ResolvedConfig>` containing the fully resolved configuration.
+
+### Example
+
+```ts
+import { Rollipop } from 'rollipop';
+
+const config = await Rollipop.loadConfig();
+
+console.log('Resolved config:', config);
+```
+
+## `runServer`
+
+Start the React Native development server.
+
+```ts
+function runServer(
+  config: ResolvedConfig,
+  options: ServerOptions
+): Promise<DevServer>
+```
+
+### Parameters
+
+`config: ResolvedConfig`
+
+The resolved Rollipop configuration (obtained from `loadConfig`).
+
+`options: ServerOptions`
+
+| Option | Type | Description | Default |
+|--------|------|-------------|---------|
+| `port` | `number` | Port to start the development server on | `8081` |
+| `host` | `string` | Host to start the development server on | `localhost` |
+| `https` | `boolean` | Enable HTTPS connections | `false` |
+| `key` | `string` | Path to custom SSL key | - |
+| `cert` | `string` | Path to custom SSL certificate | - |
+| `onDeviceConnected` | `(client: WebSocketClient) => void` | Callback when a device connects | - |
+| `onDeviceMessage` | `(client: WebSocketClient, data: RawData) => void` | Callback when a device sends a message | - |
+| `onDeviceConnectionError` | `(client: WebSocketClient, error: Error) => void` | Callback when a device connection error occurs | - |
+| `onDeviceDisconnected` | `(client: WebSocketClient) => void` | Callback when a device disconnects | - |
+
+### Returns
+
+Returns a `Promise<DevServer>` containing the running development server instance.
+
+### DevServer Interface
+
+```ts
+interface DevServer {
+  config: ResolvedConfig;
+  instance: FastifyInstance;
+  middlewares: Middlewares;
+  message: ws.Server & {
+    broadcast: (method: string, params?: Record<string, any>) => void;
+  };
+  events: ws.Server & {
+    reportEvent: (event: { type: string; [key: string]: unknown }) => void;
+  };
+  hot: ws.Server & {
+    send: (client: ws.WebSocket, data: BufferLike) => void;
+    sendAll: (data: BufferLike) => void;
+  };
+}
+```
+
+### Example
+
+```ts
+import { Rollipop } from 'rollipop';
+
+const config = await Rollipop.loadConfig();
+
+const server = await Rollipop.runServer(config, {
+  port: 8081,
+  host: 'localhost',
+  onDeviceConnected: (client) => {
+    console.log('Device connected:', client.id);
+  },
+});
+
+console.log('Dev server running at:', server.instance.listeningOrigin);
+```
+
+## `runBuild`
+
+Build a JavaScript bundle for production or development.
+
+```ts
+function runBuild(
+  config: ResolvedConfig,
+  options: BuildOptions
+): Promise<OutputChunk>
+```
+
+### Parameters
+
+`config: ResolvedConfig`
+
+The resolved Rollipop configuration (obtained from `loadConfig`).
+
+`options: BuildOptions`
+
+| Option | Type | Description | Default |
+|--------|------|-------------|---------|
+| `platform` | `string` | Target platform (`ios` \| `android`) | - |
+| `dev` | `boolean` | Build in development mode | `true` |
+| `minify` | `boolean` | Minify the bundle | `false` |
+| `cache` | `boolean` | Enable or disable bundler caching | `true` |
+| `outfile` | `string` | Output file path | - |
+| `sourcemap` | `string` | Sourcemap file path | - |
+| `assetsDir` | `string` | Assets directory path | - |
+
+### Returns
+
+Returns a `Promise<OutputChunk>` containing the build result.
+
+### Example
+
+```ts
+import { Rollipop } from 'rollipop';
+
+const config = await Rollipop.loadConfig();
+
+const result = await Rollipop.runBuild(config, {
+  platform: 'ios',
+  dev: false,
+  minify: true,
+  outfile: './dist/main.bundle.js',
+  sourcemap: './dist/main.bundle.map',
+  assetsDir: './dist/assets',
+});
+
+console.log('Bundle built:', result.fileName);
+```

@@ -1,0 +1,90 @@
+---
+title: CLI Commands
+---
+
+Rollipop CLI is partially compatible with the React Native CLI, allowing for seamless integration with existing React Native projects.
+
+## start
+
+Start the React Native development server.
+
+```bash
+rollipop start [options]
+```
+
+### Options
+
+| Option | Description | Type | Default |
+|--------|-------------|------|---------|
+| `--config` | Path to the Rollipop configuration file | `string` | - |
+| `--host` | Host to start the development server on | `string` | `localhost` |
+| `--port` | Port to start the development server on | `number` | `8081` |
+| `--project-root` | Path to a custom project root | `string` | - |
+| `--reset-cache` | Removes cached files before starting the server | `boolean` | - |
+| `--no-interactive` | Disables interactive mode | `boolean` | - |
+| `--client-logs` | Enable client log streaming (deprecated) | `boolean` | `false` |
+
+### Examples
+
+```bash
+# Start with default settings
+rollipop start
+
+# Start on a custom port with cache reset
+rollipop start --port 3000 --reset-cache
+
+# Start with HTTPS
+rollipop start --https --key ./key.pem --cert ./cert.pem
+```
+
+## bundle
+
+Build a JavaScript bundle for production or development.
+
+```bash
+rollipop bundle [options]
+```
+
+### Options
+
+| Option | Description | Type | Default |
+|--------|-------------|------|---------|
+| `--config` | Path to the Rollipop configuration file | `string` | - |
+| `--entry-file` * | Path to the root JS file | `string` | - |
+| `--bundle-output` * | File path where to store the resulting bundle | `string` | - |
+| `--platform` | Target platform (`ios` \| `android`) | `string` | `ios` |
+| `--dev` | Build in development mode | `boolean` | `true` |
+| `--minify` | Override bundle minification | `boolean` | `false` |
+| `--sourcemap-output` | File path where to store the sourcemap | `string` | - |
+| `--assets-dest` | Directory path where to store assets | `string` | - |
+| `--cache` | Enable or disable bundler caching | `boolean` | `true` |
+| `--reset-cache` | Removes cached files before building | `boolean` | - |
+
+<small>* Required option</small>
+
+### Examples
+
+```bash
+# Development bundle
+rollipop bundle \
+  --entry-file ./index.js \
+  --bundle-output ./dist/main.bundle.js \
+  --platform ios \
+  --dev true
+
+# Production bundle
+rollipop bundle \
+  --entry-file ./index.js \
+  --bundle-output ./dist/main.bundle.js \
+  --platform android \
+  --dev false \
+  --sourcemap-output ./dist/main.bundle.map \
+  --assets-dest ./dist/assets
+```
+
+## Global Options
+
+| Option | Description |
+|--------|-------------|
+| `--version` | Display the Rollipop version |
+| `--help` | Display help information for a command |

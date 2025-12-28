@@ -2,6 +2,7 @@
   "name": "rollipop-monorepo",
   "private": true,
   "workspaces": [
+    "docs",
     "example",
     "packages/*"
   ],
@@ -11,6 +12,8 @@
     "lint:fix": "oxlint --type-aware --deny-warnings --fix",
     "test:all": "yarn workspaces foreach --all --topological-dev --no-private run test",
     "build:all": "yarn workspaces foreach --all --topological-dev --no-private run build",
+    "docs:dev": "yarn workspace docs dev",
+    "docs:build": "yarn workspace docs build",
     "format": "oxfmt",
     "publish": ".scripts/publish.sh"
   },

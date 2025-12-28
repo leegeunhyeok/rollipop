@@ -6,8 +6,8 @@ export interface DefineConfigContext {
   defaultConfig: DefaultConfig;
 }
 
-export type UserConfig = Config | DynamicConfig;
-export type DynamicConfig =
+export type UserConfig = Config | DynamicUserConfig;
+export type DynamicUserConfig =
   | ((context: DefineConfigContext) => Config)
   | ((context: DefineConfigContext) => Promise<Config>);
 

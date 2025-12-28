@@ -1,0 +1,86 @@
+---
+title: Troubleshooting
+---
+
+This guide helps you diagnose and resolve common issues with Rollipop.
+
+## Enable Debug Logging
+
+Rollipop provides detailed debug and trace logs to help diagnose issues. These logs are disabled by default for performance reasons.
+
+### Enable Debug Mode
+
+Set the `DEBUG_ROLLIPOP` environment variable to enable debug and trace logging:
+
+```bash
+# Enable debug logging
+DEBUG_ROLLIPOP=1 rollipop start
+
+# Or for bundle command
+DEBUG_ROLLIPOP=1 rollipop bundle --entry-file ./index.js --bundle-output ./dist/main.bundle.js
+```
+## Programmatic Usage
+
+When using Rollipop programmatically, you can also enable debug logging:
+
+```ts
+// Set the environment variable before importing
+process.env.DEBUG_ROLLIPOP = '1';
+
+import { Rollipop } from 'rollipop';
+
+const config = await Rollipop.loadConfig();
+const server = await Rollipop.runServer(config, { port: 8081 });
+```
+
+## Reporting Issues
+
+If you encounter an issue that isn't covered in this guide:
+
+1. **Search existing issues**: Check if someone has already reported the issue at [github.com/leegeunhyeok/rollipop/issues](https://github.com/leegeunhyeok/rollipop/issues)
+
+2. **Gather information**:
+  - Rollipop version (`rollipop --version`)
+  - Node.js version (`node --version`)
+  - Operating system
+  - Debug logs (run with `DEBUG_ROLLIPOP=1`)
+  - Minimal reproduction steps
+
+3. **Create a new issue**: If the issue hasn't been reported, create a new issue at [github.com/leegeunhyeok/rollipop/issues/new](https://github.com/leegeunhyeok/rollipop/issues/new)
+
+### Issue Template
+
+When reporting an issue, please include:
+
+```markdown
+**Describe the bug**
+A clear and concise description of what the bug is.
+
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Run `rollipop start ...`
+2. See error
+
+**Expected behavior**
+What you expected to happen.
+
+**Debug logs**
+Paste logs from running with `DEBUG_ROLLIPOP=1`:
+```
+[paste logs here]
+```
+
+**Environment:**
+- Rollipop version: [e.g., 1.0.0]
+- Node.js version: [e.g., 20.0.0]
+- OS: [e.g., macOS 14.0]
+
+**Additional context**
+Any other context about the problem.
+```
+
+## Getting Help
+
+- **Documentation**: [rollipop.dev](https://rollipop.dev)
+- **GitHub Issues**: [github.com/leegeunhyeok/rollipop/issues](https://github.com/leegeunhyeok/rollipop/issues)
+- **GitHub Discussions**: [github.com/leegeunhyeok/rollipop/discussions](https://github.com/leegeunhyeok/rollipop/discussions)

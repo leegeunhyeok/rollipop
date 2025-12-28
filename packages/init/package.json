@@ -1,0 +1,40 @@
+{
+  "name": "@rollipop/init",
+  "version": "0.1.0-alpha.4",
+  "type": "module",
+  "bin": "./bin/index.js",
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leegeunhyeok/rollipop.git",
+    "directory": "packages/core"
+  },
+  "author": "leegeunhyeok <dev.ghlee@gmail.com> (https://github.com/leegeunhyeok)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leegeunhyeok/rollipop/issues"
+  },
+  "homepage": "https://github.com/leegeunhyeok/rollipop#readme",
+  "scripts": {
+    "execute": "tsx src/index.ts",
+    "prepack": "yarn build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest --run --passWithNoTests",
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3",
+    "picocolors": "^1.1.1",
+    "which-pm": "^3.0.1",
+    "xcode": "^3.0.1"
+  },
+  "devDependencies": {
+    "tsdown": "catalog:",
+    "tsx": "^4.21.0",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

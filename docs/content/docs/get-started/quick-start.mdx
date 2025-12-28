@@ -1,0 +1,104 @@
+---
+title: Quick Start
+---
+
+This guide will walk you through setting up Rollipop in your React Native project.
+
+<Callout>
+Rollipop is actively developed and tested with the latest versions of React Native, targeting the **Hermes JavaScript engine** for optimal performance and compatibility.
+</Callout>
+
+## Prerequisites
+
+- Node.js 20 or higher
+
+## Installation
+
+You have two options for getting started with Rollipop: using the automated setup command or manual installation.
+
+### Option 1: Automated Setup (Recommended)
+
+The quickest way to get started is to use `@rollipop/init`:
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tab value="npm">
+    ```bash
+    npx @rollipop/init
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm dlx @rollipop/init
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn dlx @rollipop/init
+    ```
+  </Tab>
+</Tabs>
+
+This command will:
+- Install Rollipop as a dev dependency
+- Configure Android and iOS build scripts to use Rollipop CLI
+- Create a basic `rollipop.config.ts` configuration file (if it doesn't exist)
+
+### Option 2: Manual Installation
+
+If you prefer to set up Rollipop manually:
+
+#### 1. Install the package
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tab value="npm">
+    ```bash
+    npm install --save-dev rollipop
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm add -D rollipop
+    ```
+  </Tab>
+  <Tab value="yarn">
+    ```bash
+    yarn add -D rollipop
+    ```
+  </Tab>
+</Tabs>
+
+#### 2. Configure Android
+
+Open `android/app/build.gradle` and configure React Native to use Rollipop CLI:
+
+```
+react {
+  cliFile = file("../../node_modules/rollipop/bin/index.js")
+}
+```
+
+#### 3. Configure iOS
+
+Open your project in Xcode, then:
+
+1. Select your app target
+2. Go to **Build Phases**
+3. Find **Bundle React Native code and images** phase
+4. Add the `CLI_PATH` environment variable at the beginning of the script:
+
+```bash
+set -e
+
+export CLI_PATH="$PROJECT_DIR/../node_modules/rollipop/bin/index.js"
+
+# ...
+```
+
+## Next Steps
+
+Now that you have Rollipop set up, you can:
+
+- Learn about [Configuration](/docs/get-started/configuration) options
+- Explore [CLI Commands](/docs/get-started/cli-commands)
+- Check out [Features](/docs/features/dev-server) available in Rollipop
+- Read about the [Plugin API](/docs/apis/plugin) to extend functionality

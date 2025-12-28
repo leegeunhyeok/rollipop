@@ -44,6 +44,7 @@
   "scripts": {
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
+    "execute": "node bin/index.js",
     "build": "tsdown"
   },
   "dependencies": {

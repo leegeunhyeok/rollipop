@@ -1,0 +1,36 @@
+---
+title: Introduction
+---
+
+<img alt="logo" src="/logo.svg" width="240" style={{ margin: '0 auto', padding: '8px' }} />
+
+## What is Rollipop?
+
+Rollipop is a modern build toolkit for React Native, powered by [Rolldown](https://rolldown.rs/). Designed to seamlessly integrate with your React Native workflow while bringing the best of frontend tooling standards to mobile development.
+
+- **Ready for React Native**: Pre-configured resolver, plugins, and transformers designed specifically for React Native environments.
+- **Fully-Featured Dev Server**: Native HMR(Hot Module Replacement)+ React Refresh, React Native DevTools integration, and Flipper support out of the box.
+- **CLI Compatibility**: Drop-in commands compatible with React Native CLI, making migration from Metro seamless and straightforward.
+- **Fully Typed APIs**: Pure TypeScript implementation providing low-level control with comprehensive type definitions.
+
+## Motivation
+
+React Native uses [Metro](https://metrobundler.dev/) as its default bundler. Metro is designed specifically for React Native environments and provides stable compatibility within the React Native ecosystem.
+
+For most React Native projects, Metro works perfectly well. However, as the frontend ecosystem continues to evolve with new standards and tooling, some gaps remain in adopting these modern conventions. Features like package exports support are still marked as unstable, Yarn PnP integration requires custom resolver configuration, and Metro's built-in Haste module system can lead to compatibility friction in monorepo environments.
+
+`Rollipop` was created to bring frontend ecosystem standards to React Native bundling. Built on Rolldown, it prioritizes compatibility with modern frontend ecosystem conventions.
+
+## Key Features
+
+- **Powered by Rolldown**: Fully compatible with the Rollup/Rolldown ecosystem, enabling seamless plugin integration and easy extensibility.
+- **Frontend Ecosystem First**: Adopts standard Node module resolution—no Haste. Includes Yarn PnP support for seamless integration with modern tooling.
+- **Full-Featured Dev Server**: Native HMR, Fast Refresh, error symbolication, and source maps—everything you need out of the box.
+- **Optimized Bundles**: Tree-shaking reduces bundle size for faster app startup and improved initial load times.
+- **Built-in Caching System**: File system and in-memory caching for faster iteration cycles without compromising accuracy.
+- **Drop-in Metro Replacement**: Compatible build and dev server APIs to replace Metro.
+- **Complete Type Safety**: No more `$FlowFixMe`. Complete TypeScript rewrite with full type definitions for all runtime code and APIs.
+
+## Next Steps
+
+Ready to start? Visit the [Quick Start](/docs/get-started/quick-start) guide!
