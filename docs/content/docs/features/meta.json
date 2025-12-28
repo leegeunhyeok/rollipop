@@ -1,0 +1,12 @@
+{
+  "title": "Features",
+  "pages": [
+    "dev-server",
+    "devtools",
+    "reporter",
+    "custom-hmr-client",
+    "flow",
+    "svg"
+  ],
+  "defaultOpen": true
+}

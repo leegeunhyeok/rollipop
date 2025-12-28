@@ -1,0 +1,282 @@
+---
+title: Plugin API
+---
+
+Rollipop plugins extends Rolldown's well-designed plugin interface with a few extra Rollipop-specific options. As a result, you can write a Rollipop plugin once and have it work for both dev and build.
+
+It is recommended to go through [Rolldown's plugin documentation](https://rolldown.rs/apis/plugin-api/) first before reading the sections below.
+
+## Plugins Config
+
+Users will add plugins to the project `devDependencies` and configure them using the `plugins` array option.
+
+```ts title="rollipop.config.ts"
+import foo from 'rollipop-plugin-foo';
+import bar from 'rollipop-plugin-bar';
+import baz from 'rollipop-plugin-baz';
+
+export default defineConfig({
+  plugins: [foo(), bar(), baz()],
+});
+```
+
+Falsy plugins will be ignored, which can be used to easily activate or deactivate plugins.
+
+`plugins` also accepts presets including several plugins as a single element. This is useful for complex features (like framework integration) that are implemented using several plugins. The array will be flattened internally.
+
+```ts title="framework-plugin.ts"
+import foo from 'rollipop-plugin-foo';
+import bar from 'rollipop-plugin-bar';
+import baz from 'rollipop-plugin-baz';
+
+export default function framework() {
+  return [foo(), bar(), baz()];
+}
+```
+
+```ts title="rollipop.config.ts"
+import framework from 'rollipop-plugin-framework';
+
+export default defineConfig({
+  plugins: [framework()],
+});
+```
+
+## Universal Hooks
+
+Rollipop supports all plugins compatible with Rolldown.
+
+For more details, refer to the [Rolldown Plugin API documentation](https://rolldown.rs/apis/plugin-api/).
+
+## Rollipop Specific Hooks
+
+### `config`
+
+- **Kind:** `async`, `sequential`
+
+Modify Rollipop config before it's resolved. The hook receives the merged config accumulated from all previous plugins. If the hook returns a config object, it will be deeply merged with the existing config.
+
+This is useful when you need to:
+- Set default configuration values
+- Conditionally modify config based on other settings
+- Add or override specific configuration options
+
+
+```ts
+export default function myPlugin() {
+  return {
+    name: 'my-plugin',
+    config: {
+      resolver: {
+        alias: {
+          '@': '/src',
+        },
+      },
+    },
+  };
+}
+```
+
+You can also provide config as a function:
+
+```ts
+export default function myPlugin() {
+  return {
+    name: 'my-plugin',
+    config(config) {
+      // Return partial config to merge
+      return {
+        resolver: {
+          alias: {
+            '@': '/src',
+          },
+        },
+      };
+    },
+  };
+}
+```
+
+
+You can also directly modify the config object passed to the hook:
+
+```ts
+export default function myPlugin() {
+  return {
+    name: 'my-plugin',
+    config(config) {
+      // Directly override existing config
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@': '/src',
+      };
+    },
+  };
+}
+```
+
+**Note:** The `config` hook runs sequentially for each plugin. The order matters as each plugin receives the config modified by previous plugins.
+
+### `configResolved`
+
+- **Kind:** `async`, `parallel`
+
+Called after the Rollipop config is resolved. Use this hook to read and store the final resolved config. Do not mutate the config inside this hook.
+
+This is useful when you need to:
+- Read the final resolved config to understand what settings are actually being used
+- Store config values for use in other hooks
+- Perform validation on the final config
+
+```ts
+export default function myPlugin() {
+  let config: ResolvedConfig;
+
+  return {
+    name: 'my-plugin',
+    configResolved(resolvedConfig) {
+      // Store the config for use in other hooks
+      config = resolvedConfig;
+    },
+  };
+}
+```
+
+**Note:** The `configResolved` hook runs in parallel for all plugins using `Promise.all`.
+
+### `configureServer`
+
+- **Kind:** `async`, `sequential`
+
+Hook for configuring the dev server. The hook receives the DevServer instance and can be used to:
+- Access server instances (Fastify, WebSocket servers)
+- Add custom middleware
+- Set up custom routes or handlers
+
+The most common use case is adding custom middleware. Middlewares are added via `server.middlewares.use`, which is compatible with Express/Connect-style middleware.
+
+---
+
+**Adding Middleware**
+
+If you return a function from `configureServer`, it will be called after all built-in middlewares are installed. This allows you to add middleware that runs after the default middleware stack.
+
+```ts
+export default function myPlugin() {
+  return {
+    name: 'my-plugin',
+    configureServer(server) {
+      // Add middleware before built-in middlewares
+      server.middlewares.use((req, res, next) => {
+        console.log('Early middleware');
+        next();
+      });
+
+      // Return a function to add middleware after built-in middlewares
+      return () => {
+        server.middlewares.use((req, res, next) => {
+          console.log('Late middleware');
+          next();
+        });
+      };
+    },
+  };
+}
+```
+
+---
+
+**Accessing Server Instances**
+
+The `DevServer` object provides access to:
+
+```ts
+export default function myPlugin() {
+  return {
+    name: 'my-plugin',
+    configureServer(server) {
+      // Access the resolved config
+      console.log('Resolved config:', server.config);
+
+      // Access the Fastify instance
+      server.instance.get('/custom-route', async (request, reply) => {
+        return { hello: 'world' };
+      });
+
+      // Access the message WebSocket server
+      server.message.broadcast('custom-event', { data: 'hello' });
+
+      // Access the events WebSocket server
+      server.events.reportEvent({ type: 'custom-event', message: 'hello' });
+
+      // Access the HMR WebSocket server
+      server.hot.sendAll(JSON.stringify({ type: 'custom-hmr' }));
+    },
+  };
+}
+```
+
+**Note:** The `configureServer` hook only runs in development mode (when using the `start` command). It will not run during production builds.
+
+## Plugin Ordering
+
+A Rollipop plugin can additionally specify an `order` property to adjust its application order. The value of `order` can be either `'pre'` or `'post'`.
+
+```ts title="plugins.ts"
+export function prePlugin() {
+  return {
+    name: 'pre-plugin',
+    order: 'pre',
+    transform(code, id) {
+      return transform(code); // 1st
+    },
+  },
+};
+
+export function postPlugin() {
+  return {
+    name: 'post-plugin',
+    order: 'post',
+    transform(code, id) {
+      return transform(code); // 2nd
+    },
+  },
+};
+```
+
+```ts title="rollipop.config.ts"
+import { prePlugin, postPlugin } from './plugins';
+
+export default defineConfig({
+  // The `order` field takes priority over the position in the `plugins` array.
+  plugins: [postPlugin(), prePlugin()],
+});
+```
+
+## Hook Filters
+
+Rolldown introduced a [hook filter feature](https://rolldown.rs/apis/plugin-hook-filters) to reduce the communication overhead between the Rust and JavaScript runtimes. This feature allows plugins to specify patterns that determine when hooks should be called, improving performance by avoiding unnecessary hook invocations.
+
+```ts title="my-plugin.ts"
+export default function myPlugin() {
+  const jsFileRegex = /\.js$/
+
+  return {
+    name: 'my-plugin',
+    // Example: only call transform for .js files
+    transform: {
+      filter: {
+        include: {
+          id: jsFileRegex,
+        },
+      },
+      handler(code, id) {
+        return {
+          code: transformCode(code),
+          map: null,
+        };
+      },
+    },
+  }
+}
+```

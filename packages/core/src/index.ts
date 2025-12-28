@@ -21,7 +21,7 @@ export type * from './types';
 export type * from './types/hmr';
 
 // Reporter
-export { TerminalReporter as DefaultReporter } from './reporter';
+export { TerminalReporter } from './reporter';
 
 // Re-export `rolldown`
 export * as rolldown from 'rolldown';
