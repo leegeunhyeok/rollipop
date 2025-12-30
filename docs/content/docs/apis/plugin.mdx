@@ -210,7 +210,7 @@ export default function myPlugin() {
       server.events.reportEvent({ type: 'custom-event', message: 'hello' });
 
       // Access the HMR WebSocket server
-      server.hot.sendAll(JSON.stringify({ type: 'custom-hmr' }));
+      server.hot.sendAll('custom-hmr', { message: 'Hey!' });
     },
   };
 }
@@ -279,4 +279,100 @@ export default function myPlugin() {
     },
   }
 }
+```
+
+## Client-Server Communication
+
+Rollipop provide some utilities for plugins to help handle the communication with clients.
+
+### Server to Client
+
+On the plugin side, we could use `server.hot.sendAll` to broadcast events to the client:
+
+```ts
+{
+  name: 'my-plugin',
+  configureServer(server) {
+    setInterval(() => {
+      if (server.hot.clients.size === 0) {
+        this.debug('No clients connected, skipping sending message');
+        return;
+      } else {
+        this.debug('Sending message to clients...');
+      }
+
+      server.hot.sendAll('my-custom:from-server', { message: 'Hello from server' });
+    }, 5_000);
+  }
+}
+```
+
+On the client side, use `hot.on` to listen to the events:
+
+```ts
+if (import.meta.hot) {
+  import.meta.hot.on('my-custom:from-server', (data) => {
+    console.log(data.msg) // hello
+  })
+}
+```
+
+### Client to Server
+
+To send events from the client to the server, we can use `hot.send`:
+
+```ts
+if (import.meta.hot) {
+  import.meta.hot.send('my-custom:from-client', { msg: 'Hey!' })
+}
+```
+
+Then use `server.hot.on` and listen to the events on the server side:
+
+```ts
+{
+  name: 'my-plugin',
+  configureServer(server) {
+    server.hot.on('my-custom:from-client', (data) => {
+      console.log('Message from client:', data.msg) // Hey!
+    });
+  },
+}
+```
+
+### Global Message Handler
+
+You can also register a custom HMR handler globally via `setCustomHMRHandler`.
+
+```ts
+import { setCustomHMRHandler, type HMRCustomMessage } from 'rollipop/runtime';
+
+setCustomHMRHandler((message: HMRCustomMessage) => {
+  console.log('Received custom HMR message:', message);
+
+  switch (message.type) {
+    case 'my-custom:from-server':
+      console.log('Payload:', message.payload);
+      break;
+  }
+});
+```
+
+**Signature**
+
+`setCustomHMRHandler(handler: HMRCustomHandler)`
+
+Registers a handler function to receive custom HMR messages from the server.
+
+**Parameters:**
+- `handler`: A callback function that receives `HMRCustomMessage` objects
+
+**Types:**
+```ts
+type HMRCustomHandler = (message: HMRCustomMessage) => void;
+
+type HMRCustomMessage = {
+  type: string;
+  payload: unknown;
+};
 ```

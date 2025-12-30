@@ -28,9 +28,13 @@
     },
     "./hmr-runtime": "./dist/hmr-runtime.js",
     "./hmr-client": "./dist/hmr-client.cjs",
+    "./client": {
+      "types": "./client.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
+    "client.d.ts",
     "dist"
   ],
   "repository": {
@@ -89,11 +93,9 @@
     "@types/babel__code-frame": "^7",
     "@types/babel__core": "^7",
     "@types/babel__generator": "^7",
-    "@types/react-refresh": "^0",
     "@types/ws": "^8",
     "magic-string": "^0.30.21",
-    "react-refresh": "^0.18.0",
-    "source-map": "^0.7.6",
+    "mitt": "^3.0.1",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

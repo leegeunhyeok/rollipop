@@ -83,10 +83,12 @@ export function hot(): Plugin {
           this.debug('Sending message to clients...');
         }
 
-        server.hot.sendAll(
-          JSON.stringify({ type: 'my-custom', message: `Hello, world! ${count++}` }),
-        );
+        server.hot.sendAll('custom-server-event', { message: `Hello from server: ${count++}` });
       }, 5_000);
+
+      server.hot.on('custom-client-event', (data) => {
+        console.log('Received custom client event:', data);
+      });
     },
   };
 }

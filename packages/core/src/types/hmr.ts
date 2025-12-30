@@ -1,3 +1,11 @@
+export interface HMRContext {
+  accept(...args: any[]): void;
+  invalidate(): void;
+  on(event: string, listener: (...args: any[]) => void): void;
+  off(event: string, listener: (...args: any[]) => void): void;
+  send(type: string, payload?: unknown): void;
+}
+
 export type HMRClientLogLevel =
   | 'trace'
   | 'info'
@@ -48,12 +56,12 @@ export type HMRServerMessage =
       payload: HMRServerError;
     };
 
-export type HMRCustomServerMessage = {
+export type HMRCustomMessage = {
   type: string;
   payload: unknown;
 };
 
-export type HMRCustomHandler = (message: HMRCustomServerMessage) => void;
+export type HMRCustomHandler = (message: HMRCustomMessage) => void;
 
 export interface HMRServerError {
   type: string;

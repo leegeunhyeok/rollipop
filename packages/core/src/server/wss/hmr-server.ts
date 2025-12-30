@@ -3,7 +3,12 @@ import type * as rolldownExperimental from 'rolldown/experimental';
 import type * as ws from 'ws';
 
 import type { ReportableEvent } from '../../types';
-import type { HMRClientMessage, HMRServerError, HMRServerMessage } from '../../types/hmr';
+import type {
+  HMRClientMessage,
+  HMRCustomMessage,
+  HMRServerError,
+  HMRServerMessage,
+} from '../../types/hmr';
 import type { BundlerDevEngine, BundlerPool } from '../bundler-pool';
 import { type WebSocketClient, WebSocketServer } from './server';
 
@@ -205,6 +210,11 @@ export class HMRServer extends WebSocketServer {
       return;
     }
 
+    if (isCustomHMRMessage(message)) {
+      this.wss.emit(message.type, message.payload);
+      return;
+    }
+
     switch (message.type) {
       case 'hmr:connected':
         void this.handleConnected(client, message.platform, message.bundleEntry);
@@ -241,4 +251,16 @@ export class HMRServer extends WebSocketServer {
     this.logger.trace(`connection closed (clientId: ${client.id})`);
     this.cleanup(client);
   }
+}
+
+function isCustomHMRMessage(message: unknown): message is HMRCustomMessage {
+  if (typeof message !== 'object' || message == null) {
+    return false;
+  }
+
+  if ('type' in message && typeof message.type === 'string' && message.type.startsWith('hmr:')) {
+    return false;
+  }
+
+  return true;
 }
