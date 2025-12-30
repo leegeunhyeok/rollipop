@@ -4,7 +4,6 @@
     "dev-server",
     "devtools",
     "reporter",
-    "custom-hmr-client",
     "flow",
     "svg"
   ],

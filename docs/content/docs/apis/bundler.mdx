@@ -83,8 +83,8 @@ interface DevServer {
     reportEvent: (event: { type: string; [key: string]: unknown }) => void;
   };
   hot: ws.Server & {
-    send: (client: ws.WebSocket, data: BufferLike) => void;
-    sendAll: (data: BufferLike) => void;
+    send: (client: ws.WebSocket, event: string, payload?: unknown) => void;
+    sendAll: (event: string, payload?: unknown) => void;
   };
 }
 ```

@@ -24,9 +24,13 @@
         "default": "./dist/runtime.cjs"
       }
     },
+    "./client": {
+      "types": "./client.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "files": [
+    "client.d.ts",
     "bin",
     "dist"
   ],

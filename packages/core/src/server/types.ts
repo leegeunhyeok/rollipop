@@ -8,7 +8,7 @@ import type * as ws from 'ws';
 // Extend Fastify instance type with `@fastify/middie`.
 import '@fastify/middie';
 import type { ResolvedConfig } from '../config';
-import type { BufferLike, WebSocketClient } from './wss/server';
+import type { WebSocketClient } from './wss/server';
 
 export interface ServerOptions {
   port?: number;
@@ -66,8 +66,8 @@ export interface DevServer {
    * HMR websocket server API
    */
   hot: ws.Server & {
-    send: (client: ws.WebSocket, data: BufferLike) => void;
-    sendAll: (data: BufferLike) => void;
+    send: (client: ws.WebSocket, eventName: string, payload?: unknown) => void;
+    sendAll: (eventName: string, payload?: unknown) => void;
   };
 }
 

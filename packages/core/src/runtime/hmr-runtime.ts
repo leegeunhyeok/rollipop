@@ -1,4 +1,12 @@
-import type { HMRClientMessage, HMRServerMessage } from '../types/hmr';
+import mitt from 'mitt';
+
+import type {
+  HMRClientMessage,
+  HMRCustomHandler,
+  HMRCustomMessage,
+  HMRServerMessage,
+} from '../types/hmr';
+import { HMRContext } from '../types/hmr';
 import { enqueueUpdate, isReactRefreshBoundary } from './react-refresh-utils';
 
 interface Messenger {
@@ -29,12 +37,20 @@ declare class DevRuntime {
   loadExports(id: string): void;
 }
 
+declare global {
+  var __ROLLIPOP_CUSTOM_HMR_HANDLER__: HMRCustomHandler | undefined;
+}
+
 var BaseDevRuntime = DevRuntime;
 
-class ModuleHotContext {
+class ModuleHotContext implements HMRContext {
+  private readonly removeListeners: (() => void)[] = [];
   acceptCallbacks: { deps: string[]; fn: (moduleExports: Record<string, any>[]) => void }[] = [];
 
-  constructor(private moduleId: string) {}
+  constructor(
+    private moduleId: string,
+    private socketHolder: SocketHolder,
+  ) {}
 
   get refresh() {
     return globalThis.__ReactRefresh;
@@ -63,47 +79,115 @@ class ModuleHotContext {
   }
 
   invalidate() {
-    if (
-      ReactNativeDevRuntime.socket == null ||
-      ReactNativeDevRuntime.socket.readyState !== WebSocket.OPEN
-    ) {
-      return;
-    }
-
-    ReactNativeDevRuntime.socket.send(
+    this.socketHolder.send(
       JSON.stringify({
         type: 'hmr:invalidate',
         moduleId: this.moduleId,
-      }),
+      } satisfies HMRClientMessage),
     );
+  }
+
+  on(event: string, listener: (...args: any[]) => void) {
+    this.socketHolder.on(event, listener);
+    this.removeListeners.push(() => this.socketHolder.off(event, listener));
+  }
+
+  off(event: string, listener: (...args: any[]) => void) {
+    this.socketHolder.off(event, listener);
+  }
+
+  send(type: string, payload?: unknown) {
+    this.socketHolder.send(JSON.stringify({ type, payload }));
+  }
+
+  cleanup() {
+    for (const removeListener of this.removeListeners) {
+      removeListener();
+    }
+    this.removeListeners.length = 0;
+  }
+}
+
+class SocketHolder {
+  private readonly queuedMessages: string[] = [];
+  private readonly emitter = mitt();
+  private _socket: WebSocket | null = null;
+  private _origin: string | null = null;
+
+  get socket() {
+    return this._socket;
+  }
+
+  get origin() {
+    return this._origin;
+  }
+
+  setup(socket: WebSocket, origin: string) {
+    this._socket = socket;
+    this._origin = origin;
+
+    if (socket.readyState !== WebSocket.OPEN) {
+      socket.addEventListener('open', () => this.flushQueuedMessages(), { once: true });
+    } else {
+      this.flushQueuedMessages();
+    }
+  }
+
+  on(event: string, listener: (payload?: unknown) => void) {
+    this.emitter.on(event, listener);
+  }
+
+  off(event: string, listener: (payload?: unknown) => void) {
+    this.emitter.off(event, listener);
+  }
+
+  emit(event: string, payload?: unknown) {
+    this.emitter.emit(event, payload);
+  }
+
+  send(message: string) {
+    if (this._socket == null || this._socket.readyState !== WebSocket.OPEN) {
+      this.queuedMessages.push(message);
+      return;
+    }
+    this.flushQueuedMessages();
+    this._socket.send(message);
+  }
+
+  flushQueuedMessages() {
+    if (this._socket == null) {
+      return;
+    }
+    for (const message of this.queuedMessages) {
+      this._socket.send(message);
+    }
+    this.queuedMessages.length = 0;
+  }
+
+  close() {
+    if (this._socket == null) {
+      return;
+    }
+    this._socket.close();
   }
 }
 
 class ReactNativeDevRuntime extends BaseDevRuntime {
-  static socket: WebSocket | null = null;
-  static readonly queuedMessages: string[] = [];
-
+  socketHolder: SocketHolder;
   moduleHotContexts = new Map<string, ModuleHotContext>();
   moduleHotContextsToBeUpdated = new Map<string, ModuleHotContext>();
 
   constructor() {
+    const socketHolder = new SocketHolder();
     const messenger: Messenger = {
-      send(message) {
-        if (
-          ReactNativeDevRuntime.socket === null ||
-          ReactNativeDevRuntime.socket.readyState !== WebSocket.OPEN
-        ) {
-          ReactNativeDevRuntime.queuedMessages.push(JSON.stringify(message));
-          return;
-        }
-        ReactNativeDevRuntime.socket.send(JSON.stringify(message));
-      },
+      send: (message) => socketHolder.send(JSON.stringify(message)),
     };
     super(messenger);
+    this.socketHolder = socketHolder;
   }
 
   createModuleHotContext(moduleId: string) {
-    const hotContext = new ModuleHotContext(moduleId);
+    const hotContext = new ModuleHotContext(moduleId, this.socketHolder);
     if (this.moduleHotContexts.has(moduleId)) {
       this.moduleHotContextsToBeUpdated.set(moduleId, hotContext);
     } else {
@@ -120,6 +204,7 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
         acceptCallbacks.filter((cb) => {
           cb.fn(this.modules[moduleId].exports);
         });
+        hotContext.cleanup();
       }
     }
     this.moduleHotContextsToBeUpdated.forEach((hotContext, moduleId) => {
@@ -128,22 +213,22 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
     this.moduleHotContextsToBeUpdated.clear();
   }
 
-  setup(socket: WebSocket) {
-    if (ReactNativeDevRuntime.socket != null) {
+  setup(socket: WebSocket, origin: string) {
+    if (this.socketHolder.socket != null) {
       console.warn('[HMR]: ReactNativeDevRuntime already setup');
       return;
     }
 
-    if (socket.readyState !== WebSocket.OPEN) {
-      socket.addEventListener('open', () => {
-        this.flushQueuedMessages(socket);
-      });
-    } else {
-      this.flushQueuedMessages(socket);
-    }
+    this.socketHolder.setup(socket, origin);
 
     socket.addEventListener('message', (event: MessageEvent) => {
       const message = JSON.parse(event.data) as HMRServerMessage;
+
+      if (isCustomHMRMessage(message)) {
+        this.socketHolder.emit(message.type, message.payload);
+        globalThis.__ROLLIPOP_CUSTOM_HMR_HANDLER__?.(message);
+        return;
+      }
 
       switch (message.type) {
         case 'hmr:update':
@@ -155,15 +240,6 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
           break;
       }
     });
-
-    ReactNativeDevRuntime.socket = socket;
-  }
-
-  private flushQueuedMessages(socket: WebSocket) {
-    for (const message of ReactNativeDevRuntime.queuedMessages) {
-      socket.send(message);
-    }
-    ReactNativeDevRuntime.queuedMessages.length = 0;
   }
 
   private evaluate(code: string, sourceURL?: string) {
@@ -182,6 +258,18 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
       : globalThis.nativeModuleProxy[moduleName]
     ).reload();
   }
+}
+
+function isCustomHMRMessage(message: unknown): message is HMRCustomMessage {
+  if (typeof message !== 'object' || message == null) {
+    return false;
+  }
+
+  if ('type' in message && typeof message.type === 'string' && message.type.startsWith('hmr:')) {
+    return false;
+  }
+
+  return true;
 }
 
 globalThis.__rolldown_runtime__ = new ReactNativeDevRuntime();

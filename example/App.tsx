@@ -76,3 +76,9 @@ const styles = StyleSheet.create({
     color: '#666',
   },
 });
+
+if (import.meta.hot) {
+  import.meta.hot.on('custom-server-event', (data) => {
+    console.log('Received custom server event:', data);
+  });
+}

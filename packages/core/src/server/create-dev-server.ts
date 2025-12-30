@@ -3,6 +3,7 @@ import url from 'url';
 import { createDevServerMiddleware } from '@react-native-community/cli-server-api';
 import { createDevMiddleware } from '@react-native/dev-middleware';
 import Fastify from 'fastify';
+import type * as ws from 'ws';
 
 import type { ResolvedConfig } from '../config';
 import { createPluginContext } from '../core/plugins/context';
@@ -102,8 +103,12 @@ export async function createDevServer(
     message: Object.assign(messageServer, { broadcast }),
     events: Object.assign(eventsServer, { reportEvent }),
     hot: Object.assign(hmrServer.server, {
-      send: hmrServer.send.bind(hmrServer),
-      sendAll: hmrServer.sendAll.bind(hmrServer),
+      send: (client: ws.WebSocket, eventName: string, payload?: unknown) => {
+        hmrServer.send(client, JSON.stringify({ type: eventName, payload }));
+      },
+      sendAll: (eventName: string, payload?: unknown) => {
+        hmrServer.sendAll(JSON.stringify({ type: eventName, payload }));
+      },
     }),
   };
 

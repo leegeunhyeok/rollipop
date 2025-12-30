@@ -17,7 +17,6 @@ const runtimeConfig: UserConfig = {
   },
   fixedExtension: false,
   treeshake: false,
-  dts: false,
   logLevel: 'error',
 };
 

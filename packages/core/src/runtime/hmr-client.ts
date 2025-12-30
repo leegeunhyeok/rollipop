@@ -1,10 +1,4 @@
-import type {
-  HMRClientLogLevel,
-  HMRClientMessage,
-  HMRCustomHandler,
-  HMRCustomServerMessage,
-  HMRServerMessage,
-} from '../types/hmr';
+import type { HMRClientLogLevel, HMRClientMessage, HMRServerMessage } from '../types/hmr';
 
 const Platform = require('./Platform').default as { OS: string };
 const prettyFormat = require('pretty-format');
@@ -37,10 +31,6 @@ interface HMRClientNativeInterface {
 interface SocketInstance {
   socket: WebSocket;
   origin: string;
-}
-
-declare global {
-  var __ROLLIPOP_CUSTOM_HMR_HANDLER__: HMRCustomHandler | undefined;
 }
 
 class HMRClient implements HMRClientNativeInterface {
@@ -173,7 +163,7 @@ class HMRClient implements HMRClientNativeInterface {
       this.handleClose(event);
     });
 
-    globalThis.__rolldown_runtime__.setup(socket);
+    globalThis.__rolldown_runtime__.setup(socket, origin);
 
     this.enabled = isEnabled;
   }
@@ -303,10 +293,6 @@ class HMRClient implements HMRClientNativeInterface {
       case 'hmr:error':
         this.compileErrorMessage = data.payload.message;
         this.showCompileErrorIfNeeded();
-        break;
-
-      default:
-        globalThis.__ROLLIPOP_CUSTOM_HMR_HANDLER__?.(data as HMRCustomServerMessage);
         break;
     }
   }
