@@ -50,6 +50,7 @@
   "scripts": {
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
+    "test": "vitest --run",
     "execute": "node bin/index.js",
     "build": "tsdown"
   },

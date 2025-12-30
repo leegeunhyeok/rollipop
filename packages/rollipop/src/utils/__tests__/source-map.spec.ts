@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { replaceSourceMappingURL } from './source-map';
+import { replaceSourceMappingURL } from '../source-map';
 
 describe('source-map', () => {
   describe('replaceSourceMappingURL', () => {

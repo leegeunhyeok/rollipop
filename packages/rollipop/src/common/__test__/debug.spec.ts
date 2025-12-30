@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseDebugKeys } from './debug';
+import { parseDebugKeys } from '../debug';
 
 describe('debug', () => {
   describe('parseDebugKeys', () => {

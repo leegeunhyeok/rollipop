@@ -10,11 +10,20 @@ export function createId(config: ResolvedConfig, buildOptions: BuildOptions) {
   return md5(
     serialize([
       ROLLIPOP_VERSION,
-      pick(buildOptions, ['platform', 'dev']),
-      config.resolver,
-      config.transformer,
-      config.plugins,
-      config.serializer.prelude,
+      filterTransformAffectedOptions(buildOptions),
+      filterTransformAffectedConfig(config),
     ]),
   );
+}
+
+function filterTransformAffectedOptions(buildOptions: BuildOptions) {
+  return pick(buildOptions, ['platform', 'dev']);
+}
+
+function filterTransformAffectedConfig(config: ResolvedConfig) {
+  const { transformer, plugins = [] } = config;
+  return {
+    transformer,
+    plugins: plugins.map((plugin, index) => `${plugin.name}#${index}`),
+  };
 }
