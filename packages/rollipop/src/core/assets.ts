@@ -350,3 +350,7 @@ function getAndroidAssetDestinationPath(asset: AssetData, scale: number) {
 function isDrawable(type: string) {
   return ['gif', 'heic', 'heif', 'jpeg', 'jpg', 'ktx', 'png', 'webp', 'xml'].includes(type);
 }
+
+export function generateAssetRegistryCode(assetRegistryPath: string, asset: AssetData) {
+  return `module.exports = require('${assetRegistryPath}').registerAsset(${JSON.stringify(asset)});`;
+}

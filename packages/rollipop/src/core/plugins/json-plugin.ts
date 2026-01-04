@@ -1,20 +1,22 @@
 import fs from 'node:fs';
 
+import { id, include } from '@rolldown/pluginutils';
 import type * as rolldown from 'rolldown';
+
+import { setFlag, TransformFlag } from './utils/transform-flags';
 
 function jsonPlugin(): rolldown.Plugin {
   return {
     name: 'rollipop:json',
     load: {
-      filter: {
-        id: /\.json$/,
-      },
+      filter: [include(id(/\.json$/))],
       handler(id) {
         const rawJson = fs.readFileSync(id, 'utf-8');
         const json = JSON.parse(rawJson);
 
         return {
           code: jsonToEsm(json),
+          meta: setFlag(this, id, TransformFlag.SKIP_ALL),
           moduleType: 'js',
         };
       },

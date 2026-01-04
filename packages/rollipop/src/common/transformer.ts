@@ -1,50 +1,26 @@
 import path from 'node:path';
 
 import { generate } from '@babel/generator';
-import * as swc from '@swc/core';
 import flowRemoveTypes from 'flow-remove-types';
 import * as hermesParser from 'hermes-parser';
 
-export function stripFlowSyntax(code: string, id: string) {
+export function stripFlowTypes(code: string) {
   const typeRemoved = flowRemoveTypes(code, { all: true, removeEmptyImports: true });
-  const ast = hermesParser.parse(typeRemoved.toString(), { flow: 'all', babel: true });
-  const generated = generate(ast, { sourceMaps: true, sourceFileName: path.basename(id) });
-
-  return { code: generated.code, map: generated.map };
+  return { code: typeRemoved.toString(), map: typeRemoved.generateMap() };
 }
 
-export function transformToHermesAwareSyntax(code: string, id: string) {
-  const result = swc.transformSync(code, {
-    filename: path.basename(id),
-    configFile: false,
-    swcrc: false,
-    sourceMaps: true,
-    // Disables the input source map to prevent error logs when
-    // swc cannot find the source map file (e.g., in Yarn PnP environments).
-    inputSourceMap: false,
-    jsc: {
-      target: 'es5',
-      parser: {
-        // Parse as TypeScript code because Flow modules can be `.js` files with type annotations
-        syntax: 'typescript',
-        // Always enable JSX parsing because Flow modules can be `.js` files with JSX syntax
-        tsx: true,
-      },
-      keepClassNames: true,
-      loose: false,
-      transform: {
-        react: {
-          runtime: 'preserve',
-        },
-      },
-      assumptions: {
-        setPublicClassFields: true,
-        privateFieldsAsProperties: true,
-      },
-    },
+export function stripFlowSyntax(code: string) {
+  const { code: typeRemovedCode } = stripFlowTypes(code);
+  const ast = parseFlowSyntax(typeRemovedCode);
+  return ast;
+}
 
-    isModule: true,
-  });
+export function parseFlowSyntax(code: string) {
+  const ast = hermesParser.parse(code, { flow: 'all', babel: true });
+  return ast;
+}
 
-  return result;
+export function generateSourceFromAst(ast: babel.Node, id: string) {
+  const generated = generate(ast, { sourceMaps: true, sourceFileName: path.basename(id) });
+  return { code: generated.code, map: generated.map };
 }

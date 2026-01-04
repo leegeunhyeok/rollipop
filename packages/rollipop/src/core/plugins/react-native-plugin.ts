@@ -1,31 +1,30 @@
 import fs from 'node:fs';
-import path from 'path';
 
-import * as babel from '@babel/core';
-import { exactRegex } from '@rolldown/pluginutils';
+import { exactRegex, id, include, type TopLevelFilterExpression } from '@rolldown/pluginutils';
 import type * as rolldown from 'rolldown';
 
-import { transformToHermesAwareSyntax, stripFlowSyntax } from '../../common/transformer';
+import { stripFlowSyntax, generateSourceFromAst } from '../../common/transformer';
 import { ResolvedConfig } from '../../config';
 import { DEFAULT_HMR_CLIENT_PATH } from '../../constants';
-import { AssetData, copyAssetsToDestination, resolveScaledAssets } from '../assets';
+import {
+  AssetData,
+  copyAssetsToDestination,
+  generateAssetRegistryCode,
+  resolveScaledAssets,
+} from '../assets';
 import type { BuildMode } from '../types';
-import { PluginUtils } from './utils';
+import { cacheable } from './utils';
+import { TransformFlag, getFlag, setFlag } from './utils/transform-flags';
 
 export interface ReactNativePluginOptions {
   platform: string;
   dev: boolean;
   mode: BuildMode;
-  flowFilter: rolldown.HookFilter;
-  codegenFilter: rolldown.HookFilter;
+  flowFilter: rolldown.HookFilter | TopLevelFilterExpression[];
+  codegenFilter: rolldown.HookFilter | TopLevelFilterExpression[];
   assetsDir?: string;
   assetExtensions: string[];
   assetRegistryPath: string;
-}
-
-enum TransformFlags {
-  SKIP_FLOW = 0b0001,
-  NONE = 0,
 }
 
 function reactNativePlugin(
@@ -37,42 +36,12 @@ function reactNativePlugin(
   const assetExtensionRegex = new RegExp(`\\.(?:${assetExtensions.join('|')})$`);
 
   const codegenPlugin: rolldown.Plugin = {
-    name: 'rollipop:react-native-codegen',
+    name: 'rollipop:react-native-codegen-marker',
     transform: {
       order: 'pre',
       filter: codegenFilter,
-      handler(code, id) {
-        this.debug(`Transforming codegen native component ${id}`);
-
-        const result = babel.transformSync(code, {
-          filename: path.basename(id),
-          babelrc: false,
-          configFile: false,
-          sourceMaps: true,
-          parserOpts: { flow: 'all' } as any,
-          plugins: [
-            require.resolve('babel-plugin-syntax-hermes-parser'),
-            require.resolve('@babel/plugin-transform-flow-strip-types'),
-            [
-              require.resolve('@babel/plugin-syntax-typescript'),
-              {
-                isTSX: id.endsWith('x'),
-                dts: false,
-              },
-            ],
-            require.resolve('@react-native/babel-plugin-codegen'),
-          ],
-        });
-
-        if (result?.code == null) {
-          throw new Error(`Failed to transform codegen native component: ${id}`);
-        }
-
-        return {
-          code: result.code,
-          map: result.map,
-          meta: setFlag(this, id, TransformFlags.SKIP_FLOW),
-        };
+      handler(_code, id) {
+        return { meta: setFlag(this, id, TransformFlag.CODEGEN_REQUIRED) };
       },
     },
   };
@@ -83,11 +52,17 @@ function reactNativePlugin(
       order: 'pre',
       filter: flowFilter,
       handler(code, id) {
-        if (getFlags(this, id) & TransformFlags.SKIP_FLOW) {
+        const flags = getFlag(this, id);
+
+        if (flags & TransformFlag.SKIP_ALL) {
           return;
         }
 
-        const result = stripFlowSyntax(code, id);
+        if (flags & TransformFlag.CODEGEN_REQUIRED) {
+          return { meta: setFlag(this, id, TransformFlag.STRIP_FLOW_REQUIRED) };
+        }
+
+        const result = generateSourceFromAst(stripFlowSyntax(code), id);
 
         return {
           code: result.code,
@@ -102,24 +77,11 @@ function reactNativePlugin(
     },
   };
 
-  const hermesSyntaxAware: rolldown.Plugin = {
-    name: 'rollipop:react-native-hermes-syntax-aware',
-    transform: {
-      order: 'post',
-      handler(code, id) {
-        const result = transformToHermesAwareSyntax(code, id);
-        return { code: result.code, map: result.map };
-      },
-    },
-  };
-
   const assets: AssetData[] = [];
   const assetPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-asset',
     load: {
-      filter: {
-        id: assetExtensionRegex,
-      },
+      filter: [include(id(assetExtensionRegex))],
       async handler(id) {
         this.debug(`Asset ${id} found`);
 
@@ -133,11 +95,9 @@ function reactNativePlugin(
         assets.push(assetData);
 
         return {
-          code: `
-          module.exports = require('${assetRegistryPath}').registerAsset(${JSON.stringify(
-            assetData,
-          )});
-          `,
+          code: generateAssetRegistryCode(assetRegistryPath, assetData),
+          meta: setFlag(this, id, TransformFlag.SKIP_ALL),
+          moduleType: 'js',
         };
       },
     },
@@ -172,9 +132,7 @@ function reactNativePlugin(
   const replaceHMRClientPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-replace-hmr-client',
     resolveId: {
-      filter: {
-        id: /\/HMRClient\.js$/,
-      },
+      filter: [include(id(/\/HMRClient\.js$/))],
       async handler(id, importer) {
         const resolvedId = await this.resolve(id, importer, { skipSelf: true });
 
@@ -184,9 +142,7 @@ function reactNativePlugin(
       },
     },
     load: {
-      filter: {
-        id: exactRegex(hmrClientPath),
-      },
+      filter: [include(id(exactRegex(hmrClientPath)))],
       handler(id) {
         this.debug(`Replacing HMR client: ${id}`);
         return hmrClientImplement;
@@ -197,42 +153,11 @@ function reactNativePlugin(
   const devServerPlugins = mode === 'serve' ? [replaceHMRClientPlugin] : null;
 
   return [
-    PluginUtils.cacheable(codegenPlugin),
-    PluginUtils.cacheable(stripFlowSyntaxPlugin),
-    PluginUtils.cacheable(hermesSyntaxAware),
+    cacheable(codegenPlugin),
+    cacheable(stripFlowSyntaxPlugin),
     assetPlugin,
     ...(devServerPlugins ?? []),
   ];
-}
-
-type ReactNativePluginMeta = rolldown.CustomPluginOptions & {
-  flags: TransformFlags;
-};
-
-function setFlag(
-  context: rolldown.TransformPluginContext,
-  id: string,
-  flag: TransformFlags,
-): rolldown.CustomPluginOptions {
-  const moduleInfo = context.getModuleInfo(id);
-  if (moduleInfo && hasFlags(moduleInfo.meta)) {
-    moduleInfo.meta.flags |= flag;
-    return moduleInfo.meta;
-  } else {
-    return { meta: flag };
-  }
-}
-
-function hasFlags(meta: rolldown.CustomPluginOptions): meta is ReactNativePluginMeta {
-  return 'flags' in meta;
-}
-
-function getFlags(context: rolldown.TransformPluginContext, id: string): TransformFlags {
-  const moduleInfo = context.getModuleInfo(id);
-  if (moduleInfo && hasFlags(moduleInfo.meta)) {
-    return moduleInfo.meta.flags;
-  }
-  return TransformFlags.NONE;
 }
 
 export { reactNativePlugin as reactNative };

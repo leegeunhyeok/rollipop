@@ -7016,12 +7016,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-syntax-hermes-parser@npm:^0.33.0":
-  version: 0.33.0
-  resolution: "babel-plugin-syntax-hermes-parser@npm:0.33.0"
+"babel-plugin-syntax-hermes-parser@npm:^0.33.2":
+  version: 0.33.2
+  resolution: "babel-plugin-syntax-hermes-parser@npm:0.33.2"
   dependencies:
-    hermes-parser: "npm:0.33.0"
-  checksum: 10c0/be8d03fe7827405db2e25cddd165eb048d3851f328cb7614604df3214c4f9af4ed3e64eb23a36f2659e36e6bfbb4a38fbb358d998411a1868d6a9a61744d1315
+    hermes-parser: "npm:0.33.2"
+  checksum: 10c0/e881f94fc77c497eb8ded7923018af41a8f64302e58c9b9dafc9a4ca81a36329ce24c3632f4cfb61900c632e4fbfb65e5859313ef12358b72505a96291f25db6
   languageName: node
   linkType: hard
 
@@ -10215,6 +10215,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hermes-estree@npm:0.33.2":
+  version: 0.33.2
+  resolution: "hermes-estree@npm:0.33.2"
+  checksum: 10c0/5c1f71571d12447c6ddc4dbacb30593ad84cb0e4e8f0afdeed7b07bc7a79f24271deb25006a072aa52b6a72e0b885250242384364dec87226c39d2bbeac8c09c
+  languageName: node
+  linkType: hard
+
 "hermes-parser@npm:0.32.0":
   version: 0.32.0
   resolution: "hermes-parser@npm:0.32.0"
@@ -10224,7 +10231,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hermes-parser@npm:0.33.0, hermes-parser@npm:^0.33.0":
+"hermes-parser@npm:0.33.2":
+  version: 0.33.2
+  resolution: "hermes-parser@npm:0.33.2"
+  dependencies:
+    hermes-estree: "npm:0.33.2"
+  checksum: 10c0/b2fcb04d06d0fafb3463193c9a1b0ca1ada96c4a81265d23959cc3b8cf89856e89463e45748757bb3b96d9cb1ea538a4ec9752a3d079608a259e055b51b3f95f
+  languageName: node
+  linkType: hard
+
+"hermes-parser@npm:^0.33.0":
   version: 0.33.0
   resolution: "hermes-parser@npm:0.33.0"
   dependencies:
@@ -14927,12 +14943,11 @@ __metadata:
     "@babel/code-frame": "npm:^7.27.1"
     "@babel/core": "npm:^7.28.5"
     "@babel/generator": "npm:^7.28.5"
-    "@babel/plugin-syntax-typescript": "npm:^7.27.1"
     "@babel/plugin-transform-flow-strip-types": "npm:^7.27.1"
+    "@babel/plugin-transform-typescript": "npm:^7.28.5"
     "@commander-js/extra-typings": "npm:^14.0.0"
     "@fastify/middie": "npm:^9.0.3"
     "@inquirer/prompts": "npm:^8.1.0"
-    "@jridgewell/remapping": "npm:^2.3.5"
     "@node-rs/xxhash": "npm:^1.7.6"
     "@react-native-community/cli-server-api": "npm:^20.0.2"
     "@react-native/babel-plugin-codegen": "npm:^0.83.1"
@@ -14946,7 +14961,7 @@ __metadata:
     "@types/babel__generator": "npm:^7"
     "@types/ws": "npm:^8"
     ajv: "npm:^8.17.1"
-    babel-plugin-syntax-hermes-parser: "npm:^0.33.0"
+    babel-plugin-syntax-hermes-parser: "npm:^0.33.2"
     c12: "npm:^3.3.3"
     chalk: "npm:^5.6.2"
     commander: "npm:^14.0.2"
