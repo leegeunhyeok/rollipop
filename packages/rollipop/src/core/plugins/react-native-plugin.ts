@@ -5,7 +5,7 @@ import * as babel from '@babel/core';
 import { exactRegex } from '@rolldown/pluginutils';
 import type * as rolldown from 'rolldown';
 
-import { blockScoping, stripFlowSyntax } from '../../common/transformer';
+import { transformToHermesAwareSyntax, stripFlowSyntax } from '../../common/transformer';
 import { ResolvedConfig } from '../../config';
 import { DEFAULT_HMR_CLIENT_PATH } from '../../constants';
 import { AssetData, copyAssetsToDestination, resolveScaledAssets } from '../assets';
@@ -102,12 +102,12 @@ function reactNativePlugin(
     },
   };
 
-  const blockScopingPlugin: rolldown.Plugin = {
-    name: 'rollipop:react-native-block-scoping',
+  const hermesSyntaxAware: rolldown.Plugin = {
+    name: 'rollipop:react-native-hermes-syntax-aware',
     transform: {
       order: 'post',
       handler(code, id) {
-        const result = blockScoping(code, id);
+        const result = transformToHermesAwareSyntax(code, id);
         return { code: result.code, map: result.map };
       },
     },
@@ -199,7 +199,7 @@ function reactNativePlugin(
   return [
     PluginUtils.cacheable(codegenPlugin),
     PluginUtils.cacheable(stripFlowSyntaxPlugin),
-    PluginUtils.cacheable(blockScopingPlugin),
+    PluginUtils.cacheable(hermesSyntaxAware),
     assetPlugin,
     ...(devServerPlugins ?? []),
   ];

@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 
 import { getErrorStack } from '../../testing/error-stack';
 import { evaluateContext } from '../../testing/evaluate-context';
-import { blockScoping, stripFlowSyntax } from '../transformer';
+import { transformToHermesAwareSyntax, stripFlowSyntax } from '../transformer';
 
 describe('stripFlowSyntax', () => {
   const FLOW_1 = dedent`
@@ -85,7 +85,7 @@ describe('stripFlowSyntax', () => {
   });
 });
 
-describe('blockScoping', () => {
+describe('transformToHermesAwareSyntax', () => {
   const CODE_1 = dedent`
   const bindings = {};
   function setBindings() {
@@ -114,7 +114,7 @@ describe('blockScoping', () => {
   `;
 
   it('should block scope bindings', () => {
-    const { code, map: rawMap } = blockScoping(CODE_1, 'test.js');
+    const { code, map: rawMap } = transformToHermesAwareSyntax(CODE_1, 'test.js');
     const { evaluate } = evaluateContext();
     expect(code).not.toContain('let');
     expect(code).not.toContain('const');
@@ -125,7 +125,7 @@ describe('blockScoping', () => {
   });
 
   it('should return the correct source map', async () => {
-    const { code, map } = blockScoping(CODE_2, 'test.js');
+    const { code, map } = transformToHermesAwareSyntax(CODE_2, 'test.js');
     const { evaluate } = evaluateContext();
     const consumer = await new SourceMapConsumer(map!);
 

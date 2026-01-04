@@ -13,7 +13,7 @@ export function stripFlowSyntax(code: string, id: string) {
   return { code: generated.code, map: generated.map };
 }
 
-export function blockScoping(code: string, id: string) {
+export function transformToHermesAwareSyntax(code: string, id: string) {
   const result = swc.transformSync(code, {
     filename: path.basename(id),
     configFile: false,
