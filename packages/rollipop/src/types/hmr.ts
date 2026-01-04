@@ -61,7 +61,7 @@ export type HMRCustomMessage = {
   payload: unknown;
 };
 
-export type HMRCustomHandler = (message: HMRCustomMessage) => void;
+export type HMRCustomHandler = (socket: WebSocket, message: HMRCustomMessage) => void;
 
 export interface HMRServerError {
   type: string;
