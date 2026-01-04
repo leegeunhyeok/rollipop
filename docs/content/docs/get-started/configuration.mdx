@@ -111,7 +111,7 @@ Flow type syntax transformation configuration.
 
 `flow.filter`
 
-- **Type:** `HookFilter`
+- **Type:** `HookFilter | TopLevelFilterExpression[]`
 - **Default:** `{ id: /\.jsx?$/, code: /@flow/ }`
 
 Filter for Flow transformation pipeline. Uses Rolldown's [hook filter feature](https://rolldown.rs/apis/plugin-hook-filters) to determine which files should be processed.
@@ -252,8 +252,8 @@ React Native Codegen configuration.
 
 `reactNative.codegen.filter`
 
-- **Type:** `HookFilter`
-- **Default:** `{ code: /codegenNativeComponent/ }`
+- **Type:** `HookFilter | TopLevelFilterExpression[]`
+- **Default:** `{ code: /\bcodegenNativeComponent</ }`
 
 Filter for codegen transformation pipeline. Only files matching this filter will be processed for React Native Codegen.
 
@@ -262,8 +262,8 @@ export default defineConfig({
   reactNative: {
     codegen: {
       filter: {
-        // Process files containing codegenNativeComponent
-        code: /codegenNativeComponent/,
+        // Process files containing `codegenNativeComponent<`
+        code: /\bcodegenNativeComponent</,
       },
     },
   },

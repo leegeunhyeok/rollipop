@@ -1,3 +1,4 @@
+import type { TopLevelFilterExpression } from '@rolldown/pluginutils';
 import type * as rolldown from 'rolldown';
 import type { DevWatchOptions, TransformOptions } from 'rolldown/experimental';
 
@@ -77,7 +78,10 @@ export type ResolverConfig = Omit<NonNullable<rolldown.InputOptions['resolve']>,
   preferNativePlatform?: boolean;
 };
 
-export type TransformerConfig = Omit<TransformOptions, 'cwd'  | 'lang' | 'sourceType' | 'plugins'> & {
+export type TransformerConfig = Omit<
+  TransformOptions,
+  'cwd' | 'lang' | 'sourceType' | 'plugins'
+> & {
   /**
    * Transform SVG assets files to React components using `@svgr/core`.
    *
@@ -94,7 +98,7 @@ export interface FlowConfig {
   /**
    * Filter for Flow transformation pipeline.
    */
-  filter?: rolldown.HookFilter;
+  filter?: rolldown.HookFilter | TopLevelFilterExpression[];
 }
 
 export interface SerializerConfig {
@@ -136,7 +140,7 @@ export interface CodegenConfig {
   /**
    * Filter for codegen transformation pipeline.
    */
-  filter?: rolldown.HookFilter;
+  filter?: rolldown.HookFilter | TopLevelFilterExpression[];
 }
 
 export interface TerminalConfig {

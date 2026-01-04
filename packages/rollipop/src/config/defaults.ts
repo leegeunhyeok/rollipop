@@ -54,8 +54,11 @@ export function getDefaultConfig(basePath: string) {
     },
     reactNative: {
       codegen: {
+        /**
+         * @see {@link https://github.com/facebook/react-native/blob/v0.83.1/packages/react-native-babel-preset/src/configs/main.js#L78}
+         */
         filter: {
-          code: /codegenNativeComponent/,
+          code: /\bcodegenNativeComponent</,
         },
       },
       assetRegistryPath: DEFAULT_ASSET_REGISTRY_PATH,
