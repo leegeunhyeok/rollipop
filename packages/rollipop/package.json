@@ -14,6 +14,16 @@
         "default": "./dist/index.cjs"
       }
     },
+    "./pluginutils": {
+      "import": {
+        "types": "./dist/pluginutils.d.ts",
+        "default": "./dist/pluginutils.js"
+      },
+      "require": {
+        "types": "./dist/pluginutils.d.cts",
+        "default": "./dist/pluginutils.cjs"
+      }
+    },
     "./runtime": {
       "import": {
         "types": "./dist/runtime.d.ts",

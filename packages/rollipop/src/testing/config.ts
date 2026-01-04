@@ -50,7 +50,7 @@ export function createTestConfig(basePath: string): ResolvedConfig {
     reactNative: {
       codegen: {
         filter: {
-          code: /codegenNativeComponent/,
+          code: /\bcodegenNativeComponent</,
         },
       },
       assetRegistryPath: DEFAULT_ASSET_REGISTRY_PATH,

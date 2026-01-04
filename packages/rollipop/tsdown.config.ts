@@ -33,6 +33,14 @@ export default defineConfig([
     dts: true,
   },
   {
+    entry: 'src/pluginutils.ts',
+    outDir: 'dist',
+    format: ['esm', 'cjs'],
+    platform: 'node',
+    fixedExtension: false,
+    dts: true,
+  },
+  {
     ...runtimeConfig,
     entry: 'src/runtime.ts',
     format: ['esm', 'cjs'],

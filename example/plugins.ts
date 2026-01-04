@@ -1,5 +1,6 @@
 import * as babel from '@babel/core';
 import { type Plugin, PluginUtils } from 'rollipop';
+import { include, code, id, exclude } from 'rollipop/pluginutils';
 
 const EXCLUDE_PACKAGES = ['react-native', '@react-native'];
 const REANIMATED_AUTOWORKLETIZATION_KEYWORDS = [
@@ -25,12 +26,10 @@ export function worklet(): Plugin {
   return PluginUtils.cacheable({
     name: 'worklet',
     transform: {
-      filter: {
-        id: {
-          exclude: new RegExp(`node_modules/(?:${EXCLUDE_PACKAGES.join('|')})/`),
-        },
-        code: new RegExp(REANIMATED_AUTOWORKLETIZATION_KEYWORDS.join('|')),
-      },
+      filter: [
+        exclude(id(new RegExp(`node_modules/(?:${EXCLUDE_PACKAGES.join('|')})/`))),
+        include(code(new RegExp(REANIMATED_AUTOWORKLETIZATION_KEYWORDS.join('|')))),
+      ],
       handler(code, id) {
         const result = babel.transformSync(code, {
           filename: id,
