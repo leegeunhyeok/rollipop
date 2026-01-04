@@ -23,6 +23,9 @@ describe('rollipop:json', () => {
       export { _1 as "bar" };
       export { _2 as "baz" };
       export default {"foo":_0,"bar":_1,"baz":_2};",
+        "meta": {
+          Symbol(transform-flags): 128,
+        },
         "moduleType": "js",
       }
     `);

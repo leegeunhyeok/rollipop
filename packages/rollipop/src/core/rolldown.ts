@@ -11,9 +11,9 @@ import { Polyfill, ResolvedConfig } from '../config';
 import { GLOBAL_IDENTIFIER } from '../constants';
 import { getGlobalVariables } from '../internal/react-native';
 import { ResolvedBuildOptions } from '../utils/build-options';
-import { prelude, status, reactRefresh, reactNative, json, svg } from './plugins';
+import { prelude, status, reactRefresh, reactNative, json, svg, babel, swc } from './plugins';
 import { printPluginLog } from './plugins/context';
-import { withPersistCache } from './plugins/utils';
+import { withPersistCache } from './plugins/utils/persist-cache';
 import { BundlerContext } from './types';
 
 export interface RolldownOptions {
@@ -38,7 +38,7 @@ export async function resolveRolldownOptions(
   const { sourceExtensions, assetExtensions, preferNativePlatform, ...rolldownResolve } =
     config.resolver;
   const { prelude: preludePaths, polyfills } = config.serializer;
-  const { flow, ...rolldownTransform } = config.transformer;
+  const { flow, babel: babelConfig, swc: swcConfig, ...rolldownTransform } = config.transformer;
   const { codegen, assetRegistryPath } = config.reactNative;
 
   const resolvedSourceExtensions = config.transformer.svg
@@ -116,6 +116,8 @@ export async function resolveRolldownOptions(
           assetExtensions: resolvedAssetExtensions,
           assetRegistryPath,
         }),
+        babel({ rules: babelConfig?.rules }),
+        swc({ rules: swcConfig?.rules }),
         svg({ enabled: config.transformer.svg }),
         json(),
         status(statusPreset),
@@ -129,7 +131,7 @@ export async function resolveRolldownOptions(
        * Disable eval check because react-native uses `eval` to execute code.
        */
       eval: false,
-      pluginTimings: false,
+      pluginTimings: isDebugEnabled(),
     },
     logLevel: isDebugEnabled() ? 'debug' : 'info',
     onLog(level, log, defaultHandler) {

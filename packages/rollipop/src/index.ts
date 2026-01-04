@@ -29,7 +29,6 @@ export * from './server';
 
 // Plugins
 export * as plugins from './core/plugins';
-export { PluginUtils } from './core/plugins/utils';
 export type { Plugin, PluginConfig } from './core/plugins/types';
 
 // Assets

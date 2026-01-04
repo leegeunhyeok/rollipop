@@ -1,4 +1,6 @@
+import type * as babel from '@babel/core';
 import type { TopLevelFilterExpression } from '@rolldown/pluginutils';
+import type * as swc from '@swc/core';
 import type * as rolldown from 'rolldown';
 import type { DevWatchOptions, TransformOptions } from 'rolldown/experimental';
 
@@ -92,7 +94,27 @@ export type TransformerConfig = Omit<
    * Flow specific configuration.
    */
   flow?: FlowConfig;
+  /**
+   * Babel transformation configuration.
+   */
+  babel?: {
+    rules?: BabelTransformRule[];
+  };
+  /**
+   * SWC transformation configuration.
+   */
+  swc?: {
+    rules?: SwcTransformRule[];
+  };
 };
+
+export type BabelTransformRule = TransformRule<babel.TransformOptions>;
+export type SwcTransformRule = TransformRule<swc.Options>;
+
+export interface TransformRule<T = unknown> {
+  filter?: rolldown.HookFilter | TopLevelFilterExpression[];
+  options: T | ((code: string, id: string) => T);
+}
 
 export interface FlowConfig {
   /**

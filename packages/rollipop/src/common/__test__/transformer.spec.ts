@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 
 import { getErrorStack } from '../../testing/error-stack';
 import { evaluateContext } from '../../testing/evaluate-context';
-import { transformToHermesAwareSyntax, stripFlowSyntax } from '../transformer';
+import { stripFlowSyntax, generateSourceFromAst } from '../transformer';
 
 describe('stripFlowSyntax', () => {
   const FLOW_1 = dedent`
@@ -33,7 +33,7 @@ describe('stripFlowSyntax', () => {
   `;
 
   it('should strip Flow syntax', () => {
-    const { code, map } = stripFlowSyntax(FLOW_1, 'test.js');
+    const { code, map } = generateSourceFromAst(stripFlowSyntax(FLOW_1), 'test.js');
     const { evaluate } = evaluateContext();
     expect(code).not.toContain('@flow');
     expect(() => evaluate(code)).not.toThrow();
@@ -41,7 +41,7 @@ describe('stripFlowSyntax', () => {
   });
 
   it('should return the correct source map', async () => {
-    const { code, map } = stripFlowSyntax(FLOW_2, 'test.js');
+    const { code, map } = generateSourceFromAst(stripFlowSyntax(FLOW_2), 'test.js');
     const { evaluate } = evaluateContext();
     const consumer = await new SourceMapConsumer(map!);
 
@@ -64,90 +64,6 @@ describe('stripFlowSyntax', () => {
 
     const codeFrame = codeFrameColumns(
       FLOW_2,
-      {
-        start: {
-          line: originalPosition.line!,
-          column: originalPosition.column!,
-        },
-      },
-      { highlightCode: false },
-    );
-
-    expect(codeFrame).toMatchInlineSnapshot(`
-      "  4 |     console.log('no boom');
-        5 |   } else {
-      > 6 |     throw new Error('boom');
-          |          ^
-        7 |   }
-        8 | }
-        9 | boom();"
-    `);
-  });
-});
-
-describe('transformToHermesAwareSyntax', () => {
-  const CODE_1 = dedent`
-  const bindings = {};
-  function setBindings() {
-    for (let i = 0; i < 10; i++) {
-      bindings[i] = {
-        getValue: () => i,
-      };
-    }
-  }
-  setBindings();
-
-  assert(bindings[0].getValue() === 0);
-  assert(bindings[9].getValue() === 9);
-  `;
-
-  const CODE_2 = dedent`
-  const v = false;
-  const boom = () => {
-    if (v) {
-      console.log('no boom');
-    } else {
-      throw new Error('boom');
-    }
-  }
-  boom();
-  `;
-
-  it('should block scope bindings', () => {
-    const { code, map: rawMap } = transformToHermesAwareSyntax(CODE_1, 'test.js');
-    const { evaluate } = evaluateContext();
-    expect(code).not.toContain('let');
-    expect(code).not.toContain('const');
-    expect(() => evaluate(code)).not.toThrow();
-
-    const map = JSON.parse(rawMap as string);
-    expect(map.sources).toContain('test.js');
-  });
-
-  it('should return the correct source map', async () => {
-    const { code, map } = transformToHermesAwareSyntax(CODE_2, 'test.js');
-    const { evaluate } = evaluateContext();
-    const consumer = await new SourceMapConsumer(map!);
-
-    let errorStack: ReturnType<typeof getErrorStack> | null = null;
-    try {
-      evaluate(code);
-    } catch (error) {
-      errorStack = getErrorStack(error);
-    }
-
-    expect(errorStack).toBeTruthy();
-
-    const originalPosition = consumer.originalPositionFor({
-      line: errorStack?.line!,
-      column: errorStack?.column!,
-    });
-
-    expect(originalPosition.column).toBeDefined();
-    expect(originalPosition.line).toBeDefined();
-
-    const codeFrame = codeFrameColumns(
-      CODE_2,
       {
         start: {
           line: originalPosition.line!,

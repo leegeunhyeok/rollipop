@@ -104,10 +104,8 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
       },
       onOutput: (errorOrResult) => {
         if (errorOrResult instanceof Error) {
-          logger.error('Failed to build bundle', {
-            bundlerId: this.id,
-            error: errorOrResult,
-          });
+          logger.error(errorOrResult.message);
+          logger.debug({ bundlerId: this.id, error: errorOrResult });
         } else {
           const output = errorOrResult.output[0];
           const sourceMap = output.map?.toString();

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 import { Logger } from '../common/logger';
-import { stripFlowSyntax } from '../common/transformer';
+import { generateSourceFromAst, stripFlowSyntax } from '../common/transformer';
 import {
   DEFAULT_ASSET_EXTENSIONS,
   DEFAULT_ASSET_REGISTRY_PATH,
@@ -43,7 +43,7 @@ export function getDefaultConfig(basePath: string) {
         (path) =>
           ({
             type: 'iife',
-            code: stripFlowSyntax(fs.readFileSync(path, 'utf-8'), path).code,
+            code: generateSourceFromAst(stripFlowSyntax(fs.readFileSync(path, 'utf-8')), path).code,
           }) satisfies Polyfill,
       ),
     },

@@ -1,8 +1,19 @@
 import MagicString from 'magic-string';
 import type * as rolldown from 'rolldown';
 
-export function testPluginDriver(plugins: rolldown.Plugin | rolldown.Plugin[]) {
-  const context = {} as any;
+import { TRANSFORM_FLAGS_KEY, TransformFlag } from '../core/plugins/utils/transform-flags';
+
+export function testPluginDriver(
+  plugins: rolldown.Plugin | rolldown.Plugin[],
+  initialModuleInfo: Record<string, TransformFlag> = {},
+) {
+  const context = {
+    getModuleInfo: (id: string) => {
+      return {
+        meta: initialModuleInfo[id] == null ? {} : { [TRANSFORM_FLAGS_KEY]: initialModuleInfo[id] },
+      };
+    },
+  } as any;
 
   function invokeLoad(this: rolldown.Plugin, id: string) {
     if (typeof this.load === 'function') {

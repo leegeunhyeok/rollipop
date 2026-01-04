@@ -1,6 +1,5 @@
-import * as babel from '@babel/core';
-import { type Plugin, PluginUtils } from 'rollipop';
-import { include, code, id, exclude } from 'rollipop/pluginutils';
+import type { BabelTransformRule, Plugin } from 'rollipop';
+import { code, exclude, id, include } from 'rollipop/pluginutils';
 
 const EXCLUDE_PACKAGES = ['react-native', '@react-native'];
 const REANIMATED_AUTOWORKLETIZATION_KEYWORDS = [
@@ -23,39 +22,31 @@ const REANIMATED_AUTOWORKLETIZATION_KEYWORDS = [
 ];
 
 export function worklet(): Plugin {
-  return PluginUtils.cacheable({
-    name: 'worklet',
-    transform: {
-      filter: [
-        exclude(id(new RegExp(`node_modules/(?:${EXCLUDE_PACKAGES.join('|')})/`))),
-        include(code(new RegExp(REANIMATED_AUTOWORKLETIZATION_KEYWORDS.join('|')))),
-      ],
-      handler(code, id) {
-        const result = babel.transformSync(code, {
-          filename: id,
-          babelrc: false,
-          configFile: false,
-          sourceMaps: true,
-          presets: [
-            [
-              require.resolve('@babel/preset-typescript'),
-              {
-                isTSX: id.endsWith('x'),
-                allExtensions: true,
-              },
-            ],
-          ],
-          plugins: [[require.resolve('react-native-worklets/plugin'), {}]],
-        });
-
-        if (result?.code == null) {
-          throw new Error(`Failed to transform worklet: ${id}`);
-        }
-
-        return { code: result.code, map: result.map };
-      },
+  const workletBabelRule: BabelTransformRule = {
+    filter: [
+      exclude(id(new RegExp(`node_modules/(?:${EXCLUDE_PACKAGES.join('|')})/`))),
+      include(code(new RegExp(REANIMATED_AUTOWORKLETIZATION_KEYWORDS.join('|')))),
+    ],
+    options: {
+      plugins: [[require.resolve('react-native-worklets/plugin'), {}]],
     },
-  });
+  };
+
+  return {
+    name: 'worklet',
+    config(config) {
+      return {
+        ...config,
+        transformer: {
+          ...config.transformer,
+          babel: {
+            ...config.transformer?.babel,
+            rules: [...(config.transformer?.babel?.rules ?? []), workletBabelRule],
+          },
+        },
+      };
+    },
+  };
 }
 
 export function config(): Plugin {
