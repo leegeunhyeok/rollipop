@@ -347,7 +347,7 @@ You can also register a custom HMR handler globally via `setCustomHMRHandler`.
 ```ts
 import { setCustomHMRHandler, type HMRCustomMessage } from 'rollipop/runtime';
 
-setCustomHMRHandler((message: HMRCustomMessage) => {
+setCustomHMRHandler((socket: WebSocket, message: HMRCustomMessage) => {
   console.log('Received custom HMR message:', message);
 
   switch (message.type) {
@@ -369,7 +369,7 @@ Registers a handler function to receive custom HMR messages from the server.
 
 **Types:**
 ```ts
-type HMRCustomHandler = (message: HMRCustomMessage) => void;
+type HMRCustomHandler = (socket: WebSocket, message: HMRCustomMessage) => void;
 
 type HMRCustomMessage = {
   type: string;

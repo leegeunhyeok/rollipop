@@ -226,7 +226,7 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
 
       if (isCustomHMRMessage(message)) {
         this.socketHolder.emit(message.type, message.payload);
-        globalThis.__ROLLIPOP_CUSTOM_HMR_HANDLER__?.(message);
+        globalThis.__ROLLIPOP_CUSTOM_HMR_HANDLER__?.(socket, message);
         return;
       }
 
