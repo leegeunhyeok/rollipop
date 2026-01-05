@@ -1,7 +1,7 @@
 import { Command } from '@commander-js/extra-typings';
 import { noop } from 'es-toolkit';
 
-import { Rollipop } from '../../../index';
+import * as Rollipop from '../../../index';
 import { DEFAULT_HOST, DEFAULT_PORT } from '../../../server/constants';
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
 import { logger } from '../../logger';

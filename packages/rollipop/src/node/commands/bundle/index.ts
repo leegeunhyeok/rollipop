@@ -1,6 +1,6 @@
 import { Command } from '@commander-js/extra-typings';
 
-import { Rollipop } from '../../../index';
+import * as Rollipop from '../../../index';
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
 import { logger } from '../../logger';
 import { parseBoolean } from '../../utils';

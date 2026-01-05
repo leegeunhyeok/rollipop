@@ -1,24 +1,8 @@
-import { loadConfig } from './config';
-import { resetCache } from './utils/reset-cache';
-import { runBuild } from './utils/run-build';
-import { runServer } from './utils/run-server';
-
-interface Rollipop {
-  readonly runBuild: typeof runBuild;
-  readonly runServer: typeof runServer;
-  readonly loadConfig: typeof loadConfig;
-  readonly resetCache: typeof resetCache;
-}
-
-const Rollipop: Rollipop = Object.freeze({
-  runBuild,
-  runServer,
-  loadConfig,
-  resetCache,
-});
-
-// Rollipop namespace
-export { Rollipop };
+// Main APIs
+export { loadConfig } from './config';
+export { resetCache } from './utils/reset-cache';
+export { runBuild } from './utils/run-build';
+export { runServer } from './utils/run-server';
 
 // Bundler
 export { Bundler } from './core/bundler';
