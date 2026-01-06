@@ -1,22 +1,30 @@
 import { mergeWith } from 'es-toolkit';
 
+import { Plugin } from '../core/plugins/types';
 import type { DefaultConfig, ResolvedConfig } from './defaults';
 import type { Config } from './types';
 
-export function mergeConfig(baseConfig: Config, ...overrideConfigs: Config[]): Config;
+export type PluginFlattenConfig = Omit<Config, 'plugins'> & { plugins?: Plugin[] };
+
+export function mergeConfig(
+  baseConfig: PluginFlattenConfig,
+  ...overrideConfigs: PluginFlattenConfig[]
+): Config;
 export function mergeConfig(
   baseConfig: DefaultConfig,
-  ...overrideConfigs: Config[]
+  ...overrideConfigs: PluginFlattenConfig[]
 ): ResolvedConfig;
 export function mergeConfig(
-  baseConfig: Config | DefaultConfig,
-  ...overrideConfigs: Config[]
+  baseConfig: PluginFlattenConfig | DefaultConfig,
+  ...overrideConfigs: PluginFlattenConfig[]
 ): Config | ResolvedConfig {
   let mergedConfig = baseConfig;
 
   for (const overrideConfig of overrideConfigs) {
     mergedConfig = mergeWith(mergedConfig, overrideConfig, (target, source, key) => {
-      if (['sourceExtensions', 'assetExtensions', 'polyfills', 'prelude'].includes(key)) {
+      if (
+        ['sourceExtensions', 'assetExtensions', 'polyfills', 'prelude', 'plugins'].includes(key)
+      ) {
         return Array.from(new Set([...(target ?? []), ...(source ?? [])]));
       }
 

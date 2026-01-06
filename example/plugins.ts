@@ -50,12 +50,22 @@ export function worklet(): Plugin {
 }
 
 export function config(): Plugin {
+  const log = (...args: any[]) => {
+    if (process.env.SHOW_CONFIG === '1') {
+      console.log(...args);
+    }
+  };
+
   return {
     name: 'config',
+    configureServer() {
+      log('configureServer:pre');
+      return () => {
+        log('configureServer:post');
+      };
+    },
     configResolved(resolvedConfig) {
-      if (process.env.SHOW_CONFIG === '1') {
-        console.log(resolvedConfig);
-      }
+      log(resolvedConfig);
     },
   };
 }

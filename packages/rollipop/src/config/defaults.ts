@@ -12,6 +12,7 @@ import {
 import { getInitializeCorePath, getPolyfillScriptPaths } from '../internal/react-native';
 import type { ReportableEvent, Reporter } from '../types';
 import { resolvePackagePath } from '../utils/node-resolve';
+import type { PluginFlattenConfig } from './merge-config';
 import type { Config, Polyfill, TerminalConfig } from './types';
 
 export function getDefaultConfig(basePath: string) {
@@ -89,4 +90,4 @@ export class TerminalReporter implements Reporter {
 }
 
 export type DefaultConfig = ReturnType<typeof getDefaultConfig>;
-export type ResolvedConfig = Config & DefaultConfig;
+export type ResolvedConfig = DefaultConfig & PluginFlattenConfig;

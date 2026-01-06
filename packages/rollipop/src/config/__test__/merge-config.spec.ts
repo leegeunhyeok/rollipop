@@ -1,12 +1,11 @@
 import { describe, it, expect } from 'vitest';
 
-import { mergeConfig } from '../merge-config';
-import type { Config } from '../types';
+import { mergeConfig, PluginFlattenConfig } from '../merge-config';
 
 describe('mergeConfig', () => {
   it('should merge configs', () => {
     const reporterA = { update: () => {} };
-    const baseConfig: Config = {
+    const baseConfig: PluginFlattenConfig = {
       root: '/foo',
       resolver: {
         sourceExtensions: ['ts', 'tsx'],
@@ -33,7 +32,7 @@ describe('mergeConfig', () => {
       reporter: reporterA,
     };
 
-    const configA: Config = {
+    const configA: PluginFlattenConfig = {
       root: '/bar',
       resolver: {
         sourceExtensions: ['js', 'jsx'],
@@ -41,7 +40,7 @@ describe('mergeConfig', () => {
     };
 
     const reporterB = { update: () => {} };
-    const configB: Config = {
+    const configB: PluginFlattenConfig = {
       root: '/baz',
       resolver: {
         // Duplicate source extensions should be removed

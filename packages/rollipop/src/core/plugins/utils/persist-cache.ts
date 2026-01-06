@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 import type * as rolldown from 'rolldown';
 
+import { PluginOption } from '../../../config';
 import { logger } from '../../../logger';
 import { xxhash } from '../../../utils/hash';
 import type { BundlerContext } from '../../types';
@@ -18,7 +19,7 @@ export interface WithCacheOptions {
  * @internal
  */
 export function withPersistCache(
-  plugins: rolldown.RolldownPluginOption[],
+  plugins: PluginOption[],
   options: WithCacheOptions,
 ): rolldown.RolldownPluginOption {
   const { enabled, sourceExtensions, context } = options;

@@ -5,7 +5,7 @@ import type * as rolldown from 'rolldown';
 import type { DevWatchOptions, TransformOptions } from 'rolldown/experimental';
 
 import type { Plugin } from '../core/plugins/types';
-import type { Reporter } from '../types';
+import type { MaybePromise, NullValue, Reporter } from '../types';
 
 export interface Config {
   /**
@@ -47,7 +47,7 @@ export interface Config {
   /**
    * Plugins.
    */
-  plugins?: Plugin[];
+  plugins?: PluginOption;
   /**
    * Rollipop provides default options for Rolldown, but you can override them by this option.
    *
@@ -58,6 +58,15 @@ export interface Config {
     | ((config: RolldownConfig) => RolldownConfig)
     | ((config: RolldownConfig) => Promise<RolldownConfig>);
 }
+
+export type PluginOption = MaybePromise<
+  | NullValue<Plugin>
+  | {
+      name: string;
+    }
+  | false
+  | PluginOption[]
+>;
 
 export type ResolverConfig = Omit<NonNullable<rolldown.InputOptions['resolve']>, 'extensions'> & {
   /**

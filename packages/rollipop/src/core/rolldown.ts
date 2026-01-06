@@ -86,7 +86,7 @@ export async function resolveRolldownOptions(
     rolldownTransform,
   );
 
-  const devServerPlugins = context.mode === 'serve' ? [reactRefresh()] : [];
+  const devServerPlugins = context.mode === 'serve' ? [reactRefresh()] : null;
   const statusOptions = (() => {
     switch (config.terminal.status) {
       case 'compat':
@@ -131,7 +131,7 @@ export async function resolveRolldownOptions(
         svg({ enabled: config.transformer.svg }),
         status(statusOptions),
         ...(devServerPlugins ?? []),
-        ...(config.plugins ?? []),
+        ...(Array.isArray(config.plugins) ? config.plugins : [config.plugins]),
       ],
       { enabled: cache, context, sourceExtensions },
     ),

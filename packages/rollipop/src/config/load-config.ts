@@ -4,11 +4,11 @@ import * as c12 from 'c12';
 import { omit } from 'es-toolkit';
 
 import { createPluginContext } from '../core/plugins/context';
-import type { Plugin } from '../core/plugins/types';
-import { getDefaultConfig, ResolvedConfig } from './defaults';
+import type { Plugin, PluginConfig } from '../core/plugins/types';
+import { getDefaultConfig, type ResolvedConfig } from './defaults';
 import { DefineConfigContext } from './define-config';
-import { mergeConfig } from './merge-config';
-import type { Config } from './types';
+import { mergeConfig, type PluginFlattenConfig } from './merge-config';
+import type { Config, PluginOption } from './types';
 
 const CONFIG_FILE_NAME = 'rollipop';
 
@@ -38,16 +38,36 @@ export async function loadConfig(options: LoadConfigOptions = {}) {
         },
   );
 
-  const pluginConfig = await resolvePluginConfig(userConfig, userConfig.plugins ?? []);
-  const resolvedConfig = mergeConfig(defaultConfig, userConfig, pluginConfig);
+  const plugins = await flattenPluginOption(userConfig.plugins);
+  const pluginConfig = await resolvePluginConfig(userConfig, plugins);
+  const overrideConfigs: PluginFlattenConfig[] = [{ ...userConfig, plugins }, pluginConfig];
+  const resolvedConfig = mergeConfig(defaultConfig, ...overrideConfigs);
 
-  await invokeConfigResolved(resolvedConfig, userConfig.plugins ?? []);
+  await invokeConfigResolved(resolvedConfig, plugins);
 
   return resolvedConfig;
 }
 
+export async function flattenPluginOption(pluginOption: PluginOption): Promise<Plugin[]> {
+  const awaitedPluginOption = await pluginOption;
+
+  if (Array.isArray(awaitedPluginOption)) {
+    const plugins = await Promise.all(awaitedPluginOption.map(flattenPluginOption));
+    return plugins.flat();
+  }
+
+  if (awaitedPluginOption == null || awaitedPluginOption === false) {
+    return [];
+  }
+
+  return [awaitedPluginOption];
+}
+
 export async function resolvePluginConfig(baseConfig: Config, plugins: Plugin[]) {
-  let mergedConfig: Config = omit(baseConfig, ['plugins', 'dangerously_overrideRolldownOptions']);
+  let mergedConfig: PluginConfig = omit(baseConfig, [
+    'plugins',
+    'dangerously_overrideRolldownOptions',
+  ]);
 
   for (const plugin of plugins) {
     const context = createPluginContext(plugin.name);
