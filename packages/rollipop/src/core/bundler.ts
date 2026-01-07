@@ -22,9 +22,9 @@ export class Bundler {
   ) {
     const mode = 'serve';
     const resolvedBuildOptions = resolveBuildOptions(config.root, buildOptions);
-    const contextBase = Bundler.createContext(mode, config, resolvedBuildOptions);
+    const context = Bundler.createContext(mode, config, resolvedBuildOptions);
     const { input = {}, output = {} } = await resolveRolldownOptions(
-      { ...contextBase, mode },
+      context,
       config,
       resolvedBuildOptions,
     );
@@ -47,10 +47,10 @@ export class Bundler {
     config: ResolvedConfig,
     buildOptions: ResolvedBuildOptions,
   ) {
-    const id = `${mode}:${Bundler.createId(config, buildOptions)}`;
+    const id = Bundler.createId(config, buildOptions);
     const cache = new FileSystemCache(config.root, id);
     const storage = FileStorage.getInstance(config.root);
-    const context: Omit<BundlerContext, 'mode'> = { id, cache, storage };
+    const context: BundlerContext = { id, cache, storage, mode };
 
     return context;
   }
@@ -62,10 +62,10 @@ export class Bundler {
   async build(buildOptions: BuildOptions) {
     const mode = 'build';
     const resolvedBuildOptions = resolveBuildOptions(this.config.root, buildOptions);
-    const contextBase = Bundler.createContext(mode, this.config, resolvedBuildOptions);
+    const context = Bundler.createContext(mode, this.config, resolvedBuildOptions);
     const sourcemap = resolvedBuildOptions.sourcemap ? true : false;
     const { input, output } = await resolveRolldownOptions(
-      { ...contextBase, mode },
+      context,
       this.config,
       resolvedBuildOptions,
     );
