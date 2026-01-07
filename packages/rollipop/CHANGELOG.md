@@ -1,5 +1,11 @@
 # rollipop
 
+## 0.1.0-alpha.6
+
+### Patch Changes
+
+- a7b7150: use `enqueueUpdate` instead of `performReactRefresh`
+
 ## 0.1.0-alpha.5
 
 ### Patch Changes
