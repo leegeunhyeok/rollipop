@@ -49,7 +49,10 @@ export class DebuggerOpener {
     }
 
     this.autoOpened = true;
-    await this.open();
+
+    if (this.isAutoOpenEnabled()) {
+      await this.open();
+    }
   }
 
   async open() {
