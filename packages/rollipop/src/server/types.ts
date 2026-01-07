@@ -10,6 +10,7 @@ import '@fastify/middie';
 import type * as ws from 'ws';
 
 import type { ResolvedConfig } from '../config';
+import type { BuildOptions } from '../core/types';
 import type { WebSocketClient } from './wss/server';
 
 export interface ServerOptions {
@@ -18,6 +19,7 @@ export interface ServerOptions {
   https?: boolean;
   key?: string;
   cert?: string;
+  buildOptions?: Pick<BuildOptions, 'cache'>;
 }
 
 export type DevServerEvents = {

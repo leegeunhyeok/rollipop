@@ -2,6 +2,7 @@ import url from 'url';
 
 import { createDevServerMiddleware } from '@react-native-community/cli-server-api';
 import { createDevMiddleware } from '@react-native/dev-middleware';
+import { merge } from 'es-toolkit';
 import Fastify from 'fastify';
 import mitt from 'mitt';
 import type * as ws from 'ws';
@@ -44,7 +45,7 @@ export async function createDevServer(
 
   const bundlerPool = new BundlerPool(config, { host, port });
   const getBundler = (bundleName: string, buildOptions: BuildOptions) => {
-    return bundlerPool.get(bundleName, buildOptions);
+    return bundlerPool.get(bundleName, merge(options?.buildOptions ?? {}, buildOptions));
   };
 
   const {

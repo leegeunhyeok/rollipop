@@ -33,7 +33,10 @@ export class Bundler {
     const mergedInput = merge(input, devServerOptions.input);
     const mergedOutput = merge(output, devServerOptions.output);
 
-    const devEngine = await dev(mergedInput, mergedOutput, devEngineOptions);
+    const devEngine = await dev(mergedInput, mergedOutput, {
+      watch: devEngineOptions.watch,
+      ...devEngineOptions,
+    });
 
     return devEngine;
   }
