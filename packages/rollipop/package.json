@@ -35,7 +35,7 @@
       }
     },
     "./hmr-runtime": "./dist/hmr-runtime.js",
-    "./hmr-client": "./dist/hmr-client.cjs",
+    "./hmr-client": "./dist/hmr-client.js",
     "./client": {
       "types": "./client.d.ts"
     },

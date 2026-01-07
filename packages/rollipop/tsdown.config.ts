@@ -86,16 +86,6 @@ export default defineConfig([
   {
     ...runtimeConfig,
     entry: 'src/runtime/hmr-client.ts',
-    format: 'cjs',
-    banner: {
-      /**
-       * @see https://github.com/facebook/react-native/blob/0.83-stable/packages/react-native/Libraries/Utilities/HMRClient.js
-       */
-      js: [
-        `import LogBox from '../LogBox/LogBox';`,
-        `import NativeRedBox from '../NativeModules/specs/NativeRedBox';`,
-      ].join('\n'),
-    },
     external: /.*/,
   },
 ]);

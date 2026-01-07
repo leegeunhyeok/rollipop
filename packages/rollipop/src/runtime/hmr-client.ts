@@ -1,12 +1,10 @@
+import prettyFormat from 'pretty-format';
+
+import LogBox from '../LogBox/LogBox';
+import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 import type { HMRClientLogLevel, HMRClientMessage, HMRServerMessage } from '../types/hmr';
-
-const Platform = require('./Platform').default as { OS: string };
-const prettyFormat = require('pretty-format');
-
-// @import import LogBox from '../LogBox/LogBox';
-// @import import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-declare var LogBox: { clearAllLogs(): void };
-declare var NativeRedBox: { dismiss?: () => void };
+import DevLoadingView from './DevLoadingView';
+import Platform from './Platform';
 
 declare var __DEV__: boolean;
 
@@ -43,13 +41,6 @@ class HMRClient implements HMRClientNativeInterface {
   private compileErrorMessage: string | null = null;
   private pendingUpdatesCount = 0;
   private readonly pendingLogs: [HMRClientLogLevel, any[]][] = [];
-
-  get DevLoadingView() {
-    return require('./DevLoadingView').default as {
-      showMessage: (message: string, type: string, options?: { dismissButton?: boolean }) => void;
-      hide: () => void;
-    };
-  }
 
   enable() {
     if (this.unavailableMessage) {
@@ -227,22 +218,18 @@ class HMRClient implements HMRClientNativeInterface {
       return;
     }
 
-    this.DevLoadingView.hide();
+    DevLoadingView.hide();
 
     if (this.enabled) {
-      this.DevLoadingView.showMessage(
-        'Fast Refresh disconnected. Reload app to reconnect.',
-        'error',
-        {
-          dismissButton: true,
-        },
-      );
+      DevLoadingView.showMessage('Fast Refresh disconnected. Reload app to reconnect.', 'error', {
+        dismissButton: true,
+      });
       console.warn(this.unavailableMessage);
     }
   }
 
   private handleConnection() {
-    this.DevLoadingView.hide();
+    DevLoadingView.hide();
     this.flushEarlyLogs();
   }
 
@@ -278,7 +265,7 @@ class HMRClient implements HMRClientNativeInterface {
       case 'hmr:update-start':
         this.pendingUpdatesCount++;
         this.compileErrorMessage = null;
-        this.DevLoadingView.showMessage('Refreshing...', 'refresh');
+        DevLoadingView.showMessage('Refreshing...', 'refresh');
         break;
 
       case 'hmr:update':
@@ -289,7 +276,7 @@ class HMRClient implements HMRClientNativeInterface {
       case 'hmr:update-done':
         this.pendingUpdatesCount = Math.max(0, this.pendingUpdatesCount - 1);
         if (this.pendingUpdatesCount === 0) {
-          this.DevLoadingView.hide();
+          DevLoadingView.hide();
         }
         break;
 
@@ -323,7 +310,13 @@ class HMRClient implements HMRClientNativeInterface {
 
 const instance = new HMRClient();
 
-// For compatibility with CommonJS modules
+// For compatibility with CommonJS modules.
+//
+// ```ts
+// import HMRClient from '/path/to/hmr-client';
+// const HMRClient = require('/path/to/hmr-client');
+// const HMRClient = require('/path/to/hmr-client').default;
+// ```
 export default Object.defineProperty(instance, 'default', {
   get: () => instance,
 });
