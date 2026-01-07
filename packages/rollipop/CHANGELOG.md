@@ -1,5 +1,13 @@
 # rollipop
 
+## 0.1.0-alpha.5
+
+### Patch Changes
+
+- eaa76df: allow `TopLevelFilterExpression` and expose `/pluginutils` subpath
+- d12877d: add `babel`, `swc` configs
+- 65fe653: add websocket param to `HMRCustomHandler`
+
 ## 0.1.0-alpha.4
 
 ### Patch Changes
