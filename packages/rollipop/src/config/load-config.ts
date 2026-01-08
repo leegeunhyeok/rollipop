@@ -15,13 +15,14 @@ const CONFIG_FILE_NAME = 'rollipop';
 export interface LoadConfigOptions {
   cwd?: string;
   configFile?: string;
+  mode?: Config['mode'];
   context?: Omit<DefineConfigContext, 'defaultConfig'>;
 }
 
 export async function loadConfig(options: LoadConfigOptions = {}) {
-  const { cwd = process.cwd(), configFile, context = {} } = options;
+  const { cwd = process.cwd(), configFile, mode, context = {} } = options;
 
-  const defaultConfig = getDefaultConfig(cwd);
+  const defaultConfig = getDefaultConfig(cwd, mode);
   const commonOptions: c12.LoadConfigOptions = {
     context: { ...context, defaultConfig },
     rcFile: false,

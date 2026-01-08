@@ -59,7 +59,7 @@ export interface BundlerContext {
   id: string;
   cache: FileSystemCache;
   storage: FileStorage;
-  mode: BuildMode;
+  buildType: BuildType;
   state: BundlerState;
 }
 
@@ -67,6 +67,6 @@ export interface BundlerState {
   hmrUpdates: Set<string>;
 }
 
-export type BuildMode = 'build' | 'serve';
+export type BuildType = 'build' | 'serve';
 
 export type AsyncResult<T> = T | Promise<T>;

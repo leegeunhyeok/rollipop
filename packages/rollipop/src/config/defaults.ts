@@ -6,6 +6,7 @@ import { generateSourceFromAst, stripFlowSyntax } from '../common/transformer';
 import {
   DEFAULT_ASSET_EXTENSIONS,
   DEFAULT_ASSET_REGISTRY_PATH,
+  DEFAULT_ENV_PREFIX,
   DEFAULT_RESOLVER_CONDITION_NAMES,
   DEFAULT_RESOLVER_MAIN_FIELDS,
   DEFAULT_SOURCE_EXTENSIONS,
@@ -16,11 +17,12 @@ import { resolvePackagePath } from '../utils/node-resolve';
 import type { PluginFlattenConfig } from './merge-config';
 import type { Config, Polyfill, TerminalConfig } from './types';
 
-export function getDefaultConfig(basePath: string) {
+export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
   const reactNativePath = resolvePackagePath(basePath, 'react-native');
 
   const defaultConfig = {
     root: basePath,
+    mode,
     entry: 'index.js',
     resolver: {
       sourceExtensions: DEFAULT_SOURCE_EXTENSIONS,
@@ -80,6 +82,8 @@ export function getDefaultConfig(basePath: string) {
       })(),
     },
     reporter: new TerminalReporter() as Reporter,
+    envDir: basePath,
+    envPrefix: DEFAULT_ENV_PREFIX,
   } satisfies Config;
 
   return defaultConfig;

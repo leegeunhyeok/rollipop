@@ -12,7 +12,7 @@ import { createId } from '../utils/id';
 import { FileSystemCache } from './cache/file-system-cache';
 import { FileStorage } from './fs/storage';
 import { getOverrideOptionsForDevServer, resolveRolldownOptions } from './rolldown';
-import type { BuildMode, BuildOptions, BundlerContext, DevEngine, DevEngineOptions } from './types';
+import type { BuildType, BuildOptions, BundlerContext, DevEngine, DevEngineOptions } from './types';
 import { BundlerState } from './types';
 
 export class Bundler {
@@ -21,9 +21,9 @@ export class Bundler {
     buildOptions: Omit<BuildOptions, 'dev' | 'outfile'>,
     devEngineOptions: DevEngineOptions,
   ) {
-    const mode = 'serve';
-    const resolvedBuildOptions = resolveBuildOptions(config.root, buildOptions);
-    const context = Bundler.createContext(mode, config, resolvedBuildOptions);
+    const buildType = 'serve';
+    const resolvedBuildOptions = resolveBuildOptions(config, buildOptions);
+    const context = Bundler.createContext(buildType, config, resolvedBuildOptions);
     const { input = {}, output = {} } = await resolveRolldownOptions(
       context,
       config,
@@ -53,7 +53,7 @@ export class Bundler {
   }
 
   private static createContext(
-    mode: BuildMode,
+    buildType: BuildType,
     config: ResolvedConfig,
     buildOptions: ResolvedBuildOptions,
   ) {
@@ -61,7 +61,7 @@ export class Bundler {
     const cache = new FileSystemCache(config.root, id);
     const storage = FileStorage.getInstance(config.root);
     const state: BundlerState = { hmrUpdates: new Set() };
-    const context: BundlerContext = { id, cache, storage, mode, state };
+    const context: BundlerContext = { id, cache, storage, buildType, state };
 
     return context;
   }
@@ -71,9 +71,9 @@ export class Bundler {
   }
 
   async build(buildOptions: BuildOptions) {
-    const mode = 'build';
-    const resolvedBuildOptions = resolveBuildOptions(this.config.root, buildOptions);
-    const context = Bundler.createContext(mode, this.config, resolvedBuildOptions);
+    const buildType = 'build';
+    const resolvedBuildOptions = resolveBuildOptions(this.config, buildOptions);
+    const context = Bundler.createContext(buildType, this.config, resolvedBuildOptions);
     const sourcemap = resolvedBuildOptions.sourcemap ? true : false;
     const { input, output } = await resolveRolldownOptions(
       context,

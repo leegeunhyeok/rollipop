@@ -36,6 +36,7 @@ export const command = new Command('start')
     const cwd = process.cwd();
     const config = await Rollipop.loadConfig({
       cwd,
+      mode: 'development',
       configFile: options.config,
       context: { command: 'start' },
     });

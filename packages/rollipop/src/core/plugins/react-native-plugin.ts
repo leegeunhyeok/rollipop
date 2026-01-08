@@ -11,14 +11,14 @@ import {
   generateAssetRegistryCode,
   resolveScaledAssets,
 } from '../assets';
-import type { BuildMode } from '../types';
+import type { BuildType } from '../types';
 import { cacheable } from './utils';
 import { TransformFlag, getFlag, setFlag } from './utils/transform-utils';
 
 export interface ReactNativePluginOptions {
   platform: string;
   dev: boolean;
-  mode: BuildMode;
+  buildType: BuildType;
   flowFilter: rolldown.HookFilter | TopLevelFilterExpression[];
   codegenFilter: rolldown.HookFilter | TopLevelFilterExpression[];
   assetsDir?: string;
@@ -30,7 +30,7 @@ function reactNativePlugin(
   config: ResolvedConfig,
   options: ReactNativePluginOptions,
 ): rolldown.Plugin[] {
-  const { mode, flowFilter, codegenFilter, assetsDir, assetExtensions, assetRegistryPath } =
+  const { buildType, flowFilter, codegenFilter, assetsDir, assetExtensions, assetRegistryPath } =
     options;
   const assetExtensionRegex = new RegExp(`\\.(?:${assetExtensions.join('|')})$`);
 
@@ -104,7 +104,7 @@ function reactNativePlugin(
       assets.length = 0;
     },
     async buildEnd(error) {
-      if (error || mode === 'serve') {
+      if (error || buildType === 'serve') {
         return;
       }
 
@@ -150,7 +150,7 @@ function reactNativePlugin(
     },
   };
 
-  const devServerPlugins = mode === 'serve' ? [replaceHMRClientPlugin] : null;
+  const devServerPlugins = buildType === 'serve' ? [replaceHMRClientPlugin] : null;
 
   return [
     cacheable(codegenPlugin),
