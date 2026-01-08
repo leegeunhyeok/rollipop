@@ -1,10 +1,10 @@
 import * as babel from '@babel/core';
-import { invariant, merge } from 'es-toolkit';
+import { invariant } from 'es-toolkit';
 import type * as rolldown from 'rolldown';
 
 import type { TransformerConfig } from '../../config';
 import { mergeBabelOptions } from '../../utils/babel';
-import { cacheable, isFlow, isJSX, isTS } from './utils';
+import { cacheable, isJSX, isTS } from './utils';
 import { getFlag, TransformFlag } from './utils/transform-flags';
 
 function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
@@ -66,21 +66,21 @@ function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
 function getPreset(flags: TransformFlag, id: string): babel.TransformOptions {
   const presets: babel.PluginItem[] = [];
   const plugins: babel.PluginItem[] = [];
-  let parserOpts: babel.ParserOptions = {};
+  let parserOpts: babel.ParserOptions | null = null;
 
-  if (isFlow(id)) {
-    parserOpts = merge(parserOpts, { flow: 'all' });
-    plugins.push([
-      require.resolve('babel-plugin-syntax-hermes-parser'),
-      {
-        parseLangTypes: 'flow',
-        reactRuntimeTarget: '19',
-      },
-    ]);
-    plugins.push(require.resolve('@babel/plugin-transform-flow-strip-types'));
-  }
-
-  if (isTS(id)) {
+  if (flags & TransformFlag.STRIP_FLOW_REQUIRED) {
+    parserOpts = { flow: 'all' } as any;
+    plugins.push(
+      [
+        require.resolve('babel-plugin-syntax-hermes-parser'),
+        {
+          parseLangTypes: 'flow',
+          reactRuntimeTarget: '19',
+        },
+      ],
+      require.resolve('@babel/plugin-transform-flow-strip-types'),
+    );
+  } else if (isTS(id)) {
     plugins.push([
       require.resolve('@babel/plugin-transform-typescript'),
       {
@@ -94,11 +94,16 @@ function getPreset(flags: TransformFlag, id: string): babel.TransformOptions {
     plugins.push([require.resolve('@react-native/babel-plugin-codegen')]);
   }
 
-  return {
-    parserOpts,
+  const options: babel.TransformOptions = {
     presets,
     plugins,
   };
+
+  if (parserOpts) {
+    options.parserOpts = parserOpts;
+  }
+
+  return options;
 }
 
 export { babelPlugin as babel };

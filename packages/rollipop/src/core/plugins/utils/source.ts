@@ -1,9 +1,5 @@
 const TS_EXTENSION_REGEXP = /\.tsx?$/;
 
-export function isFlow(id: string) {
-  return id.endsWith('.js');
-}
-
 export function isTS(id: string) {
   return TS_EXTENSION_REGEXP.test(id);
 }
