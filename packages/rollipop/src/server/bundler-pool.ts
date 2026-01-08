@@ -5,7 +5,7 @@ import * as rolldownExperimental from 'rolldown/experimental';
 
 import type { ResolvedConfig } from '../config';
 import { Bundler } from '../core/bundler';
-import type { BuildOptions } from '../core/types';
+import type { BuildOptions, DevEngine } from '../core/types';
 import { getBaseBundleName } from '../utils/bundle';
 import { bindReporter } from '../utils/config';
 import { taskHandler } from '../utils/promise';
@@ -43,7 +43,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private readonly initializeHandle: ReturnType<typeof taskHandler>;
   private readonly _id: string;
   private bundle: InMemoryBundle | null = null;
-  private _devEngine: rolldownExperimental.DevEngine | null = null;
+  private _devEngine: DevEngine | null = null;
   private _state: 'idle' | 'initializing' | 'ready' = 'idle';
 
   constructor(
@@ -129,6 +129,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     await this.ensureInitialized;
 
     const state = await this.devEngine.getBundleState();
+    logger.debug('Bundle state', { bundlerId: this.id, state });
     if (state.hasStaleOutput || this.bundle == null) {
       await this.devEngine.ensureLatestBuildOutput();
     }

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 
+import { isDebugEnabled } from '../common/debug';
 import { Logger } from '../common/logger';
 import { generateSourceFromAst, stripFlowSyntax } from '../common/transformer';
 import {
@@ -68,7 +69,15 @@ export function getDefaultConfig(basePath: string) {
       hmr: true,
     },
     terminal: {
-      status: (process.stderr.isTTY ? 'progress' : 'compat') as TerminalConfig['status'],
+      status: ((): TerminalConfig['status'] => {
+        if (isDebugEnabled()) {
+          return 'compat';
+        }
+        if (process.stderr.isTTY) {
+          return 'progress';
+        }
+        return 'compat';
+      })(),
     },
     reporter: new TerminalReporter() as Reporter,
   } satisfies Config;

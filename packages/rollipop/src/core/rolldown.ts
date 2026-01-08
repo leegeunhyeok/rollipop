@@ -14,7 +14,8 @@ import { ResolvedBuildOptions } from '../utils/build-options';
 import { resolveHmrConfig } from '../utils/config';
 import { prelude, status, reactRefresh, reactNative, json, svg, babel, swc } from './plugins';
 import { printPluginLog } from './plugins/context';
-import { withPersistCache } from './plugins/utils/persist-cache';
+import { getPersistCachePlugins } from './plugins/utils/persist-cache';
+import { withTransformBoundary } from './plugins/utils/transform-utils';
 import { BundlerContext } from './types';
 
 export interface RolldownOptions {
@@ -42,10 +43,9 @@ export async function resolveRolldownOptions(
   const { flow, babel: babelConfig, swc: swcConfig, ...rolldownTransform } = config.transformer;
   const { codegen, assetRegistryPath } = config.reactNative;
 
-  const resolvedSourceExtensions = config.transformer.svg
-    ? [...sourceExtensions, 'svg']
-    : sourceExtensions;
-  const resolvedAssetExtensions = config.transformer.svg
+  const transformSvg = config.transformer.svg;
+  const resolvedSourceExtensions = transformSvg ? [...sourceExtensions, 'svg'] : sourceExtensions;
+  const resolvedAssetExtensions = transformSvg
     ? assetExtensions.filter((extension) => extension !== 'svg')
     : assetExtensions;
 
@@ -72,6 +72,7 @@ export async function resolveRolldownOptions(
       define: {
         __DEV__: asLiteral(dev),
         'process.env.NODE_ENV': asLiteral(nodeEnvironment(dev)),
+        'process.env.DEBUG_ROLLIPOP': asLiteral(isDebugEnabled()),
         global: asIdentifier(GLOBAL_IDENTIFIER),
       },
       typescript: {
@@ -88,6 +89,12 @@ export async function resolveRolldownOptions(
   );
 
   const devServerPlugins = context.mode === 'serve' ? [reactRefresh()] : null;
+  const { beforeTransform, afterTransform } = getPersistCachePlugins({
+    enabled: cache,
+    sourceExtensions,
+    context,
+  });
+
   const statusOptions = (() => {
     switch (config.terminal.status) {
       case 'compat':
@@ -113,7 +120,7 @@ export async function resolveRolldownOptions(
     treeshake: true,
     resolve: mergedResolveOptions,
     transform: mergedTransformOptions,
-    plugins: withPersistCache(
+    plugins: withTransformBoundary(
       [
         prelude({ modulePaths: preludePaths }),
         reactNative(config, {
@@ -127,14 +134,14 @@ export async function resolveRolldownOptions(
           assetRegistryPath,
         }),
         json(),
-        babel({ rules: babelConfig?.rules }),
-        swc({ rules: swcConfig?.rules }),
-        svg({ enabled: config.transformer.svg }),
+        svg({ enabled: transformSvg }),
+        babel(babelConfig),
+        swc(swcConfig),
         status(statusOptions),
-        ...(devServerPlugins ?? []),
-        ...(Array.isArray(config.plugins) ? config.plugins : [config.plugins]),
+        devServerPlugins,
+        config.plugins,
       ],
-      { enabled: cache, context, sourceExtensions },
+      { context, beforeTransform, afterTransform },
     ),
     checks: {
       /**

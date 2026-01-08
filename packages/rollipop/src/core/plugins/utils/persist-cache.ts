@@ -1,38 +1,31 @@
 import fs from 'node:fs';
 
-import type * as rolldown from 'rolldown';
+import { exclude, id, include } from '@rolldown/pluginutils';
 
-import { PluginOption } from '../../../config';
 import { logger } from '../../../logger';
 import { xxhash } from '../../../utils/hash';
 import type { BundlerContext } from '../../types';
 import type { Plugin } from '../types';
-import { TransformFlag, getFlag, setFlag } from './transform-flags';
+import { TransformFlag, getFlag, setFlag } from './transform-utils';
 
-export interface WithCacheOptions {
+export interface PersistCachePluginsOptions {
   enabled: boolean;
   sourceExtensions: string[];
   context: BundlerContext;
 }
 
-/**
- * @internal
- */
-export function withPersistCache(
-  plugins: PluginOption[],
-  options: WithCacheOptions,
-): rolldown.RolldownPluginOption {
-  const { enabled, sourceExtensions, context } = options;
-
-  if (!enabled) {
-    return plugins;
+export function getPersistCachePlugins(options: PersistCachePluginsOptions) {
+  if (!options.enabled) {
+    return { beforeTransform: null, afterTransform: null };
   }
 
+  const { sourceExtensions, context } = options;
   const includePattern = new RegExp(`\\.(?:${sourceExtensions.join('|')})$`);
   const excludePattern = /@oxc-project\+runtime/;
+  const filter = [exclude(id(excludePattern)), include(id(includePattern))];
   let cacheHits = 0;
 
-  const startMarker: rolldown.Plugin = {
+  const beforeTransform: Plugin = {
     name: 'rollipop:persist-cache-start',
     buildStart() {
       cacheHits = 0;
@@ -40,15 +33,10 @@ export function withPersistCache(
     buildEnd() {
       this.debug(`Cache hits: ${cacheHits}`);
     },
-    load: {
+    transform: {
       order: 'pre',
-      filter: {
-        id: {
-          include: includePattern,
-          exclude: excludePattern,
-        },
-      },
-      handler(id) {
+      filter,
+      handler(_code, id) {
         const key = getCacheKey(id, context.id);
         const cache = context.cache.get(key);
 
@@ -64,16 +52,11 @@ export function withPersistCache(
     },
   };
 
-  const endMarker: rolldown.Plugin = {
+  const afterTransform: Plugin = {
     name: 'rollipop:persist-cache-end',
     transform: {
       order: 'post',
-      filter: {
-        id: {
-          include: includePattern,
-          exclude: excludePattern,
-        },
-      },
+      filter,
       handler(code, id) {
         // To avoid the re-caching
         if (getFlag(this, id) & TransformFlag.SKIP_ALL) {
@@ -84,7 +67,7 @@ export function withPersistCache(
     },
   };
 
-  return [startMarker, ...plugins, endMarker];
+  return { beforeTransform, afterTransform };
 }
 
 function getCacheKey(id: string, buildHash: string) {

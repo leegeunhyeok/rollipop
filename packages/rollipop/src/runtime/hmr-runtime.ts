@@ -225,6 +225,7 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
       const message = JSON.parse(event.data) as HMRServerMessage;
 
       if (isCustomHMRMessage(message)) {
+        debug(`[HMR]: Custom HMR message received: ${message.type}`);
         this.socketHolder.emit(message.type, message.payload);
         globalThis.__ROLLIPOP_CUSTOM_HMR_HANDLER__?.(socket, message);
         return;
@@ -243,6 +244,7 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
   }
 
   private evaluate(code: string, sourceURL?: string) {
+    debug(`[HMR]: Evaluating code\n${code}`);
     if (globalThis.globalEvalWithSourceUrl) {
       globalThis.globalEvalWithSourceUrl(code, sourceURL);
     } else {
@@ -252,11 +254,18 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
   }
 
   private reload() {
+    debug(`[HMR]: Reloading`);
     const moduleName = 'DevSettings';
     (globalThis.__turboModuleProxy
       ? globalThis.__turboModuleProxy(moduleName)
       : globalThis.nativeModuleProxy[moduleName]
     ).reload();
+  }
+}
+
+function debug(...args: any[]) {
+  if (process.env.DEBUG_ROLLIPOP) {
+    console.log(...args);
   }
 }
 

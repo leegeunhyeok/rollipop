@@ -1,7 +1,7 @@
 import MagicString from 'magic-string';
 import type * as rolldown from 'rolldown';
 
-import { TRANSFORM_FLAGS_KEY, TransformFlag } from '../core/plugins/utils/transform-flags';
+import { TRANSFORM_FLAGS_KEY, TransformFlag } from '../core/plugins/utils/transform-utils';
 
 export function testPluginDriver(
   plugins: rolldown.Plugin | rolldown.Plugin[],

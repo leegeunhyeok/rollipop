@@ -5,7 +5,7 @@ import type * as rolldown from 'rolldown';
 import type { TransformerConfig } from '../../config';
 import { mergeBabelOptions } from '../../utils/babel';
 import { cacheable, isJSX, isTS } from './utils';
-import { getFlag, TransformFlag } from './utils/transform-flags';
+import { getFlag, TransformFlag } from './utils/transform-utils';
 
 function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
   const { rules = [] } = options ?? {};

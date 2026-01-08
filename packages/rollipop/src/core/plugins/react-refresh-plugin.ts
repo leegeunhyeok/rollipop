@@ -3,7 +3,7 @@ import type * as rolldown from 'rolldown';
 import { transformSync } from 'rolldown/experimental';
 
 import { GLOBAL_IDENTIFIER } from '../../constants';
-import { getFlag, TransformFlag } from './utils/transform-flags';
+import { getFlag, TransformFlag } from './utils/transform-utils';
 
 const DEFAULT_INCLUDE_REGEX = /\.[tj]sx?(?:$|\?)/;
 const DEFAULT_EXCLUDE_REGEX = /\/node_modules\//;

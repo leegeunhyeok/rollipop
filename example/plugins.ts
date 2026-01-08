@@ -70,7 +70,11 @@ export function config(): Plugin {
   };
 }
 
-export function hot(): Plugin {
+export function hot(): Plugin | null {
+  if (process.env.HOT !== '1') {
+    return null;
+  }
+
   let count = 0;
   return {
     name: 'hot',

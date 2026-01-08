@@ -13,7 +13,7 @@ import {
 } from '../assets';
 import type { BuildMode } from '../types';
 import { cacheable } from './utils';
-import { TransformFlag, getFlag, setFlag } from './utils/transform-flags';
+import { TransformFlag, getFlag, setFlag } from './utils/transform-utils';
 
 export interface ReactNativePluginOptions {
   platform: string;

@@ -198,12 +198,14 @@ export class HMRServer extends WebSocketServer {
 
     try {
       message = this.parseClientMessage(data);
-      this.logger.trace(
-        'HMR client message received',
-        message.type === 'hmr:module-registered'
-          ? { ...message, modules: `[${message.modules.length} modules]` }
-          : message,
-      );
+
+      let traceMessage: any = message;
+      if (message.type === 'hmr:module-registered') {
+        traceMessage = { ...message, modules: `[${message.modules.length} modules]` };
+      } else if (message.type === 'hmr:log') {
+        traceMessage = { ...message, data: `(${message.data.length} items)` };
+      }
+      this.logger.trace('HMR client message received', traceMessage);
     } catch (error) {
       const message = 'Failed to parse HMR client message';
       this.logger.error(message, error);

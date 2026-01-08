@@ -4,7 +4,7 @@ import type * as rolldown from 'rolldown';
 import type { TransformerConfig } from '../../config';
 import { mergeSwcOptions } from '../../utils/swc';
 import { cacheable } from './utils';
-import { getFlag, TransformFlag } from './utils/transform-flags';
+import { getFlag, TransformFlag } from './utils/transform-utils';
 
 function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
   const { rules = [] } = options ?? {};

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { id, include } from '@rolldown/pluginutils';
 import type * as rolldown from 'rolldown';
 
-import { setFlag, TransformFlag } from './utils/transform-flags';
+import { setFlag, TransformFlag } from './utils/transform-utils';
 
 function jsonPlugin(): rolldown.Plugin {
   return {

@@ -7,12 +7,13 @@ import { dev } from 'rolldown/experimental';
 
 import { Logo } from '../common/logo';
 import type { ResolvedConfig } from '../config/defaults';
-import { resolveBuildOptions, ResolvedBuildOptions } from '../utils/build-options';
+import { resolveBuildOptions, type ResolvedBuildOptions } from '../utils/build-options';
 import { createId } from '../utils/id';
 import { FileSystemCache } from './cache/file-system-cache';
 import { FileStorage } from './fs/storage';
 import { getOverrideOptionsForDevServer, resolveRolldownOptions } from './rolldown';
-import type { BuildMode, BuildOptions, BundlerContext, DevEngineOptions } from './types';
+import type { BuildMode, BuildOptions, BundlerContext, DevEngine, DevEngineOptions } from './types';
+import { BundlerState } from './types';
 
 export class Bundler {
   static async devEngine(
@@ -38,7 +39,13 @@ export class Bundler {
       ...devEngineOptions,
     });
 
-    return devEngine;
+    Object.defineProperty(devEngine, 'getContext', {
+      value: () => context,
+      enumerable: true,
+      configurable: false,
+    });
+
+    return devEngine as DevEngine;
   }
 
   static createId(config: ResolvedConfig, buildOptions: BuildOptions) {
@@ -53,7 +60,8 @@ export class Bundler {
     const id = Bundler.createId(config, buildOptions);
     const cache = new FileSystemCache(config.root, id);
     const storage = FileStorage.getInstance(config.root);
-    const context: BundlerContext = { id, cache, storage, mode };
+    const state: BundlerState = { hmrUpdates: new Set() };
+    const context: BundlerContext = { id, cache, storage, mode, state };
 
     return context;
   }
