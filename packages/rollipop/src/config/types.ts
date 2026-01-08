@@ -5,6 +5,7 @@ import type * as rolldown from 'rolldown';
 import type { DevWatchOptions, TransformOptions } from 'rolldown/experimental';
 
 import type { Plugin } from '../core/plugins/types';
+import { InteractiveCommand } from '../node/cli-utils';
 import type { MaybePromise, NullValue, Reporter } from '../types';
 
 export interface Config {
@@ -161,7 +162,7 @@ export type WatcherConfig = DevWatchOptions;
 export interface DevModeConfig {
   /**
    * Hot Module Replacement configurations.
-   * 
+   *
    * Defaults to `true`
    */
   hmr?: boolean | HmrConfig;
@@ -176,7 +177,7 @@ export interface HmrConfig {
   runtimeImplement?: string;
   /**
    * Source code of the HMR client implementation.
-   * 
+   *
    * Defaults to: using `rollipop/hmr-client` as a default implementation.
    */
   clientImplement?: string;
@@ -209,6 +210,10 @@ export interface TerminalConfig {
    * Defaults to: `process.stderr.isTTY ? 'progress' : 'compat'`
    */
   status?: 'none' | 'compat' | 'progress';
+  /**
+   * Extra commands to display in the interactive mode.
+   */
+  extraCommands?: InteractiveCommand[];
 }
 
 export interface RolldownConfig {

@@ -49,7 +49,7 @@ export const command = new Command('start')
       config.reporter = { update: noop };
     }
 
-    const server = await Rollipop.runServer(config, {
+    const devServer = await Rollipop.runServer(config, {
       port: options.port,
       host: options.host,
       https: options.https,
@@ -58,6 +58,6 @@ export const command = new Command('start')
     });
 
     if (options.interactive) {
-      setupInteractiveMode(server);
+      setupInteractiveMode({ devServer, extraCommands: config.terminal?.extraCommands });
     }
   });
