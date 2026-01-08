@@ -21,3 +21,6 @@ dist
 .DS_Store
 
 package.tgz
+
+# local env files
+*.local
