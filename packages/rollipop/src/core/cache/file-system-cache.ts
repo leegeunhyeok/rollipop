@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import pLimit from 'p-limit';
+
 import { logger } from '../../logger';
 import { getSharedDataPath } from '../fs/data';
 import type { Cache } from './cache';
@@ -8,6 +10,7 @@ import type { Cache } from './cache';
 type Key = string;
 
 export class FileSystemCache implements Cache<Key, string> {
+  private pendingData: Map<Key, string> = new Map();
   private readonly cacheDirectory: string;
 
   static getCacheDirectory(projectRoot: string) {
@@ -39,11 +42,33 @@ export class FileSystemCache implements Cache<Key, string> {
   }
 
   set(key: Key, value: string) {
-    try {
-      fs.writeFileSync(path.join(this.cacheDirectory, key), value);
-    } catch {
-      logger.error('Failed to write cache file', key);
-    }
+    this.pendingData.set(key, value);
+  }
+
+  async flush() {
+    const limit = pLimit(
+      process.env.ROLLIPOP_CACHE_FLUSH_LIMIT
+        ? parseInt(process.env.ROLLIPOP_CACHE_FLUSH_LIMIT)
+        : 20,
+    );
+    const entries = Array.from(this.pendingData.entries());
+
+    await Promise.all(
+      entries.map(([key, value]) =>
+        limit(async () => {
+          try {
+            await fs.promises.writeFile(path.join(this.cacheDirectory, key), value);
+          } catch (error) {
+            logger.error('Failed to write cache file', key);
+            logger.debug(error);
+          }
+        }),
+      ),
+    ).catch((error) => {
+      logger.error('Failed to flush cache', error);
+    });
+
+    this.pendingData.clear();
   }
 
   clear() {
