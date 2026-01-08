@@ -3,6 +3,7 @@ import type * as rolldown from 'rolldown';
 import { transformSync } from 'rolldown/experimental';
 
 import { GLOBAL_IDENTIFIER } from '../../constants';
+import { getFlag, TransformFlag } from './utils/transform-flags';
 
 const DEFAULT_INCLUDE_REGEX = /\.[tj]sx?(?:$|\?)/;
 const DEFAULT_EXCLUDE_REGEX = /\/node_modules\//;
@@ -28,6 +29,10 @@ function reactRefreshPlugin(options?: ReactRefreshPluginOptions): rolldown.Plugi
         },
       },
       handler(code, id) {
+        if (getFlag(this, id) & TransformFlag.SKIP_ALL) {
+          return;
+        }
+
         const result = transformSync(id, code, {
           sourcemap: true,
           jsx: {
@@ -55,6 +60,10 @@ function reactRefreshPlugin(options?: ReactRefreshPluginOptions): rolldown.Plugi
         },
       },
       handler(code, id, meta) {
+        if (getFlag(this, id) & TransformFlag.SKIP_ALL) {
+          return;
+        }
+
         const { magicString } = meta;
         invariant(magicString != null, 'magicString is not available');
 
