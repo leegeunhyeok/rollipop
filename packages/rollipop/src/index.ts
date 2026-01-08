@@ -18,6 +18,9 @@ export type { Plugin, PluginConfig } from './core/plugins/types';
 // Assets
 export * as AssetUtils from './core/assets';
 
+// Env
+export * from './core/env';
+
 // Config
 export * from './config';
 

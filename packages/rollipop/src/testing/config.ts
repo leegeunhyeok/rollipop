@@ -6,6 +6,7 @@ import type { Config, ResolvedConfig } from '../config';
 import {
   DEFAULT_ASSET_EXTENSIONS,
   DEFAULT_ASSET_REGISTRY_PATH,
+  DEFAULT_ENV_PREFIX,
   DEFAULT_RESOLVER_CONDITION_NAMES,
   DEFAULT_RESOLVER_MAIN_FIELDS,
   DEFAULT_SOURCE_EXTENSIONS,
@@ -15,6 +16,7 @@ import type { Reporter } from '../types';
 export function createTestConfig(basePath: string): ResolvedConfig {
   const defaultConfig = {
     root: basePath,
+    mode: 'development',
     entry: 'index.js',
     resolver: {
       sourceExtensions: DEFAULT_SOURCE_EXTENSIONS,
@@ -62,6 +64,8 @@ export function createTestConfig(basePath: string): ResolvedConfig {
       status: process.stderr.isTTY ? 'progress' : 'compat',
     },
     reporter: { update: noop } as Reporter,
+    envDir: basePath,
+    envPrefix: DEFAULT_ENV_PREFIX,
   } satisfies Config;
 
   return defaultConfig;

@@ -72,3 +72,5 @@ export const DEFAULT_ASSET_EXTENSIONS = [
 
 export const DEFAULT_ASSET_REGISTRY_PATH = 'react-native/Libraries/Image/AssetRegistry.js';
 export const DEFAULT_HMR_CLIENT_PATH = 'react-native/Libraries/Utilities/HMRClient.js';
+
+export const DEFAULT_ENV_PREFIX = 'ROLLIPOP_';

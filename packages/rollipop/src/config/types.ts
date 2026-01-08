@@ -14,6 +14,12 @@ export interface Config {
    */
   root?: string;
   /**
+   * Specifying this in config will override the default mode for both serve and build.
+   *
+   * Defaults to: `'development'` for serve, 'production' for build.
+   */
+  mode?: 'development' | 'production';
+  /**
    * Defaults to: `index.js`
    */
   entry?: string;
@@ -53,6 +59,18 @@ export interface Config {
    * Plugins.
    */
   plugins?: PluginOption;
+  /**
+   * Directory to load environment variables from.
+   *
+   * Defaults to: `root`
+   */
+  envDir?: string;
+  /**
+   * Environment variable prefix.
+   *
+   * Defaults to: `'ROLLIPOP_'`
+   */
+  envPrefix?: string;
   /**
    * Rollipop provides default options for Rolldown, but you can override them by this option.
    *

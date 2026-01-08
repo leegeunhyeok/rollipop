@@ -30,7 +30,7 @@ function HomeScreen() {
       </Animated.View>
       <View style={styles.descriptionContainer}>
         <Text style={styles.title}>Rollipop</Text>
-        <Text style={styles.description}>Modern build toolkit for React Native</Text>
+        <Text style={styles.description}>{import.meta.env.ROLLIPOP_DESCRIPTION}</Text>
       </View>
     </View>
   );

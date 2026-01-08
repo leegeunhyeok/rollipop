@@ -53,6 +53,7 @@ export const command = new Command('bundle')
     const cwd = process.cwd();
     const config = await Rollipop.loadConfig({
       cwd,
+      mode: 'production',
       configFile: options.config,
       context: { command: 'bundle' },
     });

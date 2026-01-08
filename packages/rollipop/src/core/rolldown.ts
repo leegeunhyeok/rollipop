@@ -12,6 +12,7 @@ import { GLOBAL_IDENTIFIER } from '../constants';
 import { getGlobalVariables } from '../internal/react-native';
 import { ResolvedBuildOptions } from '../utils/build-options';
 import { resolveHmrConfig } from '../utils/config';
+import { loadEnv } from './env';
 import { prelude, status, reactRefresh, reactNative, json, svg, babel, swc } from './plugins';
 import { printPluginLog } from './plugins/context';
 import { getPersistCachePlugins } from './plugins/utils/persist-cache';
@@ -36,6 +37,7 @@ export async function resolveRolldownOptions(
     return cachedOptions;
   }
 
+  const env = loadEnv(config);
   const { platform, dev, cache, minify } = buildOptions;
   const { sourceExtensions, assetExtensions, preferNativePlatform, ...rolldownResolve } =
     config.resolver;
@@ -71,9 +73,12 @@ export async function resolveRolldownOptions(
       },
       define: {
         __DEV__: asLiteral(dev),
+        global: asIdentifier(GLOBAL_IDENTIFIER),
         'process.env.NODE_ENV': asLiteral(nodeEnvironment(dev)),
         'process.env.DEBUG_ROLLIPOP': asLiteral(isDebugEnabled()),
-        global: asIdentifier(GLOBAL_IDENTIFIER),
+        ...Object.fromEntries(
+          Object.entries(env).map(([key, value]) => [`import.meta.env.${key}`, asLiteral(value)]),
+        ),
       },
       typescript: {
         removeClassFieldsWithoutInitializer: true,
@@ -88,7 +93,8 @@ export async function resolveRolldownOptions(
     rolldownTransform,
   );
 
-  const devServerPlugins = context.mode === 'serve' ? [reactRefresh()] : null;
+  const isDevServerMode = config.mode === 'development' && context.buildType === 'serve';
+  const devServerPlugins = isDevServerMode ? [reactRefresh()] : null;
   const { beforeTransform, afterTransform } = getPersistCachePlugins({
     enabled: cache,
     sourceExtensions,
@@ -126,7 +132,7 @@ export async function resolveRolldownOptions(
         reactNative(config, {
           dev,
           platform,
-          mode: context.mode,
+          buildType: context.buildType,
           codegenFilter: codegen.filter,
           flowFilter: flow.filter,
           assetsDir: buildOptions.assetsDir,
@@ -161,7 +167,7 @@ export async function resolveRolldownOptions(
   };
 
   const outputOptions: rolldown.OutputOptions = {
-    postBanner: [...getGlobalVariables(dev, context.mode)].join('\n'),
+    postBanner: [...getGlobalVariables(dev, context.buildType)].join('\n'),
     intro: [...loadPolyfills(polyfills)].join('\n'),
     file: buildOptions.outfile,
     minify,
