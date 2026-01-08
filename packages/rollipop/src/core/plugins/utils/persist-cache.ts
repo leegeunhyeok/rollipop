@@ -65,6 +65,9 @@ export function getPersistCachePlugins(options: PersistCachePluginsOptions) {
         context.cache.set(getCacheKey(id, context.id), code);
       },
     },
+    buildEnd() {
+      void context.cache.flush().then(() => logger.trace('Cache flushed'));
+    },
   };
 
   return { beforeTransform, afterTransform };
