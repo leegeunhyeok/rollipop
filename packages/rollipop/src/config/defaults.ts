@@ -18,7 +18,14 @@ import type { PluginFlattenConfig } from './merge-config';
 import type { Config, Polyfill, TerminalConfig } from './types';
 
 export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
-  const reactNativePath = resolvePackagePath(basePath, 'react-native');
+  let reactNativePath: string;
+  try {
+    reactNativePath = resolvePackagePath(basePath, 'react-native');
+  } catch {
+    throw new Error(
+      `Could not resolve 'react-native' package path. Please check your project path.`,
+    );
+  }
 
   const defaultConfig = {
     root: basePath,
