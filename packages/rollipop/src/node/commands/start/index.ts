@@ -5,6 +5,7 @@ import * as Rollipop from '../../../index';
 import { DEFAULT_HOST, DEFAULT_PORT } from '../../../server/constants';
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
 import { logger } from '../../logger';
+import { withErrorHandler } from '../../utils';
 import { setupInteractiveMode } from './setup-interactive-mode';
 
 export const command = new Command('start')
@@ -32,33 +33,35 @@ export const command = new Command('start')
   .option('--max-workers <list>', UNSUPPORTED_OPTION_DESCRIPTION)
   .option('--transformer', UNSUPPORTED_OPTION_DESCRIPTION)
   .option('--custom-log-reporter-path', UNSUPPORTED_OPTION_DESCRIPTION)
-  .action(async (options) => {
-    const cwd = process.cwd();
-    const config = await Rollipop.loadConfig({
-      cwd,
-      mode: 'development',
-      configFile: options.config,
-      context: { command: 'start' },
-    });
+  .action(
+    withErrorHandler(async (options) => {
+      const cwd = process.cwd();
+      const config = await Rollipop.loadConfig({
+        cwd,
+        mode: 'development',
+        configFile: options.config,
+        context: { command: 'start' },
+      });
 
-    if (options.resetCache) {
-      Rollipop.resetCache(cwd);
-      logger.info('The transform cache was reset');
-    }
+      if (options.resetCache) {
+        Rollipop.resetCache(cwd);
+        logger.info('The transform cache was reset');
+      }
 
-    if (options.clientLogs === false) {
-      config.reporter = { update: noop };
-    }
+      if (options.clientLogs === false) {
+        config.reporter = { update: noop };
+      }
 
-    const devServer = await Rollipop.runServer(config, {
-      port: options.port,
-      host: options.host,
-      https: options.https,
-      key: options.key,
-      cert: options.cert,
-    });
+      const devServer = await Rollipop.runServer(config, {
+        port: options.port,
+        host: options.host,
+        https: options.https,
+        key: options.key,
+        cert: options.cert,
+      });
 
-    if (options.interactive) {
-      setupInteractiveMode({ devServer, extraCommands: config.terminal?.extraCommands });
-    }
-  });
+      if (options.interactive) {
+        setupInteractiveMode({ devServer, extraCommands: config.terminal?.extraCommands });
+      }
+    }),
+  );

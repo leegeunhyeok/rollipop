@@ -3,7 +3,7 @@ import { Command } from '@commander-js/extra-typings';
 import * as Rollipop from '../../../index';
 import { UNSUPPORTED_OPTION_DESCRIPTION } from '../../constants';
 import { logger } from '../../logger';
-import { parseBoolean } from '../../utils';
+import { parseBoolean, withErrorHandler } from '../../utils';
 
 export const command = new Command('bundle')
   .description('Build the bundle for the provided entry file.')
@@ -49,31 +49,33 @@ export const command = new Command('bundle')
   .option('--asset-catalog-dest [string]', UNSUPPORTED_OPTION_DESCRIPTION)
   .option('--read-global-cache', UNSUPPORTED_OPTION_DESCRIPTION)
   .option('--resolver-option <string...>', UNSUPPORTED_OPTION_DESCRIPTION)
-  .action(async (options) => {
-    const cwd = process.cwd();
-    const config = await Rollipop.loadConfig({
-      cwd,
-      mode: 'production',
-      configFile: options.config,
-      context: { command: 'bundle' },
-    });
+  .action(
+    withErrorHandler(async (options) => {
+      const cwd = process.cwd();
+      const config = await Rollipop.loadConfig({
+        cwd,
+        mode: 'production',
+        configFile: options.config,
+        context: { command: 'bundle' },
+      });
 
-    if (options.resetCache) {
-      Rollipop.resetCache(cwd);
-      logger.info('The transform cache was reset');
-    }
+      if (options.resetCache) {
+        Rollipop.resetCache(cwd);
+        logger.info('The transform cache was reset');
+      }
 
-    if (options.entryFile) {
-      config.entry = options.entryFile;
-    }
+      if (options.entryFile) {
+        config.entry = options.entryFile;
+      }
 
-    await Rollipop.runBuild(config, {
-      platform: options.platform,
-      dev: options.dev,
-      minify: options.minify,
-      cache: options.cache,
-      outfile: options.bundleOutput,
-      sourcemap: options.sourcemapOutput,
-      assetsDir: options.assetsDest,
-    });
-  });
+      await Rollipop.runBuild(config, {
+        platform: options.platform,
+        dev: options.dev,
+        minify: options.minify,
+        cache: options.cache,
+        outfile: options.bundleOutput,
+        sourcemap: options.sourcemapOutput,
+        assetsDir: options.assetsDest,
+      });
+    }),
+  );
