@@ -21,6 +21,7 @@ export interface InteractiveCommand {
 }
 
 export interface InteractiveCommandContext {
+  server: DevServer;
   logger: Logger;
 }
 
@@ -81,7 +82,7 @@ export function setupInteractiveMode(options: InteractiveModeOptions) {
     );
 
     if (targetCommand) {
-      targetCommand.handler.call({ logger });
+      targetCommand.handler.call({ server: devServer, logger });
     }
   });
 
