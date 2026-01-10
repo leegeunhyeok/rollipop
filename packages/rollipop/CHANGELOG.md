@@ -1,5 +1,13 @@
 # rollipop
 
+## 0.1.0-alpha.7
+
+### Patch Changes
+
+- 66477ec: implement deferred caching with batch flush
+- 646d819: resolve HMR not working when cache is enabled
+- 78a57d4: add dotenv-based environment variable loading
+
 ## 0.1.0-alpha.6
 
 ### Patch Changes
