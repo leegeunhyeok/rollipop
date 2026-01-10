@@ -16,6 +16,7 @@ import { BundlerPool } from './bundler-pool';
 import { DEFAULT_HOST, DEFAULT_PORT } from './constants';
 import { errorHandler } from './error';
 import { DevServerLogger, logger } from './logger';
+import { requestLogger } from './middlewares/request-logger';
 import { serveAssets } from './middlewares/serve-assets';
 import { serveBundle } from './middlewares/serve-bundle';
 import { symbolicate } from './middlewares/symbolicate';
@@ -114,6 +115,7 @@ export async function createDevServer(
   );
 
   fastify
+    .use(requestLogger)
     .use(communityMiddleware)
     .use(devMiddleware)
     .register(symbolicate, { getBundler })

@@ -1,4 +1,5 @@
 import { invariant } from 'es-toolkit';
+import type { FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 import { asConst, type FromSchema } from 'json-schema-to-ts';
 
@@ -20,6 +21,12 @@ type RouteParams = FromSchema<typeof routeParamSchema>;
 
 export interface ServeBundlePluginOptions {
   getBundler: (bundleName: string, buildOptions: BuildOptions) => BundlerDevEngine;
+}
+
+function withGetBundleErrorHandler<T>(reply: FastifyReply, task: Promise<T>) {
+  return task.catch((error) => {
+    return reply.status(500).send(error instanceof Error ? error.message : 'Internal Server Error');
+  });
 }
 
 const plugin = fp<ServeBundlePluginOptions>(
@@ -57,14 +64,11 @@ const plugin = fp<ServeBundlePluginOptions>(
           await bundler
             .getBundle()
             .then((bundle) => bundleResponse.endWithBundle(bundle.code))
-            .catch((error) => {
-              bundleResponse.endWithError(error);
-              throw error;
-            })
+            .catch((error) => bundleResponse.endWithError(error))
             .finally(() => bundler.off('transform', transformHandler));
         } else {
           this.log.debug(`client is not support multipart/mixed content: ${accept ?? '<empty>'}`);
-          const bundle = await bundler.getBundle();
+          const bundle = await withGetBundleErrorHandler(reply, bundler.getBundle());
           const code = bundle.code;
           await reply
             .header('Content-Type', 'application/javascript')
@@ -88,7 +92,10 @@ const plugin = fp<ServeBundlePluginOptions>(
           return;
         }
 
-        const bundle = await getBundler(params.name, buildOptions).getBundle();
+        const bundle = await withGetBundleErrorHandler(
+          reply,
+          getBundler(params.name, buildOptions).getBundle(),
+        );
         const sourceMap = bundle.sourceMap;
         invariant(sourceMap, 'Source map is not available');
 

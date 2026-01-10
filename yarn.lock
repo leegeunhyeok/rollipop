@@ -15026,6 +15026,7 @@ __metadata:
     p-limit: "npm:^7.2.0"
     rolldown: "catalog:rolldown"
     source-map: "npm:^0.7.6"
+    strip-ansi: "npm:^7.1.2"
     tsdown: "catalog:"
     typescript: "catalog:"
     url: "npm:^0.11.4"
@@ -15854,7 +15855,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-ansi@npm:^7.0.1, strip-ansi@npm:^7.1.0":
+"strip-ansi@npm:^7.0.1, strip-ansi@npm:^7.1.0, strip-ansi@npm:^7.1.2":
   version: 7.1.2
   resolution: "strip-ansi@npm:7.1.2"
   dependencies:
