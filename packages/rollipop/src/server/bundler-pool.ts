@@ -8,6 +8,7 @@ import { Bundler } from '../core/bundler';
 import type { BuildOptions, DevEngine } from '../core/types';
 import { getBaseBundleName } from '../utils/bundle';
 import { bindReporter } from '../utils/config';
+import { normalizeRolldownError } from '../utils/errors';
 import { taskHandler } from '../utils/promise';
 import { InMemoryBundle } from './bundle';
 import { logger } from './logger';
@@ -43,6 +44,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private readonly initializeHandle: ReturnType<typeof taskHandler>;
   private readonly _id: string;
   private bundle: InMemoryBundle | null = null;
+  private buildFailedError: Error | null = null;
   private _devEngine: DevEngine | null = null;
   private _state: 'idle' | 'initializing' | 'ready' = 'idle';
 
@@ -94,6 +96,8 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
             bundlerId: this.id,
             error: errorOrResult,
           });
+          const normalizedError = normalizeRolldownError(errorOrResult);
+          this.emit('buildFailed', normalizedError);
         } else {
           logger.trace('Detected changed files', {
             bundlerId: this.id,
@@ -104,12 +108,16 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
       },
       onOutput: (errorOrResult) => {
         if (errorOrResult instanceof Error) {
+          const normalizedError = normalizeRolldownError(errorOrResult);
+          logger.trace('onOutput', { bundlerId: this.id });
           logger.error(errorOrResult.message);
-          logger.debug({ bundlerId: this.id, error: errorOrResult });
+          this.buildFailedError = normalizedError;
+          this.emit('buildFailed', normalizedError);
         } else {
           const output = errorOrResult.output[0];
           const sourceMap = output.map?.toString();
           this.bundle = new InMemoryBundle(output.code, sourceMap, this.sourceMappingURL);
+          this.buildFailedError = null;
           logger.debug('Build completed', {
             bundlerId: this.id,
             bundleName: output.name,
@@ -130,6 +138,9 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
 
     const state = await this.devEngine.getBundleState();
     logger.debug('Bundle state', { bundlerId: this.id, state });
+    if (state.lastFullBuildFailed) {
+      throw new Error(this.buildFailedError?.message ?? 'Build failed');
+    }
     if (state.hasStaleOutput || this.bundle == null) {
       await this.devEngine.ensureLatestBuildOutput();
     }

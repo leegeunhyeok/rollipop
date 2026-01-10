@@ -20,6 +20,7 @@ export interface HMRServerOptions {
 interface Bindings {
   hmrUpdates: (updates: rolldownExperimental.BindingClientHmrUpdate[]) => void;
   watchChange: () => void;
+  buildFailed: (error: Error) => void;
 }
 
 export class HMRServer extends WebSocketServer {
@@ -67,14 +68,31 @@ export class HMRServer extends WebSocketServer {
       };
 
       const handleWatchChange = () => {
-        this.send(client, JSON.stringify({ type: 'hmr:update-start' }));
+        this.send(client, JSON.stringify({ type: 'hmr:update-start' } satisfies HMRServerMessage));
+      };
+
+      const handleBuildFailed = (error: Error) => {
+        this.send(
+          client,
+          JSON.stringify({
+            type: 'hmr:error',
+            payload: {
+              type: 'BuildError',
+              errors: [{ description: error.message }],
+              message: error.message,
+            },
+          } satisfies HMRServerMessage),
+        );
       };
 
       instance.addListener('hmrUpdates', handleHmrUpdates);
       instance.addListener('watchChange', handleWatchChange);
+      instance.addListener('buildFailed', handleBuildFailed);
+
       this.bindings.set(client.id, {
         hmrUpdates: handleHmrUpdates,
         watchChange: handleWatchChange,
+        buildFailed: handleBuildFailed,
       });
       this.logger.trace(`HMR event binding established (clientId: ${client.id})`);
     }
@@ -183,6 +201,7 @@ export class HMRServer extends WebSocketServer {
     if (binding != null && instance != null) {
       instance.removeListener('hmrUpdates', binding.hmrUpdates);
       instance.removeListener('watchChange', binding.watchChange);
+      instance.removeListener('buildFailed', binding.buildFailed);
     }
 
     if (instance != null) {

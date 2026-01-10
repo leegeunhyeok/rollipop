@@ -22,10 +22,15 @@ function compat(reporter: Reporter): StatusPluginOptions {
     onStart() {
       logger.info('Build started...');
     },
-    onEnd({ totalModules, duration }) {
+    onEnd({ totalModules, duration, error }) {
       const time = chalk.blue(`${duration.toFixed(2)}ms`);
       const modules = chalk.blue(`(${totalModules} modules)`);
-      logger.info(`Build finished in ${time} ${modules}`);
+
+      if (error) {
+        logger.error(`Build failed in ${time} ${modules}`);
+      } else {
+        logger.info(`Build completed in ${time} ${modules}`);
+      }
     },
   });
 }
