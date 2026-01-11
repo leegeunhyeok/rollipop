@@ -14,6 +14,16 @@
         "default": "./dist/index.cjs"
       }
     },
+    "./commands": {
+      "import": {
+        "types": "./dist/commands.d.ts",
+        "default": "./dist/commands.js"
+      },
+      "require": {
+        "types": "./dist/commands.d.cts",
+        "default": "./dist/commands.cjs"
+      }
+    },
     "./pluginutils": {
       "import": {
         "types": "./dist/pluginutils.d.ts",
@@ -74,6 +84,7 @@
     "@inquirer/prompts": "^8.1.0",
     "@node-rs/xxhash": "^1.7.6",
     "@react-native-community/cli-server-api": "^20.0.2",
+    "@react-native-community/cli-types": "^20.1.0",
     "@react-native/babel-plugin-codegen": "^0.83.1",
     "@react-native/dev-middleware": "^0.83.1",
     "@rolldown/pluginutils": "catalog:rolldown",

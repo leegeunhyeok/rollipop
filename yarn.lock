@@ -4552,6 +4552,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/cli-types@npm:^20.1.0":
+  version: 20.1.0
+  resolution: "@react-native-community/cli-types@npm:20.1.0"
+  dependencies:
+    joi: "npm:^17.2.1"
+  checksum: 10c0/247deebf26b435c0cbabfb7dd7de09a4e79c544ee72a2ef2817268108f7c085dab4d54c7fbc8111ad89360e13227f2041c5eac208971c251da332e4d33311a7b
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli@npm:20.0.0":
   version: 20.0.0
   resolution: "@react-native-community/cli@npm:20.0.0"
@@ -14993,6 +15002,7 @@ __metadata:
     "@inquirer/prompts": "npm:^8.1.0"
     "@node-rs/xxhash": "npm:^1.7.6"
     "@react-native-community/cli-server-api": "npm:^20.0.2"
+    "@react-native-community/cli-types": "npm:^20.1.0"
     "@react-native/babel-plugin-codegen": "npm:^0.83.1"
     "@react-native/dev-middleware": "npm:^0.83.1"
     "@rolldown/pluginutils": "catalog:rolldown"
