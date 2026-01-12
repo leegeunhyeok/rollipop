@@ -42,7 +42,7 @@ declare class DevRuntime implements DevRuntimeInterface {
  * which contains the HMR Runtime class implementation (class name: `DevRuntime`).
  *
  * However, while Hermes V1 supports `class` syntax, earlier versions of the Hermes runtime do not, making this implementation unusable.
- * Interestingly, Hermes evaluates class syntax as `null` instead of throwing a syntax error,
+ * Interestingly, Hermes evaluates class syntax as `undefined` instead of throwing a syntax error,
  * which allows us to safely replace the implementation using the nullish coalescing operator.
  *
  * Therefore, when DevRuntime injected by Rolldown is unavailable (i.e., in non-Hermes V1 environments),
