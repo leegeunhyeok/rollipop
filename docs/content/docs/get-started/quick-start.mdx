@@ -67,32 +67,22 @@ If you prefer to set up Rollipop manually:
   </Tab>
 </Tabs>
 
-#### 2. Configure Android
+#### 2. Configure React Native CLI
 
-Open `android/app/build.gradle` and configure React Native to use Rollipop CLI:
+Create or update the `react-native.config.js` file in your project root:
 
+```js title="react-native.config.js"
+module.exports = {
+  commands: require('rollipop/commands'),
+  /* Existing configurations */
+};
 ```
-react {
-  cliFile = file("../../node_modules/rollipop/bin/index.js")
-}
-```
 
-#### 3. Configure iOS
+This configuration makes Rollipop's commands available to React Native CLI, allowing you to use Rollipop seamlessly with your existing React Native build process.
 
-Open your project in Xcode, then:
-
-1. Select your app target
-2. Go to **Build Phases**
-3. Find **Bundle React Native code and images** phase
-4. Add the `CLI_PATH` environment variable at the beginning of the script:
-
-```bash
-set -e
-
-export CLI_PATH="$PROJECT_DIR/../node_modules/rollipop/bin/index.js"
-
-# ...
-```
+<Callout type="info">
+If you don't have a `react-native.config.js` file in your project, create one in the root directory with the configuration above.
+</Callout>
 
 ## Next Steps
 

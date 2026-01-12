@@ -19,10 +19,13 @@ rollipop start [options]
 | `--config` | Path to the Rollipop configuration file | `string` | - |
 | `--host` | Host to start the development server on | `string` | `localhost` |
 | `--port` | Port to start the development server on | `number` | `8081` |
-| `--project-root` | Path to a custom project root | `string` | - |
-| `--reset-cache` | Removes cached files before starting the server | `boolean` | - |
+| `--reset-cache` | Removes cached files | `boolean` | - |
+| `--https` | Enables https connections to the server | `boolean` | - |
+| `--key` | Path to custom SSL key | `string` | - |
+| `--cert` | Path to custom SSL cert | `string` | - |
 | `--no-interactive` | Disables interactive mode | `boolean` | - |
 | `--client-logs` | Enable client log streaming (deprecated) | `boolean` | `false` |
+| `--cache` | If false, the bundler will not load or store any cache | `boolean` | - |
 
 ### Examples
 

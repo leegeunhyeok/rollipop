@@ -21,6 +21,19 @@ export default defineConfig({
 
 Project root directory. All relative paths in the configuration will be resolved from this directory.
 
+## mode
+
+- **Type:** `'development' | 'production'`
+- **Default:** `'development'` for serve, 'production' for build.
+
+The mode to run the bundler in. This affects various optimizations and defaults throughout the bundler.
+
+```ts
+export default defineConfig({
+  mode: 'production',
+});
+```
+
 ## entry
 
 - **Type:** `string`
@@ -117,6 +130,80 @@ Flow type syntax transformation configuration.
 Filter for Flow transformation pipeline. Uses Rolldown's [hook filter feature](https://rolldown.rs/apis/plugin-hook-filters) to determine which files should be processed.
 
 See [Flow Support](/docs/features/flow) for more details.
+
+### transformer.babel
+
+Custom Babel transformation rules.
+
+`babel.rules`
+
+- **Type:** `BabelTransformRule[]`
+
+Define custom Babel transformation rules for specific files.
+
+```ts
+export default defineConfig({
+  transformer: {
+    babel: {
+      rules: [
+        {
+          filter: { id: /\.custom\.js$/ },
+          options: {
+            plugins: ['custom-babel-plugin'],
+          },
+        },
+      ],
+    },
+  },
+});
+```
+
+**BabelTransformRule:**
+```ts
+interface BabelTransformRule {
+  filter?: HookFilter | TopLevelFilterExpression[];
+  options: babel.TransformOptions | ((code: string, id: string) => babel.TransformOptions);
+}
+```
+
+### transformer.swc
+
+Custom SWC transformation rules.
+
+`swc.rules`
+
+- **Type:** `SwcTransformRule[]`
+
+Define custom SWC transformation rules for specific files.
+
+```ts
+export default defineConfig({
+  transformer: {
+    swc: {
+      rules: [
+        {
+          filter: { id: /\.custom\.ts$/ },
+          options: {
+            jsc: {
+              parser: {
+                syntax: 'typescript',
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+});
+```
+
+**SwcTransformRule:**
+```ts
+interface SwcTransformRule {
+  filter?: HookFilter | TopLevelFilterExpression[];
+  options: swc.Options | ((code: string, id: string) => swc.Options);
+}
+```
 
 ## serializer
 
@@ -242,6 +329,46 @@ Use debouncing for file change events.
 
 Debounce duration in milliseconds.
 
+## devMode
+
+Development mode configuration.
+
+### devMode.hmr
+
+- **Type:** `boolean | HmrConfig`
+- **Default:** `true`
+
+Enable or configure Hot Module Replacement (HMR).
+
+```ts
+export default defineConfig({
+  devMode: {
+    hmr: true,
+  },
+});
+```
+
+**Advanced HMR Configuration:**
+
+```ts
+export default defineConfig({
+  devMode: {
+    hmr: {
+      runtimeImplement: './custom-hmr-runtime.js',
+      clientImplement: './custom-hmr-client.js',
+    },
+  },
+});
+```
+
+**HmrConfig:**
+```ts
+interface HmrConfig {
+  runtimeImplement?: string;  // Custom HMR runtime source
+  clientImplement?: string;    // Custom HMR client source
+}
+```
+
 ## reactNative
 
 React Native specific configuration.
@@ -312,12 +439,50 @@ Terminal output configuration.
 
 ### terminal.status
 
-- **Type:** `'compat' | 'progress'`
+- **Type:** `'none' | 'compat' | 'progress'`
 - **Default:** `isTTY ? 'progress' : 'compat'`
 
 Terminal status display mode:
+- `'none'`: No status display
 - `'progress'`: Interactive progress display (when TTY is available)
 - `'compat'`: Compatible mode for non-TTY environments
+
+### terminal.extraCommands
+
+- **Type:** `InteractiveCommand[]`
+
+Add custom interactive commands to the development server's interactive mode.
+
+```ts
+export default defineConfig({
+  terminal: {
+    extraCommands: [
+      {
+        key: 'c',
+        description: 'Clear console',
+        handler() {
+          console.clear();
+        },
+      },
+    ],
+  },
+});
+```
+
+**InteractiveCommand:**
+```ts
+interface InteractiveCommand {
+  key: string;
+  shift?: boolean;
+  description: string | (() => string);
+  handler: (this: InteractiveCommandContext) => void;
+}
+
+interface InteractiveCommandContext {
+  server: DevServer;
+  logger: Logger;
+}
+```
 
 ## reporter
 
@@ -327,3 +492,29 @@ Terminal status display mode:
 Custom reporter for build events. Implement the `Reporter` interface to create custom reporters.
 
 See [Reporter](/docs/features/reporter) for more details.
+
+## envDir
+
+- **Type:** `string`
+- **Default:** `config.root`
+
+Directory to load environment files from.
+
+```ts
+export default defineConfig({
+  envDir: './envFiles',
+});
+```
+
+## envPrefix
+
+- **Type:** `string`
+- **Default:** `'ROLLIPOP_'`
+
+Prefix for environment variables to be included in the bundle.
+
+```ts
+export default defineConfig({
+  envPrefix: 'MY_APP_',
+});
+```

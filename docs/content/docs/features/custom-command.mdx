@@ -1,0 +1,97 @@
+---
+title: Custom Command
+---
+
+Rollipop allows you to add custom interactive commands to the dev server terminal. These commands can be triggered by keyboard shortcuts while the dev server is running.
+
+## Configuration
+
+To add custom commands, configure the `terminal.extraCommands` option in your `rollipop.config.ts` file:
+
+```ts title="rollipop.config.ts"
+import { defineConfig } from 'rollipop';
+
+export default defineConfig({
+  terminal: {
+    extraCommands: [
+      {
+        key: 'a',Running tests or linting
+        description: 'My custom command',
+        handler: () => {
+          console.log('My custom command executed!');
+        },
+      },
+    ],
+  },
+});
+```
+
+## Command Options
+
+Each command object has the following properties:
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `key` | `string` | Yes | The keyboard key to trigger the command (e.g., 'a', 'b', 'c') |
+| `description` | `string` | Yes | A description of what the command does |
+| `handler` | `() => void` | Yes | The function to execute when the command is triggered |
+| `shift` | `boolean` | No | If `true`, requires Shift key to be pressed with the key |
+
+## Examples
+
+### Basic Command
+
+```ts title="rollipop.config.ts"
+export default defineConfig({
+  terminal: {
+    extraCommands: [
+      {
+        key: 'a',
+        description: 'Clear console',
+        handler: () => {
+          console.clear();
+        },
+      },
+    ],
+  },
+});
+```
+
+### Using Shift Modifier
+
+You can assign multiple commands to the same key by using the `shift` modifier:
+
+```ts title="rollipop.config.ts"
+export default defineConfig({
+  terminal: {
+    extraCommands: [
+      {
+        key: 'a',
+        description: 'My custom command 1',
+        handler: () => {
+          console.log('My custom command 1');
+        },
+      },
+      {
+        key: 'a',
+        shift: true,
+        description: 'My custom command 2',
+        handler: () => {
+          console.log('My custom command 2');
+        },
+      },
+    ],
+  },
+});
+```
+
+In this example:
+- Pressing `a` triggers the first command
+- Pressing `Shift + a` triggers the second command
+
+## Use Cases
+
+Custom commands are useful for:
+- Clearing logs or resetting state
+- Opening external tools or documentation
+- Any other development workflow automation

@@ -9,7 +9,9 @@ title: Dev Server
 
 ## Usage
 
-To start the dev server, you can use the following command:
+### Using Commands
+
+To start the dev server, you can use the `start` command:
 
 <Tabs items={['npm', 'pnpm', 'yarn']}>
   <Tab value="npm">
@@ -29,4 +31,51 @@ To start the dev server, you can use the following command:
   </Tab>
 </Tabs>
 
-See [CLI Commands](/get-started/cli-commands) for more available options.
+You can customize the dev server with various options:
+
+```bash
+# Start on a custom port
+rollipop start --port 3000
+
+# Start with HTTPS
+rollipop start --https
+
+# Reset cache on start
+rollipop start --reset-cache
+```
+
+See [CLI Commands](/docs/get-started/cli-commands) for more available options.
+
+### Using Bundler API
+
+You can also start the dev server programmatically using the Bundler API:
+
+```ts
+import * as Rollipop from 'rollipop';
+
+const config = await Rollipop.loadConfig();
+
+const server = await Rollipop.runServer(config, {
+  port: 8081,
+  host: 'localhost',
+});
+
+// Listen to device events
+server.on('device.connected', ({ client }) => {
+  console.log('Device connected:', client.id);
+});
+
+server.on('device.disconnected', ({ client }) => {
+  console.log('Device disconnected:', client.id);
+});
+
+console.log('Dev server running at:', server.instance.listeningOrigin);
+```
+
+See [Bundler API](/docs/apis/bundler) for more details.
+
+## Plugin Integration
+
+Rollipop plugins can interact with the dev server through WebSocket connections. This enables features like custom HMR (Hot Module Replacement), client-server communication, and real-time updates.
+
+For detailed information on how to communicate between plugins and clients, see the [Plugin API - Client-Server Communication](/docs/apis/plugin#client-server-communication) section.

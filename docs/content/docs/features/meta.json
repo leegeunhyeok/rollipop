@@ -3,9 +3,10 @@
   "pages": [
     "dev-server",
     "devtools",
-    "reporter",
     "flow",
-    "svg"
+    "svg",
+    "reporter",
+    "custom-command"
   ],
   "defaultOpen": true
 }
