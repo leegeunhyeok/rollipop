@@ -1,3 +1,4 @@
+/* oxlint-disable */
 /**
  * Ported from:
  * @see https://github.com/rolldown/rolldown/blob/feae112db77bf01e886b859e347ce3256944d360/crates/rolldown/src/runtime/runtime-base.js
