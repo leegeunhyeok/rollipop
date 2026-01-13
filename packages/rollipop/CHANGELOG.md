@@ -1,5 +1,12 @@
 # rollipop
 
+## 0.1.0-alpha.8
+
+### Patch Changes
+
+- adf0937: improve HRM runtime compatibility for lower runtime versions
+- cd796f7: fix hermes performance degradation issue
+
 ## 0.1.0-alpha.7
 
 ### Patch Changes
