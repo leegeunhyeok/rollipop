@@ -1,5 +1,5 @@
+import type * as rolldownExperimental from '@rollipop/rolldown/experimental';
 import { invariant } from 'es-toolkit';
-import type * as rolldownExperimental from 'rolldown/experimental';
 import type * as ws from 'ws';
 
 import type { ReportableEvent } from '../../types';

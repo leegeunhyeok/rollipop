@@ -1,6 +1,6 @@
 import * as babel from '@babel/core';
 import { invariant } from 'es-toolkit';
-import type * as rolldown from 'rolldown';
+import type * as rolldown from '@rollipop/rolldown';
 
 import type { TransformerConfig } from '../../config';
 import { mergeBabelOptions } from '../../utils/babel';

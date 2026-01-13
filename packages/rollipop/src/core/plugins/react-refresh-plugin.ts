@@ -1,6 +1,6 @@
+import type * as rolldown from '@rollipop/rolldown';
+import { transformSync } from '@rollipop/rolldown/experimental';
 import { invariant } from 'es-toolkit';
-import type * as rolldown from 'rolldown';
-import { transformSync } from 'rolldown/experimental';
 
 import { GLOBAL_IDENTIFIER } from '../../constants';
 import { getFlag, TransformFlag } from './utils/transform-utils';

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import type { LogLevel, RollupLogWithString } from 'rolldown';
+import type { LogLevel, RollupLogWithString } from '@rollipop/rolldown';
 
 import { Logger } from '../../common/logger';
 

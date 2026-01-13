@@ -1,5 +1,5 @@
 import MagicString from 'magic-string';
-import type * as rolldown from 'rolldown';
+import type * as rolldown from '@rollipop/rolldown';
 
 import { TRANSFORM_FLAGS_KEY, TransformFlag } from '../core/plugins/utils/transform-utils';
 

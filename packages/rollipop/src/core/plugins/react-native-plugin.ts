@@ -1,5 +1,10 @@
-import { exactRegex, id, include, type TopLevelFilterExpression } from '@rolldown/pluginutils';
-import type * as rolldown from 'rolldown';
+import type * as rolldown from '@rollipop/rolldown';
+import {
+  exactRegex,
+  id,
+  include,
+  type TopLevelFilterExpression,
+} from '@rollipop/rolldown-pluginutils';
 
 import { stripFlowSyntax, generateSourceFromAst } from '../../common/transformer';
 import { ResolvedConfig } from '../../config';

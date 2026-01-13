@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import * as rolldown from '@rollipop/rolldown';
+import { dev } from '@rollipop/rolldown/experimental';
 import { invariant, merge } from 'es-toolkit';
-import * as rolldown from 'rolldown';
-import { dev } from 'rolldown/experimental';
 
 import { Logo } from '../common/logo';
 import type { ResolvedConfig } from '../config/defaults';

@@ -1,4 +1,4 @@
-import type * as rolldown from 'rolldown';
+import type * as rolldown from '@rollipop/rolldown';
 import { describe, it, expect } from 'vitest';
 
 import { setFlag, hasFlag, TransformFlag, TRANSFORM_FLAGS_KEY } from '../transform-utils';

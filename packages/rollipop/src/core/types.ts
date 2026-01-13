@@ -1,4 +1,4 @@
-import type { DevEngine as BaseDevEngine, DevOptions } from 'rolldown/experimental';
+import type { DevEngine as BaseDevEngine, DevOptions } from '@rollipop/rolldown/experimental';
 
 import type { FileSystemCache } from './cache/file-system-cache';
 import type { FileStorage } from './fs/storage';

@@ -1,8 +1,8 @@
 import type * as babel from '@babel/core';
-import type { TopLevelFilterExpression } from '@rolldown/pluginutils';
+import type * as rolldown from '@rollipop/rolldown';
+import type { TopLevelFilterExpression } from '@rollipop/rolldown-pluginutils';
+import type { DevWatchOptions, TransformOptions } from '@rollipop/rolldown/experimental';
 import type * as swc from '@swc/core';
-import type * as rolldown from 'rolldown';
-import type { DevWatchOptions, TransformOptions } from 'rolldown/experimental';
 
 import type { Plugin } from '../core/plugins/types';
 import { InteractiveCommand } from '../node/cli-utils';

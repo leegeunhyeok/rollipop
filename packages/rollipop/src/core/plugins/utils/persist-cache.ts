@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import { exclude, id, include } from '@rolldown/pluginutils';
+import { exclude, id, include } from '@rollipop/rolldown-pluginutils';
 
 import { logger } from '../../../logger';
 import { xxhash } from '../../../utils/hash';

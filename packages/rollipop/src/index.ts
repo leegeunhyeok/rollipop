@@ -33,5 +33,5 @@ export * as cli from './node/cli';
 export * from './node/cli-utils';
 
 // Re-export `rolldown`
-export * as rolldown from 'rolldown';
-export * as rolldownExperimental from 'rolldown/experimental';
+export * as rolldown from '@rollipop/rolldown';
+export * as rolldownExperimental from '@rollipop/rolldown/experimental';

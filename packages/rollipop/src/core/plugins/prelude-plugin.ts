@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import * as rolldown from 'rolldown';
+import * as rolldown from '@rollipop/rolldown';
 
 const IS_ENTRY = Symbol('IS_ENTRY');
 

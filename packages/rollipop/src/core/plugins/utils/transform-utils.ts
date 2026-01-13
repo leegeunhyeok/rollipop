@@ -1,4 +1,4 @@
-import type * as rolldown from 'rolldown';
+import type * as rolldown from '@rollipop/rolldown';
 
 import type { PluginOption } from '../../../config';
 import type { BundlerContext } from '../../types';

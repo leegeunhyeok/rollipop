@@ -1,4 +1,4 @@
-import type * as rolldown from 'rolldown';
+import type * as rolldown from '@rollipop/rolldown';
 
 export interface StatusPluginOptions {
   initialTotalModules?: number;

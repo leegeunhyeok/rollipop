@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
-import { id, include } from '@rolldown/pluginutils';
-import type * as rolldown from 'rolldown';
+import type * as rolldown from '@rollipop/rolldown';
+import { id, include } from '@rollipop/rolldown-pluginutils';
 
 import { setFlag, TransformFlag } from './utils/transform-utils';
 

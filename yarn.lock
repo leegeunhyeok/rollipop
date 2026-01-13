@@ -3532,6 +3532,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@oxc-project/types@npm:=0.108.0":
+  version: 0.108.0
+  resolution: "@oxc-project/types@npm:0.108.0"
+  checksum: 10c0/764d3eac426b2c663521a4b8a2f2c399108918aa0644e9a87ab0d998a90814cdb7d18566732c61d9b38da21215497f6528e51e5619d4c23b212f5fb73d4ede9c
+  languageName: node
+  linkType: hard
+
 "@oxfmt/darwin-arm64@npm:0.17.0":
   version: 0.17.0
   resolution: "@oxfmt/darwin-arm64@npm:0.17.0"
@@ -5074,6 +5081,106 @@ __metadata:
     init: ./bin/index.js
   languageName: unknown
   linkType: soft
+
+"@rollipop/rolldown-binding-darwin-arm64@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-binding-darwin-arm64@npm:0.0.0-beta.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown-binding-darwin-x64@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-binding-darwin-x64@npm:0.0.0-beta.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown-binding-linux-arm64-gnu@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-binding-linux-arm64-gnu@npm:0.0.0-beta.0"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown-binding-linux-arm64-musl@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-binding-linux-arm64-musl@npm:0.0.0-beta.0"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown-binding-linux-x64-gnu@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-binding-linux-x64-gnu@npm:0.0.0-beta.0"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown-binding-linux-x64-musl@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-binding-linux-x64-musl@npm:0.0.0-beta.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown-binding-win32-arm64-msvc@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-binding-win32-arm64-msvc@npm:0.0.0-beta.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown-binding-win32-x64-msvc@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-binding-win32-x64-msvc@npm:0.0.0-beta.0"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown-pluginutils@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown-pluginutils@npm:0.0.0-beta.0"
+  checksum: 10c0/07b4c60be1860137b056dad2f1e8535f56b5f92e6f8ae3353ce975a712d1c63acc1e9e32c82f9f7cfe5a47276c42b3056aeffe220bfb863d209fc2ad276c98d0
+  languageName: node
+  linkType: hard
+
+"@rollipop/rolldown@npm:0.0.0-beta.0":
+  version: 0.0.0-beta.0
+  resolution: "@rollipop/rolldown@npm:0.0.0-beta.0"
+  dependencies:
+    "@oxc-project/types": "npm:=0.108.0"
+    "@rollipop/rolldown-binding-darwin-arm64": "npm:0.0.0-beta.0"
+    "@rollipop/rolldown-binding-darwin-x64": "npm:0.0.0-beta.0"
+    "@rollipop/rolldown-binding-linux-arm64-gnu": "npm:0.0.0-beta.0"
+    "@rollipop/rolldown-binding-linux-arm64-musl": "npm:0.0.0-beta.0"
+    "@rollipop/rolldown-binding-linux-x64-gnu": "npm:0.0.0-beta.0"
+    "@rollipop/rolldown-binding-linux-x64-musl": "npm:0.0.0-beta.0"
+    "@rollipop/rolldown-binding-win32-arm64-msvc": "npm:0.0.0-beta.0"
+    "@rollipop/rolldown-binding-win32-x64-msvc": "npm:0.0.0-beta.0"
+    "@rollipop/rolldown-pluginutils": "npm:0.0.0-beta.0"
+  dependenciesMeta:
+    "@rollipop/rolldown-binding-darwin-arm64":
+      optional: true
+    "@rollipop/rolldown-binding-darwin-x64":
+      optional: true
+    "@rollipop/rolldown-binding-linux-arm64-gnu":
+      optional: true
+    "@rollipop/rolldown-binding-linux-arm64-musl":
+      optional: true
+    "@rollipop/rolldown-binding-linux-x64-gnu":
+      optional: true
+    "@rollipop/rolldown-binding-linux-x64-musl":
+      optional: true
+    "@rollipop/rolldown-binding-win32-arm64-msvc":
+      optional: true
+    "@rollipop/rolldown-binding-win32-x64-msvc":
+      optional: true
+  bin:
+    rolldown: bin/cli.mjs
+  checksum: 10c0/5c12594854285837187ee4ee41ce3dfece297bf5dc0e34c8eeb7f5b06675b6b70abe6919f3c0c5698029b5e64328ff7cba8ff324b167a699a7418d66f258b5b7
+  languageName: node
+  linkType: hard
 
 "@rollup/rollup-android-arm-eabi@npm:4.53.3":
   version: 4.53.3
@@ -14845,7 +14952,8 @@ __metadata:
     "@react-native-community/cli-types": "npm:^20.1.0"
     "@react-native/babel-plugin-codegen": "npm:^0.83.1"
     "@react-native/dev-middleware": "npm:^0.83.1"
-    "@rolldown/pluginutils": "catalog:rolldown"
+    "@rollipop/rolldown": "catalog:rolldown"
+    "@rollipop/rolldown-pluginutils": "catalog:rolldown"
     "@svgr/core": "npm:^8.1.0"
     "@svgr/plugin-jsx": "npm:^8.1.0"
     "@swc/core": "npm:^1.15.7"
@@ -14874,7 +14982,6 @@ __metadata:
     mime: "npm:^4.1.0"
     mitt: "npm:^3.0.1"
     p-limit: "npm:^7.2.0"
-    rolldown: "catalog:rolldown"
     source-map: "npm:^0.7.6"
     strip-ansi: "npm:^7.1.2"
     tsdown: "catalog:"

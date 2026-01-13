@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 import { Config, transform } from '@svgr/core';
-import type * as rolldown from 'rolldown';
+import type * as rolldown from '@rollipop/rolldown';
 
 export interface SvgPluginOptions {
   enabled: boolean;

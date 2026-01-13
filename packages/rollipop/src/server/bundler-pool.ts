@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 
+import * as rolldownExperimental from '@rollipop/rolldown/experimental';
 import { invariant } from 'es-toolkit';
-import * as rolldownExperimental from 'rolldown/experimental';
 
 import type { ResolvedConfig } from '../config';
 import { Bundler } from '../core/bundler';
