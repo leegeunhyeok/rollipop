@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import type { RolldownPluginOption } from '@rollipop/rolldown';
 import * as swc from '@swc/core';
 import { invariant } from 'es-toolkit';
-import type { RolldownPluginOption } from '@rollipop/rolldown';
 import { defineConfig, type UserConfig } from 'tsdown';
 
 const rawPackageJson = fs.readFileSync(path.join(import.meta.dirname, 'package.json'), 'utf-8');
@@ -29,6 +29,10 @@ const transformToEs5: RolldownPluginOption = {
         assumptions: {
           setPublicClassFields: true,
           privateFieldsAsProperties: true,
+        },
+        minify: {
+          // To avoid mangling the rolldown runtime variable names
+          mangle: true,
         },
       },
       isModule: true,

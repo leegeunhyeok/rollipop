@@ -7,12 +7,6 @@ import type {
   HMRServerMessage,
 } from '../types/hmr';
 import { HMRContext } from '../types/hmr';
-import {
-  DevRuntimeFallback,
-  type DevRuntime as DevRuntimeInterface,
-  type ModuleFallback,
-  type Messenger,
-} from './dev-runtime-fallback';
 import { enqueueUpdate, isReactRefreshBoundary } from './react-refresh-utils';
 
 declare global {
@@ -27,30 +21,35 @@ declare global {
   var __ROLLIPOP_CUSTOM_HMR_HANDLER__: HMRCustomHandler | undefined;
 }
 
-// DO NOT EDIT THIS CLASS NAME (`DevRuntime`)
-declare class DevRuntime implements DevRuntimeInterface {
-  constructor(messenger: Messenger);
-  modules: Record<string, ModuleFallback>;
+interface Module {
+  exportsHolder: { exports: any };
+  id: string;
+  exports: any;
+}
+
+interface DevRuntimeInterface {
+  modules: Record<string, Module>;
   createModuleHotContext(moduleId: string): void;
   applyUpdates(boundaries: [string, string][]): void;
-  registerModule(id: string, exportsHolder: ModuleFallback['exportsHolder']): void;
+  registerModule(id: string, exportsHolder: Module['exportsHolder']): void;
   loadExports(id: string): void;
 }
 
-/**
- * Rolldown injects the `rolldown:hmr` virtual module into the entry module,
- * which contains the HMR Runtime class implementation (class name: `DevRuntime`).
- *
- * However, while Hermes V1 supports `class` syntax, earlier versions of the Hermes runtime do not, making this implementation unusable.
- * Interestingly, Hermes evaluates class syntax as `undefined` instead of throwing a syntax error,
- * which allows us to safely replace the implementation using the nullish coalescing operator.
- *
- * Therefore, when DevRuntime injected by Rolldown is unavailable (i.e., in non-Hermes V1 environments),
- * we use an ES5-transpiled fallback implementation instead to work around this and prevent runtime errors.
- *
- * @see https://github.com/rolldown/rolldown/blob/feae112db77bf01e886b859e347ce3256944d360/crates/rolldown_plugin_hmr/src/hmr_plugin.rs#L66
- */
-var BaseDevRuntime = DevRuntime ?? DevRuntimeFallback;
+interface Messenger {
+  send(message: HMRClientMessage): void;
+}
+
+// DO NOT EDIT THIS CLASS NAME (`DevRuntime`)
+declare class DevRuntime implements DevRuntimeInterface {
+  constructor(messenger: Messenger);
+  modules: Record<string, Module>;
+  createModuleHotContext(moduleId: string): void;
+  applyUpdates(boundaries: [string, string][]): void;
+  registerModule(id: string, exportsHolder: Module['exportsHolder']): void;
+  loadExports(id: string): void;
+}
+
+var BaseDevRuntime = DevRuntime;
 
 class ModuleHotContext implements HMRContext {
   private readonly removeListeners: (() => void)[] = [];

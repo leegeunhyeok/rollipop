@@ -43,7 +43,7 @@ export async function resolveRolldownOptions(
     config.resolver;
   const { prelude: preludePaths, polyfills } = config.serializer;
   const { flow, babel: babelConfig, swc: swcConfig, ...rolldownTransform } = config.transformer;
-  const { codegen, assetRegistryPath } = config.reactNative;
+  const { codegen, assetRegistryPath, globalIdentifiers } = config.reactNative;
 
   const transformSvg = config.transformer.svg;
   const resolvedSourceExtensions = transformSvg ? [...sourceExtensions, 'svg'] : sourceExtensions;
@@ -171,9 +171,10 @@ export async function resolveRolldownOptions(
     intro: [...loadPolyfills(polyfills)].join('\n'),
     file: buildOptions.outfile,
     minify,
-    format: 'iife',
+    format: 'esm',
     keepNames: true,
     sourcemap: true,
+    globalIdentifiers,
   };
 
   const finalOptions = await applyDangerouslyOverrideOptionsFinalizer(

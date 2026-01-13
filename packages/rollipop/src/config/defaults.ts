@@ -7,6 +7,7 @@ import {
   DEFAULT_ASSET_EXTENSIONS,
   DEFAULT_ASSET_REGISTRY_PATH,
   DEFAULT_ENV_PREFIX,
+  DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
   DEFAULT_RESOLVER_CONDITION_NAMES,
   DEFAULT_RESOLVER_MAIN_FIELDS,
   DEFAULT_SOURCE_EXTENSIONS,
@@ -73,6 +74,7 @@ export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
         },
       },
       assetRegistryPath: DEFAULT_ASSET_REGISTRY_PATH,
+      globalIdentifiers: DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
     },
     devMode: {
       hmr: true,

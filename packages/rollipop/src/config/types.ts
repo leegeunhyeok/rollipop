@@ -212,6 +212,12 @@ export interface ReactNativeConfig {
    * Defaults to: `react-native/Libraries/Image/AssetRegistry.js`
    */
   assetRegistryPath?: string;
+  /**
+   * Reserved global identifiers of React Native.
+   *
+   * Defaults to: Global identifier list of React Native 0.83
+   */
+  globalIdentifiers?: string[];
 }
 
 export interface CodegenConfig {
