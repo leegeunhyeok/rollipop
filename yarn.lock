@@ -9420,7 +9420,7 @@ __metadata:
     react-native-screens: "npm:^4.19.0"
     react-native-svg: "npm:^15.15.1"
     react-native-svg-transformer: "npm:^1.5.2"
-    react-native-worklets: "patch:react-native-worklets@npm%3A0.7.1#~/.yarn/patches/react-native-worklets-npm-0.7.1-878d64d465.patch"
+    react-native-worklets: "npm:^0.7.1"
     react-test-renderer: "npm:19.2.0"
     rollipop: "workspace:*"
     typescript: "npm:^5.9.3"
@@ -10237,10 +10237,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hermes-compiler@npm:250829098.0.4":
-  version: 250829098.0.4
-  resolution: "hermes-compiler@npm:250829098.0.4"
-  checksum: 10c0/ab7843252595d9e541c5bf0be7c42915512d73802ac0cc089567ed8f63b591c9cc8db0633f2bb4cfe31b01cd88b891e120bde79665346811c6080054f8653da1
+"hermes-compiler@npm:0.14.0":
+  version: 0.14.0
+  resolution: "hermes-compiler@npm:0.14.0"
+  checksum: 10c0/672036528448e8af5895c9d8c5dfd6012b76e92a5a187caf3143925e358bfc81b993a0cd50bbae7518c01fe6dc4fdc882e25cd623219a4d33f56d5f7abe6918b
   languageName: node
   linkType: hard
 
@@ -14242,7 +14242,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:0.7.1":
+"react-native-worklets@npm:^0.7.1":
   version: 0.7.1
   resolution: "react-native-worklets@npm:0.7.1"
   dependencies:
@@ -14262,29 +14262,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/6965ff3cef7981e10585e15c222fb78f12c54807fcd6f7f9fccdd4dea2bd59d234797fe26a9f47d5c5ba6609f653b807d67f2d03e513e179a25ba28c3ad413ff
-  languageName: node
-  linkType: hard
-
-"react-native-worklets@patch:react-native-worklets@npm%3A0.7.1#~/.yarn/patches/react-native-worklets-npm-0.7.1-878d64d465.patch":
-  version: 0.7.1
-  resolution: "react-native-worklets@patch:react-native-worklets@npm%3A0.7.1#~/.yarn/patches/react-native-worklets-npm-0.7.1-878d64d465.patch::version=0.7.1&hash=5ac7e8"
-  dependencies:
-    "@babel/plugin-transform-arrow-functions": "npm:7.27.1"
-    "@babel/plugin-transform-class-properties": "npm:7.27.1"
-    "@babel/plugin-transform-classes": "npm:7.28.4"
-    "@babel/plugin-transform-nullish-coalescing-operator": "npm:7.27.1"
-    "@babel/plugin-transform-optional-chaining": "npm:7.27.1"
-    "@babel/plugin-transform-shorthand-properties": "npm:7.27.1"
-    "@babel/plugin-transform-template-literals": "npm:7.27.1"
-    "@babel/plugin-transform-unicode-regex": "npm:7.27.1"
-    "@babel/preset-typescript": "npm:7.27.1"
-    convert-source-map: "npm:2.0.0"
-    semver: "npm:7.7.3"
-  peerDependencies:
-    "@babel/core": "*"
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/e9bbe60b1fba8c4b8b412837a18e2c8f3cdce685a77a47b6b9417148f1a6bc10876ab71970d6fd9d508d08cf7ba0206c8bfd021572ec18b40af9da17eca909c8
   languageName: node
   linkType: hard
 
