@@ -180,8 +180,9 @@ export type WatcherConfig = DevWatchOptions;
 export interface DevModeConfig {
   /**
    * Hot Module Replacement configurations.
+   * This feature is only available in `development` mode.
    *
-   * Defaults to `true`
+   * Defaults to `true`.
    */
   hmr?: boolean | HmrConfig;
 }

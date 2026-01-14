@@ -16,7 +16,7 @@ import { getInitializeCorePath, getPolyfillScriptPaths } from '../internal/react
 import type { ReportableEvent, Reporter } from '../types';
 import { resolvePackagePath } from '../utils/node-resolve';
 import type { PluginFlattenConfig } from './merge-config';
-import type { Config, Polyfill, TerminalConfig } from './types';
+import type { Config, HmrConfig, Polyfill, TerminalConfig } from './types';
 
 export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
   let reactNativePath: string;
@@ -77,7 +77,7 @@ export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
       globalIdentifiers: DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
     },
     devMode: {
-      hmr: true,
+      hmr: true as boolean | HmrConfig,
     },
     terminal: {
       status: ((): TerminalConfig['status'] => {

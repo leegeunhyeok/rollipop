@@ -45,12 +45,13 @@ export function bindReporter(
 type ResolvedHmrConfig = Required<HmrConfig>;
 
 export function resolveHmrConfig(config: ResolvedConfig): ResolvedHmrConfig | null {
-  if (config.devMode?.hmr == null) {
+  if (config.mode !== 'development') {
     return null;
   }
 
   const defaultRuntimeImplements = getDefaultRuntimeImplements();
-  if (typeof config.devMode?.hmr === 'boolean') {
+
+  if (typeof config.devMode.hmr === 'boolean') {
     return config.devMode.hmr ? defaultRuntimeImplements : null;
   }
 

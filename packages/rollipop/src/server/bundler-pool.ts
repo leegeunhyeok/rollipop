@@ -42,6 +42,7 @@ export interface BundlerDevEngineEventMap {
 
 export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private readonly initializeHandle: ReturnType<typeof taskHandler>;
+  private readonly isHmrEnabled: boolean;
   private readonly _id: string;
   private bundle: InMemoryBundle | null = null;
   private buildFailedError: Error | null = null;
@@ -56,6 +57,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     super();
     this._id = Bundler.createId(config, buildOptions);
     this.initializeHandle = taskHandler();
+    this.isHmrEnabled = Boolean(config.mode === 'development' && config.devMode.hmr);
     void this.initialize();
   }
 
@@ -91,6 +93,10 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
       host: this.options.server.host,
       port: this.options.server.port,
       onHmrUpdates: (errorOrResult) => {
+        if (!this.isHmrEnabled) {
+          return;
+        }
+
         if (errorOrResult instanceof Error) {
           logger.error('Failed to handle HMR updates', {
             bundlerId: this.id,
