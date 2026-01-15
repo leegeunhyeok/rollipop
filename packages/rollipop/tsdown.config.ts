@@ -59,7 +59,7 @@ export default defineConfig([
   {
     entry: 'src/index.ts',
     outDir: 'dist',
-    format: ['esm', 'cjs'],
+    format: 'esm',
     platform: 'node',
     define: {
       'globalThis.__ROLLIPOP_VERSION__': JSON.stringify(version),
