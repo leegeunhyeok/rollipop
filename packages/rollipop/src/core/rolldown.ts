@@ -50,9 +50,15 @@ export async function resolveRolldownOptions(
   const env = loadEnv(config);
   const builtInEnv = {
     MODE: config.mode,
-    BASE_URL: isDevServerMode
-      ? getBaseUrl(devEngineOptions!.host, devEngineOptions!.port, devEngineOptions!.https)
-      : undefined,
+    ...(isDevServerMode
+      ? {
+          BASE_URL: getBaseUrl(
+            devEngineOptions!.host,
+            devEngineOptions!.port,
+            devEngineOptions!.https,
+          ),
+        }
+      : null),
   };
 
   const { platform, dev, cache, minify } = buildOptions;
