@@ -1,5 +1,14 @@
 # rollipop
 
+## 0.1.0-alpha.9
+
+### Patch Changes
+
+- 200e373: noop in `onHmrUpdates` when HMR is disabled
+- 099598b: esm only
+- 5b9fd00: update default `dev` option
+- 19c5b71: add built-in constants environment variables
+
 ## 0.1.0-alpha.8
 
 ### Patch Changes
