@@ -1,12 +1,14 @@
 import mitt from 'mitt';
 
 import type {
+  DevRuntime as DefaultDevRuntime,
+  DevRuntimeMessenger,
   HMRClientMessage,
   HMRCustomHandler,
   HMRCustomMessage,
   HMRServerMessage,
+  HMRContext,
 } from '../types/hmr';
-import { HMRContext } from '../types/hmr';
 import { enqueueUpdate, isReactRefreshBoundary } from './react-refresh-utils';
 
 declare global {
@@ -21,33 +23,8 @@ declare global {
   var __ROLLIPOP_CUSTOM_HMR_HANDLER__: HMRCustomHandler | undefined;
 }
 
-interface Module {
-  exportsHolder: { exports: any };
-  id: string;
-  exports: any;
-}
-
-interface DevRuntimeInterface {
-  modules: Record<string, Module>;
-  createModuleHotContext(moduleId: string): void;
-  applyUpdates(boundaries: [string, string][]): void;
-  registerModule(id: string, exportsHolder: Module['exportsHolder']): void;
-  loadExports(id: string): void;
-}
-
-interface Messenger {
-  send(message: HMRClientMessage): void;
-}
-
 // DO NOT EDIT THIS CLASS NAME (`DevRuntime`)
-declare class DevRuntime implements DevRuntimeInterface {
-  constructor(messenger: Messenger);
-  modules: Record<string, Module>;
-  createModuleHotContext(moduleId: string): void;
-  applyUpdates(boundaries: [string, string][]): void;
-  registerModule(id: string, exportsHolder: Module['exportsHolder']): void;
-  loadExports(id: string): void;
-}
+declare const DevRuntime: typeof DefaultDevRuntime;
 
 var BaseDevRuntime = DevRuntime;
 
@@ -187,7 +164,7 @@ class ReactNativeDevRuntime extends BaseDevRuntime {
 
   constructor() {
     const socketHolder = new SocketHolder();
-    const messenger: Messenger = {
+    const messenger: DevRuntimeMessenger = {
       send: (message) => socketHolder.send(JSON.stringify(message)),
     };
     super(messenger);
