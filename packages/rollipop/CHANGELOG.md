@@ -1,5 +1,11 @@
 # rollipop
 
+## 0.1.0-alpha.10
+
+### Patch Changes
+
+- c2b7b42: fix default option for `dev`
+
 ## 0.1.0-alpha.9
 
 ### Patch Changes
