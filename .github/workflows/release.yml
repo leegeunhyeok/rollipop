@@ -62,7 +62,7 @@ jobs:
           else
             yarn scripts:version ${{ inputs.preset }}
           fi
-          yarn scripts:publish
+          yarn scripts:publish dev
 
       - name: Create Release Pull Request
         if: ${{ !inputs.preset }}
