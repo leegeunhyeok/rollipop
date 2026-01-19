@@ -18,10 +18,10 @@ import { resolvePackagePath } from '../utils/node-resolve';
 import type { PluginFlattenConfig } from './merge-config';
 import type { Config, HmrConfig, Polyfill, TerminalConfig } from './types';
 
-export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
+export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
   let reactNativePath: string;
   try {
-    reactNativePath = resolvePackagePath(basePath, 'react-native');
+    reactNativePath = process.env.ROLLIPOP_REACT_NATIVE_PATH ?? resolvePackagePath(projectRoot, 'react-native');
   } catch {
     throw new Error(
       `Could not resolve 'react-native' package path. Please check your project path.`,
@@ -29,7 +29,7 @@ export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
   }
 
   const defaultConfig = {
-    root: basePath,
+    root: projectRoot,
     mode: mode ?? 'development',
     entry: 'index.js',
     resolver: {
@@ -50,7 +50,7 @@ export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
       },
     },
     serializer: {
-      prelude: [getInitializeCorePath(basePath)],
+      prelude: [getInitializeCorePath(projectRoot)],
       polyfills: getPolyfillScriptPaths(reactNativePath).map(
         (path) =>
           ({
@@ -65,6 +65,7 @@ export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
       debounceDuration: 50,
     },
     reactNative: {
+      reactNativePath,
       codegen: {
         /**
          * @see {@link https://github.com/facebook/react-native/blob/v0.83.1/packages/react-native-babel-preset/src/configs/main.js#L78}
@@ -91,7 +92,7 @@ export function getDefaultConfig(basePath: string, mode?: Config['mode']) {
       })(),
     },
     reporter: new TerminalReporter() as Reporter,
-    envDir: basePath,
+    envDir: projectRoot,
     envPrefix: DEFAULT_ENV_PREFIX,
   } satisfies Config;
 

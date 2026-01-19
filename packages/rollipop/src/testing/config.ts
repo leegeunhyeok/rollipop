@@ -51,6 +51,7 @@ export function createTestConfig(basePath: string): ResolvedConfig {
       debounceDuration: 50,
     },
     reactNative: {
+      reactNativePath: '__tests__/react-native',
       codegen: {
         filter: {
           code: /\bcodegenNativeComponent</,

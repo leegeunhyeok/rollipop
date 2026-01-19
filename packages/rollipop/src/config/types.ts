@@ -204,6 +204,12 @@ export interface HmrConfig {
 
 export interface ReactNativeConfig {
   /**
+   * Path to React Native package.
+   *
+   * Defaults to: resolving `react-native` package from `projectRoot`.
+   */
+  reactNativePath?: string;
+  /**
    * Codegen specific configuration.
    */
   codegen?: CodegenConfig;
