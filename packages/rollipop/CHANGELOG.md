@@ -1,5 +1,13 @@
 # rollipop
 
+## 0.1.0-alpha.10
+
+### Patch Changes
+
+- c28f5e2: bump version up `@rollipop/rolldown` to '0.0.0-beta.3'
+- c2b7b42: fix default option for `dev`
+- 4f8e194: add `ROLLIPOP_REACT_NATIVE_PATH` for override default `react-native` path
+
 ## 0.1.0-alpha.9
 
 ### Patch Changes
