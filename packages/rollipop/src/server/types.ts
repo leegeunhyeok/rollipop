@@ -3,15 +3,21 @@
  * @see https://github.com/facebook/metro/blob/0.81.x/packages/metro/src/lib/reporting.js
  */
 
-import type { FastifyInstance } from 'fastify';
-import { Emitter } from 'mitt';
-// Extend Fastify instance type with `@fastify/middie`.
-import '@fastify/middie';
+import type * as fastifyMiddie from '@fastify/middie';
+import type { FastifyInstance as BaseFastifyInstance } from 'fastify';
+import type { Emitter } from 'mitt';
 import type * as ws from 'ws';
 
 import type { ResolvedConfig } from '../config';
 import type { BuildOptions } from '../core/types';
 import type { WebSocketClient } from './wss/server';
+
+export type FastifyInstance = BaseFastifyInstance & {
+  // `@fastify/middie` extension
+  use(fn: fastifyMiddie.Handler): FastifyInstance;
+  use(route: string, fn: fastifyMiddie.Handler): FastifyInstance;
+  use(routes: string[], fn: fastifyMiddie.Handler): FastifyInstance;
+};
 
 export interface ServerOptions {
   port?: number;
