@@ -5,7 +5,7 @@ import type { DevWatchOptions, TransformOptions } from '@rollipop/rolldown/exper
 import type * as swc from '@swc/core';
 
 import type { Plugin } from '../core/plugins/types';
-import { InteractiveCommand } from '../node/cli-utils';
+import type { InteractiveCommand } from '../node/cli-utils';
 import type { MaybePromise, NullValue, Reporter } from '../types';
 
 export interface Config {
@@ -40,13 +40,13 @@ export interface Config {
    */
   watcher?: WatcherConfig;
   /**
+   * Optimization configuration.
+   */
+  optimization?: OptimizationConfig;
+  /**
    * React Native specific configuration.
    */
   reactNative?: ReactNativeConfig;
-  /**
-   * Dev mode specific configuration. (for dev server)
-   */
-  devMode?: DevModeConfig;
   /**
    * Terminal configuration.
    */
@@ -56,9 +56,9 @@ export interface Config {
    */
   reporter?: Reporter;
   /**
-   * Plugins.
+   * Dev mode specific configuration. (for dev server)
    */
-  plugins?: PluginOption;
+  devMode?: DevModeConfig;
   /**
    * Directory to load environment variables from.
    *
@@ -71,6 +71,92 @@ export interface Config {
    * Defaults to: `'ROLLIPOP_'`
    */
   envPrefix?: string;
+  /**
+   * Configures TypeScript configuration file resolution and usage.
+   *
+   * Defaults to: `true`
+   */
+  tsconfig?: rolldown.InputOptions['tsconfig'];
+  /**
+   * Whether to generate sourcemaps.
+   *
+   * - `false`: No sourcemap will be generated.
+   * - `true`: A separate sourcemap file will be generated.
+   * - `'inline'`: The sourcemap will be appended to the output file as a data URL.
+   * - `'hidden'`: A separate sourcemap file will be generated, but the link to the sourcemap (//# sourceMappingURL comment) will not be included in the output file.
+   *
+   * Defaults to: `true` when in development mode, `false` otherwise.
+   */
+  sourcemap?: rolldown.OutputOptions['sourcemap'];
+  /**
+   * The base URL for the links to the sourcemap file in the output file.
+   *
+   * By default, relative URLs are generated. If this option is set, an absolute URL with that base URL will be generated.
+   * This is useful when deploying source maps to a different location than your code, such as a CDN or separate debugging server.
+   */
+  sourcemapBaseUrl?: rolldown.OutputOptions['sourcemapBaseUrl'];
+  /**
+   * Whether to include [debug IDs](https://github.com/tc39/ecma426/blob/main/proposals/debug-id.md) in the sourcemap.
+   *
+   * When `true`, a unique debug ID will be emitted in source and sourcemaps which streamlines identifying sourcemaps across different builds.
+   *
+   * Defaults to: `false`
+   */
+  sourcemapDebugIds?: rolldown.OutputOptions['sourcemapDebugIds'];
+  /**
+   * Control which source files are included in the sourcemap ignore list.
+   *
+   * Files in the ignore list are excluded from debugger stepping and error stack traces.
+   *
+   * - `false`: Include no source files in the ignore list
+   * - `true`: Include all source files in the ignore list
+   * - `string`: Files containing this string in their path will be included in the ignore list
+   * - `RegExp`: Files matching this regular expression will be included in the ignore list
+   * - `function`: Custom function to determine if a source should be ignored
+   *
+   * :::tip Performance
+   * Using static values (`boolean`, `string`, or `RegExp`) is significantly more performant than functions.
+   * Calling JavaScript functions from Rust has extremely high overhead, so prefer static patterns when possible.
+   * :::
+   *
+   * @example
+   * ```js
+   * // ✅ Preferred: Use RegExp for better performance
+   * sourcemapIgnoreList: /node_modules/
+   *
+   * // ✅ Preferred: Use string pattern for better performance
+   * sourcemapIgnoreList: "vendor"
+   *
+   * // ! Use sparingly: Function calls have high overhead
+   * sourcemapIgnoreList: (source, sourcemapPath) => {
+   *   return source.includes('node_modules') || source.includes('.min.');
+   * }
+   * ```
+   *
+   * Defaults to: `/node_modules/`
+   */
+  sourcemapIgnoreList?: rolldown.OutputOptions['sourcemapIgnoreList'];
+  /**
+   * A transformation to apply to each path in a sourcemap.
+   *
+   * @example
+   * ```js
+   * export default defineConfig({
+   *   output: {
+   *     sourcemap: true,
+   *     sourcemapPathTransform: (source, sourcemapPath) => {
+   *       // Remove 'src/' prefix from all source paths
+   *       return source.replace(/^src\//, '');
+   *     },
+   *   },
+   * });
+   * ```
+   */
+  sourcemapPathTransform?: rolldown.OutputOptions['sourcemapPathTransform'];
+  /**
+   * Plugins to apply to the build.
+   */
+  plugins?: PluginOption;
   /**
    * Rollipop provides default options for Rolldown, but you can override them by this option.
    *
@@ -110,6 +196,12 @@ export type ResolverConfig = Omit<NonNullable<rolldown.InputOptions['resolve']>,
    * Defaults to: `true`
    */
   preferNativePlatform?: boolean;
+  /**
+   * Specifies which modules should be treated as external and not bundled.
+   *
+   * External modules will be left as import statements in the output.
+   */
+  external?: rolldown.InputOptions['external'];
 };
 
 export type TransformerConfig = Omit<
@@ -129,19 +221,15 @@ export type TransformerConfig = Omit<
   /**
    * Babel transformation configuration.
    */
-  babel?: {
-    rules?: BabelTransformRule[];
-  };
+  babel?: BabelTransformConfig;
   /**
    * SWC transformation configuration.
    */
-  swc?: {
-    rules?: SwcTransformRule[];
-  };
+  swc?: SwcTransformConfig;
 };
 
-export type BabelTransformRule = TransformRule<babel.TransformOptions>;
-export type SwcTransformRule = TransformRule<swc.Options>;
+export type BabelTransformConfig = { rules?: TransformRule<babel.TransformOptions>[] };
+export type SwcTransformConfig = { rules?: TransformRule<swc.Options>[] };
 
 export interface TransformRule<T = unknown> {
   filter?: rolldown.HookFilter | TopLevelFilterExpression[];
@@ -168,12 +256,64 @@ export interface SerializerConfig {
    * Polyfills are injected in the top of the output bundle.
    */
   polyfills?: Polyfill[];
+  /**
+   * A string to prepend to the bundle before `renderChunk` hook.
+   */
+  banner?: rolldown.OutputOptions['banner'];
+  /**
+   * A string to append to the bundle before `renderChunk` hook.
+   */
+  footer?: rolldown.OutputOptions['footer'];
+  /**
+   * A string to prepend to the bundle after `renderChunk` hook and minification.
+   */
+  postBanner?: rolldown.OutputOptions['postBanner'];
+  /**
+   * A string to append to the bundle after `renderChunk` hook and minification.
+   */
+  postFooter?: rolldown.OutputOptions['postFooter'];
+  /**
+   * A string to prepend inside any format-specific wrapper.
+   */
+  intro?: rolldown.OutputOptions['intro'];
+  /**
+   * A string to append inside any format-specific wrapper.
+   */
+  outro?: rolldown.OutputOptions['outro'];
+  /**
+   * When `true`, creates shim variables for missing exports instead of throwing an error.
+   *
+   * Defaults to: `false`
+   */
+  shimMissingExports?: rolldown.InputOptions['shimMissingExports'];
 }
 
 export type Polyfill = string | PolyfillWithCode | PolyfillWithPath;
 export type PolyfillWithCode = { type: PolyfillType; code: string };
 export type PolyfillWithPath = { type: PolyfillType; path: string };
 export type PolyfillType = 'plain' | 'iife';
+
+export type OptimizationConfig = rolldown.OptimizationOptions & {
+  /**
+   * Controls tree-shaking (dead code elimination).
+   *
+   * When `false`, tree-shaking will be disabled. When `true`, it is equivalent to setting each options to the default value.
+   *
+   * Defaults to: `true`
+   */
+  treeshake?: rolldown.InputOptions['treeshake'];
+  /**
+   * Control code minification.
+   *
+   * - `true`: Enable full minification including code compression and dead code elimination
+   * - `false`: Disable minification (default)
+   * - `'dce-only'`: Only perform dead code elimination without code compression
+   * - `MinifyOptions`: Fine-grained control over minification settings
+   *
+   * Defaults to: `false`
+   */
+  minify?: rolldown.OutputOptions['minify'];
+};
 
 export type WatcherConfig = DevWatchOptions;
 

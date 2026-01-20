@@ -31,7 +31,7 @@ export class Bundler {
       devEngineOptions,
     );
 
-    const devServerOptions = getOverrideOptionsForDevServer(config);
+    const devServerOptions = getOverrideOptionsForDevServer(config, resolvedBuildOptions);
     const mergedInput = merge(input, devServerOptions.input);
     const mergedOutput = merge(output, devServerOptions.output);
 
@@ -96,14 +96,18 @@ export class Bundler {
     const chunk = buildResult.output[0];
     invariant(chunk, 'Bundled chunk is not found');
 
-    if (resolvedBuildOptions.outfile && chunk.sourcemapFileName && resolvedBuildOptions.sourcemap) {
+    if (
+      resolvedBuildOptions.outfile &&
+      chunk.sourcemapFileName &&
+      resolvedBuildOptions.sourcemapOutfile
+    ) {
       const outputDir = path.dirname(resolvedBuildOptions.outfile);
-      const sourcemapDir = path.dirname(resolvedBuildOptions.sourcemap);
+      const sourcemapDir = path.dirname(resolvedBuildOptions.sourcemapOutfile);
       const sourcemapFile = path.join(outputDir, chunk.sourcemapFileName);
       if (!fs.existsSync(sourcemapDir)) {
         fs.mkdirSync(sourcemapDir, { recursive: true });
       }
-      fs.renameSync(sourcemapFile, resolvedBuildOptions.sourcemap);
+      fs.renameSync(sourcemapFile, resolvedBuildOptions.sourcemapOutfile);
     }
 
     return chunk;

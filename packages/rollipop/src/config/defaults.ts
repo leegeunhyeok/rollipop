@@ -16,12 +16,13 @@ import { getInitializeCorePath, getPolyfillScriptPaths } from '../internal/react
 import type { ReportableEvent, Reporter } from '../types';
 import { resolvePackagePath } from '../utils/node-resolve';
 import type { PluginFlattenConfig } from './merge-config';
-import type { Config, HmrConfig, Polyfill, TerminalConfig } from './types';
+import type { Config, DevModeConfig, OptimizationConfig, Polyfill, TerminalConfig } from './types';
 
 export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
   let reactNativePath: string;
   try {
-    reactNativePath = process.env.ROLLIPOP_REACT_NATIVE_PATH ?? resolvePackagePath(projectRoot, 'react-native');
+    reactNativePath =
+      process.env.ROLLIPOP_REACT_NATIVE_PATH ?? resolvePackagePath(projectRoot, 'react-native');
   } catch {
     throw new Error(
       `Could not resolve 'react-native' package path. Please check your project path.`,
@@ -64,6 +65,9 @@ export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
       useDebounce: true,
       debounceDuration: 50,
     },
+    optimization: {
+      treeshake: true as NonNullable<OptimizationConfig['treeshake']>,
+    },
     reactNative: {
       reactNativePath,
       codegen: {
@@ -78,7 +82,7 @@ export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
       globalIdentifiers: DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
     },
     devMode: {
-      hmr: true as boolean | HmrConfig,
+      hmr: true as NonNullable<DevModeConfig['hmr']>,
     },
     terminal: {
       status: ((): TerminalConfig['status'] => {

@@ -15,8 +15,11 @@ export function resolveBuildOptions(config: ResolvedConfig, buildOptions: BuildO
     buildOptions.outfile = path.resolve(config.root, buildOptions.outfile);
   }
 
-  if (buildOptions.sourcemap) {
-    buildOptions.sourcemap = path.resolve(config.root, buildOptions.sourcemap);
+  if (
+    (buildOptions.sourcemap === true || buildOptions.sourcemap === 'hidden') &&
+    buildOptions.sourcemapOutfile
+  ) {
+    buildOptions.sourcemapOutfile = path.resolve(config.root, buildOptions.sourcemapOutfile);
   }
 
   return merge(DEFAULT_BUILD_OPTIONS, {

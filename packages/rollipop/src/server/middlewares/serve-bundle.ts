@@ -33,6 +33,15 @@ const plugin = fp<ServeBundlePluginOptions>(
   (fastify, options) => {
     const { getBundler } = options;
 
+    const getBundleOptions = (buildOptions: BundleRequestSchema) => {
+      return {
+        platform: buildOptions.platform,
+        dev: buildOptions.dev,
+        minify: buildOptions.minify,
+        sourcemap: buildOptions.inlineSourceMap ? 'inline' : true,
+      } as const;
+    };
+
     fastify.get<{ Params: RouteParams; Querystring: BundleRequestSchema }>('/:name.bundle', {
       schema: {
         params: routeParamSchema,
@@ -41,7 +50,7 @@ const plugin = fp<ServeBundlePluginOptions>(
       async handler(request, reply) {
         const {
           params,
-          query: buildOptions,
+          query,
           headers: { accept },
         } = request;
 
@@ -50,6 +59,7 @@ const plugin = fp<ServeBundlePluginOptions>(
           return;
         }
 
+        const buildOptions = getBundleOptions(query);
         const bundler = getBundler(params.name, buildOptions);
         const isSupportMultipart = accept?.includes('multipart/mixed') ?? false;
 
@@ -85,13 +95,14 @@ const plugin = fp<ServeBundlePluginOptions>(
         querystring: bundleRequestSchema,
       },
       async handler(request, reply) {
-        const { params, query: buildOptions } = request;
+        const { params, query } = request;
 
         if (!params.name) {
           await reply.status(400).send('invalid bundle name');
           return;
         }
 
+        const buildOptions = getBundleOptions(query);
         const bundle = await withGetBundleErrorHandler(
           reply,
           getBundler(params.name, buildOptions).getBundle(),

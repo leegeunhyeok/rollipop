@@ -31,7 +31,7 @@ export const action: CommandAction<BundleCommandArgs> = async function (options)
     minify: options.minify,
     cache: options.cache,
     outfile: options.bundleOutput,
-    sourcemap: options.sourcemapOutput,
+    sourcemapOutfile: options.sourcemapOutput,
     assetsDir: options.assetsDest,
   });
 };

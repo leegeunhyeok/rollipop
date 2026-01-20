@@ -50,6 +50,9 @@ export function createTestConfig(basePath: string): ResolvedConfig {
       useDebounce: true,
       debounceDuration: 50,
     },
+    optimization: {
+      treeshake: true,
+    },
     reactNative: {
       reactNativePath: '__tests__/react-native',
       codegen: {

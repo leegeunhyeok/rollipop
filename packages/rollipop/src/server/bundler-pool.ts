@@ -57,7 +57,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     super();
     this._id = Bundler.createId(config, buildOptions);
     this.initializeHandle = taskHandler();
-    this.isHmrEnabled = Boolean(config.mode === 'development' && config.devMode.hmr);
+    this.isHmrEnabled = Boolean(buildOptions.dev && config.devMode.hmr);
     void this.initialize();
   }
 

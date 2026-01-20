@@ -40,7 +40,8 @@ export async function resolveRolldownOptions(
     return cachedOptions;
   }
 
-  const isDevServerMode = config.mode === 'development' && context.buildType === 'serve';
+  const { platform, dev, cache } = buildOptions;
+  const isDevServerMode = dev && context.buildType === 'serve';
 
   invariant(
     isDevServerMode ? devEngineOptions != null : true,
@@ -61,12 +62,53 @@ export async function resolveRolldownOptions(
       : null),
   };
 
-  const { platform, dev, cache, minify } = buildOptions;
-  const { sourceExtensions, assetExtensions, preferNativePlatform, ...rolldownResolve } =
-    config.resolver;
-  const { prelude: preludePaths, polyfills } = config.serializer;
+  // Resolver
+  const {
+    sourceExtensions,
+    assetExtensions,
+    preferNativePlatform,
+    external: rolldownExternal,
+    ...rolldownResolve
+  } = config.resolver;
+
+  // Serializer
+  const {
+    prelude: preludePaths,
+    polyfills,
+    banner: rolldownBanner,
+    footer: rolldownFooter,
+    postBanner: rolldownPostBanner,
+    postFooter: rolldownPostFooter,
+    intro: rolldownIntro,
+    outro: rolldownOutro,
+    shimMissingExports: rolldownShimMissingExports,
+  } = config.serializer;
+
+  // Transformer
   const { flow, babel: babelConfig, swc: swcConfig, ...rolldownTransform } = config.transformer;
-  const { codegen, assetRegistryPath, globalIdentifiers } = config.reactNative;
+
+  // Optimization
+  const {
+    treeshake: rolldownTreeshake,
+    minify: rolldownMinify,
+    ...rolldownOptimization
+  } = config.optimization;
+
+  // React Native specific options
+  const {
+    codegen,
+    assetRegistryPath,
+    globalIdentifiers: rolldownGlobalIdentifiers,
+  } = config.reactNative;
+
+  // Sourcemap specific options
+  const {
+    sourcemap: rolldownSourcemap,
+    sourcemapBaseUrl: rolldownSourcemapBaseUrl,
+    sourcemapDebugIds: rolldownSourcemapDebugIds,
+    sourcemapIgnoreList: rolldownSourcemapIgnoreList,
+    sourcemapPathTransform: rolldownSourcemapPathTransform,
+  } = config;
 
   const transformSvg = config.transformer.svg;
   const resolvedSourceExtensions = transformSvg ? [...sourceExtensions, 'svg'] : sourceExtensions;
@@ -141,12 +183,16 @@ export async function resolveRolldownOptions(
   })();
 
   const inputOptions: rolldown.InputOptions = {
+    platform: 'neutral',
     cwd: config.root,
     input: config.entry,
-    platform: 'neutral',
-    treeshake: true,
+    tsconfig: config.tsconfig,
     resolve: mergedResolveOptions,
     transform: mergedTransformOptions,
+    optimization: rolldownOptimization,
+    treeshake: rolldownTreeshake,
+    external: rolldownExternal,
+    shimMissingExports: rolldownShimMissingExports,
     plugins: withTransformBoundary(
       [
         prelude({ modulePaths: preludePaths }),
@@ -170,6 +216,9 @@ export async function resolveRolldownOptions(
       ],
       { context, beforeTransform, afterTransform },
     ),
+    experimental: {
+      strictExecutionOrder: true,
+    },
     checks: {
       /**
        * Disable eval check because react-native uses `eval` to execute code.
@@ -188,14 +237,31 @@ export async function resolveRolldownOptions(
   };
 
   const outputOptions: rolldown.OutputOptions = {
-    postBanner: [...getGlobalVariables(dev, context.buildType)].join('\n'),
-    intro: [...loadPolyfills(polyfills)].join('\n'),
-    file: buildOptions.outfile,
-    minify,
     format: 'esm',
-    keepNames: true,
-    sourcemap: true,
-    globalIdentifiers,
+    file: buildOptions.outfile,
+    banner: rolldownBanner,
+    footer: rolldownFooter,
+    postFooter: rolldownPostFooter,
+    postBanner: rolldownPostBanner,
+    outro: rolldownOutro,
+    intro: async (chunk) => {
+      return [
+        ...getGlobalVariables(dev, context.buildType),
+        ...loadPolyfills(polyfills),
+        typeof rolldownIntro === 'function' ? await rolldownIntro(chunk) : rolldownIntro,
+      ]
+        .filter(isNotNil)
+        .join('\n');
+    },
+    keepNames: dev,
+    minify: buildOptions.minify ?? rolldownMinify,
+    sourcemap: buildOptions.sourcemap ?? rolldownSourcemap,
+    sourcemapBaseUrl: rolldownSourcemapBaseUrl,
+    sourcemapDebugIds: rolldownSourcemapDebugIds,
+    sourcemapIgnoreList: rolldownSourcemapIgnoreList,
+    sourcemapPathTransform: rolldownSourcemapPathTransform,
+    inlineDynamicImports: true,
+    globalIdentifiers: rolldownGlobalIdentifiers,
   };
 
   const finalOptions = await applyDangerouslyOverrideOptionsFinalizer(
@@ -266,7 +332,10 @@ async function applyDangerouslyOverrideOptionsFinalizer(
   };
 }
 
-export function getOverrideOptionsForDevServer(config: ResolvedConfig) {
+export function getOverrideOptionsForDevServer(
+  config: ResolvedConfig,
+  buildOptions: ResolvedBuildOptions,
+) {
   const hmrConfig = resolveHmrConfig(config);
 
   const input: rolldown.InputOptions = {
@@ -278,14 +347,18 @@ export function getOverrideOptionsForDevServer(config: ResolvedConfig) {
     experimental: {
       devMode: hmrConfig ? { implement: hmrConfig.runtimeImplement } : false,
       incrementalBuild: true,
-      strictExecutionOrder: true,
       nativeMagicString: true,
     },
     treeshake: false,
   };
 
   const output: rolldown.OutputOptions = {
-    sourcemap: true,
+    minify: buildOptions.minify ?? false,
+    sourcemap: buildOptions.sourcemap ?? true,
+    generatedCode: {
+      symbols: buildOptions.dev,
+      profilerNames: buildOptions.dev,
+    },
   };
 
   return { input, output };
