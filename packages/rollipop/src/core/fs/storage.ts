@@ -3,8 +3,8 @@ import path from 'node:path';
 
 import { merge } from 'es-toolkit';
 
-import { getSharedDataPath } from './data';
 import { FileStorageData } from '../../common/types';
+import { getSharedDataPath } from './data';
 
 const DEFAULT_DATA: FileStorageData = {
   build: {},

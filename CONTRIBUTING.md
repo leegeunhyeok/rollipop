@@ -38,12 +38,14 @@ There are many ways to contribute to Rollipop:
 Rollipop uses [mise](https://mise.jdx.dev/) to manage Node.js version, ensuring consistent development environments across the team.
 
 1. **Set up the project**:
+
    ```bash
    mise trust
    mise install
    ```
 
 2. **Install dependencies**:
+
    ```bash
    yarn install
    ```
@@ -89,11 +91,13 @@ Before submitting a pull request, ensure your code passes all quality checks. Ru
 ### TypeScript
 
 - **Lint check**:
+
   ```bash
   yarn lint
   ```
 
 - **Lint and auto-fix**:
+
   ```bash
   yarn lint:fix
   ```

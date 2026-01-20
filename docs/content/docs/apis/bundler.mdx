@@ -14,12 +14,12 @@ function loadConfig(options?: LoadConfigOptions): Promise<ResolvedConfig>
 
 ### Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `options.cwd` | `string` | Current working directory (default: `process.cwd()`) |
-| `options.configFile` | `string` | Path to the configuration file |
-| `options.mode` | `'development' \| 'production'` | Mode to run the bundler in |
-| `options.context` | `object` | Additional context to pass to the config |
+| Parameter            | Type                            | Description                                          |
+| -------------------- | ------------------------------- | ---------------------------------------------------- |
+| `options.cwd`        | `string`                        | Current working directory (default: `process.cwd()`) |
+| `options.configFile` | `string`                        | Path to the configuration file                       |
+| `options.mode`       | `'development' \| 'production'` | Mode to run the bundler in                           |
+| `options.context`    | `object`                        | Additional context to pass to the config             |
 
 ### Returns
 
@@ -54,14 +54,14 @@ The resolved Rollipop configuration (obtained from `loadConfig`).
 
 `options: ServerOptions`
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `port` | `number` | Port to start the development server on | `8081` |
-| `host` | `string` | Host to start the development server on | `localhost` |
-| `https` | `boolean` | Enable HTTPS connections | `false` |
-| `key` | `string` | Path to custom SSL key | - |
-| `cert` | `string` | Path to custom SSL certificate | - |
-| `buildOptions` | `BuildOptions` | Build options | |
+| Option         | Type           | Description                             | Default     |
+| -------------- | -------------- | --------------------------------------- | ----------- |
+| `port`         | `number`       | Port to start the development server on | `8081`      |
+| `host`         | `string`       | Host to start the development server on | `localhost` |
+| `https`        | `boolean`      | Enable HTTPS connections                | `false`     |
+| `key`          | `string`       | Path to custom SSL key                  | -           |
+| `cert`         | `string`       | Path to custom SSL certificate          | -           |
+| `buildOptions` | `BuildOptions` | Build options                           |             |
 
 ```ts
 interface BuildOptions {
@@ -153,15 +153,15 @@ The resolved Rollipop configuration (obtained from `loadConfig`).
 
 `options: BuildOptions`
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `platform` | `string` | Target platform (`ios` \| `android`) | - |
-| `dev` | `boolean` | Build in development mode | `true` |
-| `minify` | `boolean` | Minify the bundle | `false` |
-| `cache` | `boolean` | Enable or disable bundler caching | `true` |
-| `outfile` | `string` | Output file path | - |
-| `sourcemap` | `string` | Sourcemap file path | - |
-| `assetsDir` | `string` | Assets directory path | - |
+| Option      | Type      | Description                          | Default |
+| ----------- | --------- | ------------------------------------ | ------- |
+| `platform`  | `string`  | Target platform (`ios` \| `android`) | -       |
+| `dev`       | `boolean` | Build in development mode            | `true`  |
+| `minify`    | `boolean` | Minify the bundle                    | `false` |
+| `cache`     | `boolean` | Enable or disable bundler caching    | `true`  |
+| `outfile`   | `string`  | Output file path                     | -       |
+| `sourcemap` | `string`  | Sourcemap file path                  | -       |
+| `assetsDir` | `string`  | Assets directory path                | -       |
 
 ### Returns
 

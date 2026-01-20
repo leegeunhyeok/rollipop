@@ -35,10 +35,10 @@ export default defineConfig((context) => {
 
 **DefineConfigContext:**
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `command` | `string \| undefined` | The current CLI command being executed (e.g., `'serve'`, `'build'`). May be `undefined` if not run via CLI. |
-| `defaultConfig` | `DefaultConfig` | The default configuration object provided by Rollipop. Useful for extending defaults. |
+| Property        | Type                  | Description                                                                                                 |
+| --------------- | --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `command`       | `string \| undefined` | The current CLI command being executed (e.g., `'serve'`, `'build'`). May be `undefined` if not run via CLI. |
+| `defaultConfig` | `DefaultConfig`       | The default configuration object provided by Rollipop. Useful for extending defaults.                       |
 
 The function can also be async:
 
@@ -132,6 +132,7 @@ Condition names for exports field resolution in package.json.
 If `true`, resolver will resolve platform-specific files with `.native` suffix.
 
 For example:
+
 - **true**: `index.android.js` → `index.native.js` → `index.js`
 - **false**: `index.android.js` → `index.js`
 
@@ -200,6 +201,7 @@ export default defineConfig({
 ```
 
 **BabelTransformRule:**
+
 ```ts
 interface BabelTransformRule {
   filter?: HookFilter | TopLevelFilterExpression[];
@@ -239,6 +241,7 @@ export default defineConfig({
 ```
 
 **SwcTransformRule:**
+
 ```ts
 interface SwcTransformRule {
   filter?: HookFilter | TopLevelFilterExpression[];
@@ -317,11 +320,13 @@ export default defineConfig({
 You can specify polyfills in three ways:
 
 1. **String path**: Simple file path
+
    ```ts
    polyfills: ['./polyfills/custom.js']
    ```
 
 2. **Object with code**: Inline polyfill code
+
    ```ts
    polyfills: [
      {
@@ -403,6 +408,7 @@ export default defineConfig({
 ```
 
 **HmrConfig:**
+
 ```ts
 interface HmrConfig {
   runtimeImplement?: string;  // Custom HMR runtime source
@@ -484,6 +490,7 @@ Terminal output configuration.
 - **Default:** `isTTY ? 'progress' : 'compat'`
 
 Terminal status display mode:
+
 - `'none'`: No status display
 - `'progress'`: Interactive progress display (when TTY is available)
 - `'compat'`: Compatible mode for non-TTY environments
@@ -511,6 +518,7 @@ export default defineConfig({
 ```
 
 **InteractiveCommand:**
+
 ```ts
 interface InteractiveCommand {
   key: string;

@@ -2,6 +2,15 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "printWidth": 100,
   "singleQuote": true,
+  "ignorePatterns": [
+    "docs/.next/**",
+    "docs/.source/**",
+    "docs/out/**",
+    "docs/next-env.d.ts",
+    "example/andorid/**",
+    "example/ios/**",
+    "rolldown/**"
+  ],
   "experimentalSortImports": {
     "groups": [
       ["type-import"],

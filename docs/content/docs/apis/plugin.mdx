@@ -57,10 +57,10 @@ For more details, refer to the [Rolldown Plugin API documentation](https://rolld
 Modify Rollipop config before it's resolved. The hook receives the merged config accumulated from all previous plugins. If the hook returns a config object, it will be deeply merged with the existing config.
 
 This is useful when you need to:
+
 - Set default configuration values
 - Conditionally modify config based on other settings
 - Add or override specific configuration options
-
 
 ```ts
 export default function myPlugin() {
@@ -97,7 +97,6 @@ export default function myPlugin() {
 }
 ```
 
-
 You can also directly modify the config object passed to the hook:
 
 ```ts
@@ -124,6 +123,7 @@ export default function myPlugin() {
 Called after the Rollipop config is resolved. Use this hook to read and store the final resolved config. Do not mutate the config inside this hook.
 
 This is useful when you need to:
+
 - Read the final resolved config to understand what settings are actually being used
 - Store config values for use in other hooks
 - Perform validation on the final config
@@ -149,6 +149,7 @@ export default function myPlugin() {
 - **Kind:** `async`, `sequential`
 
 Hook for configuring the dev server. The hook receives the DevServer instance and can be used to:
+
 - Access server instances (Fastify, WebSocket servers)
 - Add custom middleware
 - Set up custom routes or handlers
@@ -365,9 +366,11 @@ setCustomHMRHandler((socket: WebSocket, message: HMRCustomMessage) => {
 Registers a handler function to receive custom HMR messages from the server.
 
 **Parameters:**
+
 - `handler`: A callback function that receives `HMRCustomMessage` objects
 
 **Types:**
+
 ```ts
 type HMRCustomHandler = (socket: WebSocket, message: HMRCustomMessage) => void;
 

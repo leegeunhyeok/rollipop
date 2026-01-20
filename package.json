@@ -7,8 +7,10 @@
     "packages/*"
   ],
   "scripts": {
+    "roll": "yarn fmt && yarn lint && yarn typecheck:all && yarn test:all",
+    "fmt": "oxfmt --check",
+    "fmt:fix": "oxfmt",
     "typecheck:all": "yarn workspaces foreach --all --topological-dev run typecheck",
-    "format": "oxfmt",
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --deny-warnings --fix",
     "test:all": "yarn workspaces foreach --all --topological-dev --no-private run test",

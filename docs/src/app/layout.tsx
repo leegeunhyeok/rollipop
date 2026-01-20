@@ -1,7 +1,8 @@
-import { RootProvider } from 'fumadocs-ui/provider/next';
-import './global.css';
-import { Inter } from 'next/font/google';
 import SearchDialog from '@/components/search';
+
+import './global.css';
+import { RootProvider } from 'fumadocs-ui/provider/next';
+import { Inter } from 'next/font/google';
 
 const inter = Inter({
   subsets: ['latin'],

@@ -30,7 +30,10 @@ export class SmoothPre extends React.Component<CustomPreProps> {
     transitions.forEach(({ element, keyframes, options }) => {
       const { translateX, translateY, ...kf } = keyframes as any;
       if (translateX && translateY) {
-        kf.translate = [`${translateX[0]}px ${translateY[0]}px`, `${translateX[1]}px ${translateY[1]}px`];
+        kf.translate = [
+          `${translateX[0]}px ${translateY[0]}px`,
+          `${translateX[1]}px ${translateY[1]}px`,
+        ];
       }
       element.animate(kf, {
         duration: options.duration * MAX_TRANSITION_DURATION,

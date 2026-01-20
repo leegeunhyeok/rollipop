@@ -1,5 +1,5 @@
-import * as swc from '@swc/core';
 import type * as rolldown from '@rollipop/rolldown';
+import * as swc from '@swc/core';
 
 import type { TransformerConfig } from '../../config';
 import { mergeSwcOptions } from '../../utils/swc';

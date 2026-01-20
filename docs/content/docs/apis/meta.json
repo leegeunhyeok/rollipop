@@ -1,8 +1,5 @@
 {
   "title": "APIs",
-  "pages": [
-    "plugin",
-    "bundler"
-  ],
+  "pages": ["plugin", "bundler"],
   "defaultOpen": true
 }

@@ -15,8 +15,8 @@ on:
         default: 'manual'
         type: choice
         options:
-        - manual
-        - dev
+          - manual
+          - dev
       version:
         description: The version to release
         type: string
@@ -41,7 +41,7 @@ jobs:
 
       - name: Setup Node
         run: corepack enable
-      
+
       - name: Setup NPM
         run: |
           npm install -g npm@latest
