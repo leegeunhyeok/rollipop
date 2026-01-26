@@ -216,9 +216,6 @@ export async function resolveRolldownOptions(
       ],
       { context, beforeTransform, afterTransform },
     ),
-    experimental: {
-      strictExecutionOrder: true,
-    },
     checks: {
       /**
        * Disable eval check because react-native uses `eval` to execute code.
@@ -261,6 +258,8 @@ export async function resolveRolldownOptions(
     sourcemapIgnoreList: rolldownSourcemapIgnoreList,
     sourcemapPathTransform: rolldownSourcemapPathTransform,
     inlineDynamicImports: true,
+    strictExecutionOrder: true,
+    // `@rollipop/rolldown` specific options
     globalIdentifiers: rolldownGlobalIdentifiers,
   };
 
