@@ -1,6 +1,6 @@
 {
   "name": "rollipop",
-  "version": "0.1.0-alpha.10",
+  "version": "0.1.0-alpha.11",
   "type": "module",
   "bin": "./bin/index.js",
   "main": "./dist/index.js",

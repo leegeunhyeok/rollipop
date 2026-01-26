@@ -1,5 +1,11 @@
 # rollipop
 
+## 0.1.0-alpha.11
+
+### Patch Changes
+
+- 7fcbed3: expose more rolldown config options
+
 ## 0.1.0-alpha.10
 
 ### Patch Changes
