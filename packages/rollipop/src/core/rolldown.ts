@@ -257,7 +257,7 @@ export async function resolveRolldownOptions(
     sourcemapDebugIds: rolldownSourcemapDebugIds,
     sourcemapIgnoreList: rolldownSourcemapIgnoreList,
     sourcemapPathTransform: rolldownSourcemapPathTransform,
-    inlineDynamicImports: true,
+    codeSplitting: false,
     strictExecutionOrder: true,
     // `@rollipop/rolldown` specific options
     globalIdentifiers: rolldownGlobalIdentifiers,
