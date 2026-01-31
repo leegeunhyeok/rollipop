@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 
 import { isDebugEnabled } from '../common/debug';
-import { Logger } from '../common/logger';
 import { generateSourceFromAst, stripFlowSyntax } from '../common/transformer';
 import {
   DEFAULT_ASSET_EXTENSIONS,
@@ -13,7 +12,7 @@ import {
   DEFAULT_SOURCE_EXTENSIONS,
 } from '../constants';
 import { getInitializeCorePath, getPolyfillScriptPaths } from '../internal/react-native';
-import type { ReportableEvent, Reporter } from '../types';
+import type { Reporter } from '../types';
 import { resolvePackagePath } from '../utils/node-resolve';
 import { ClientLogReporter } from '../utils/reporters';
 import type { PluginFlattenConfig } from './merge-config';
@@ -102,22 +101,6 @@ export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
   } satisfies Config;
 
   return defaultConfig;
-}
-
-export class TerminalReporter implements Reporter {
-  private logger = new Logger('app');
-
-  update(event: ReportableEvent): void {
-    if (event.type === 'client_log') {
-      if (event.level === 'group' || event.level === 'groupCollapsed') {
-        this.logger.info(...event.data);
-        return;
-      } else if (event.level === 'groupEnd') {
-        return;
-      }
-      this.logger[event.level](...event.data);
-    }
-  }
 }
 
 export type DefaultConfig = ReturnType<typeof getDefaultConfig>;

@@ -6,13 +6,13 @@ Reporters allow you to receive and handle build events, progress updates, and cl
 
 ## Default Reporter
 
-Rollipop uses `TerminalReporter` by default, which logs client console messages to the terminal.
+Rollipop uses `ClientLogReporter` by default, which logs client console messages to the terminal.
 
 ```ts title="rollipop.config.ts"
 import { defineConfig } from 'rollipop';
 
 export default defineConfig({
-  // TerminalReporter is used by default
+  // `ClientLogReporter` is used by default
   // No need to specify unless you want a custom reporter
 });
 ```
