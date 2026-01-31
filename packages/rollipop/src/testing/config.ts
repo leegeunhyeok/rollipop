@@ -69,7 +69,6 @@ export function createTestConfig(basePath: string): ResolvedConfig {
     terminal: {
       status: process.stderr.isTTY ? 'progress' : 'compat',
     },
-    reporter: { update: noop } as Reporter,
     envDir: basePath,
     envPrefix: DEFAULT_ENV_PREFIX,
   } satisfies Config;

@@ -33,7 +33,7 @@ export function bindReporter(
           eventSource.emit('watchChange', event.id);
           break;
       }
-      originalReporter.update(event);
+      originalReporter?.update(event);
     },
   };
 

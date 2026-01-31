@@ -4,19 +4,6 @@ title: Reporter
 
 Reporters allow you to receive and handle build events, progress updates, and client logs from your Rollipop application. This is useful for custom logging, monitoring, or integrating with external tools.
 
-## Default Reporter
-
-Rollipop uses `ClientLogReporter` by default, which logs client console messages to the terminal.
-
-```ts title="rollipop.config.ts"
-import { defineConfig } from 'rollipop';
-
-export default defineConfig({
-  // `ClientLogReporter` is used by default
-  // No need to specify unless you want a custom reporter
-});
-```
-
 ## Reporter Interface
 
 To create a custom reporter, implement the `Reporter` interface:

@@ -82,7 +82,7 @@ export async function createDevServer(
     bundlerPool,
     reportEvent: (event) => {
       reportEvent?.(event);
-      config.reporter.update(event);
+      config.reporter?.update(event);
     },
   })
     .on('connection', (client) => emitter.emit('device.connected', { client }))

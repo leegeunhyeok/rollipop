@@ -95,7 +95,6 @@ export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
         return 'compat';
       })(),
     },
-    reporter: new ClientLogReporter() as Reporter,
     envDir: projectRoot,
     envPrefix: DEFAULT_ENV_PREFIX,
   } satisfies Config;
