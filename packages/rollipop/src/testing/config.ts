@@ -1,7 +1,5 @@
 import path from 'node:path';
 
-import { noop } from 'es-toolkit';
-
 import type { Config, ResolvedConfig } from '../config';
 import {
   DEFAULT_ASSET_EXTENSIONS,
@@ -12,7 +10,6 @@ import {
   DEFAULT_RESOLVER_MAIN_FIELDS,
   DEFAULT_SOURCE_EXTENSIONS,
 } from '../constants';
-import type { Reporter } from '../types';
 
 export function createTestConfig(basePath: string): ResolvedConfig {
   const defaultConfig = {
