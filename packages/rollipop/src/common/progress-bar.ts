@@ -68,15 +68,19 @@ const completedRenderer: StateRenderer<{
   hasErrors: boolean;
 }> = {
   render(state, context) {
-    const icon = state.hasErrors ? chalk.red('✘') : chalk.green('✔');
-    const durationInSeconds = (state.duration / 1000).toFixed(2);
-
-    const line1 = `${icon} Build completed ${chalk.gray(context.label)}`;
-    const line2 = chalk.grey(
-      `  Built in ${durationInSeconds}s (${context.current}/${context.total} modules)`,
-    );
-
-    return `${line1}\n${line2}`;
+    if (state.hasErrors) {
+      const icon = chalk.red('✘');
+      const line = `${icon} Build failed ${chalk.gray(context.label)}`;
+      return line;
+    } else {
+      const icon = chalk.green('✔');
+      const durationInSeconds = (state.duration / 1000).toFixed(2);
+      const line1 = `${icon} Build completed ${chalk.gray(context.label)}`;
+      const line2 = chalk.grey(
+        `  Built in ${durationInSeconds}s (${context.current}/${context.total} modules)`,
+      );
+      return `${line1}\n${line2}`;
+    }
   },
 };
 

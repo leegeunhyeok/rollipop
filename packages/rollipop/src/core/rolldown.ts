@@ -6,16 +6,21 @@ import { invariant, isNotNil, merge } from 'es-toolkit';
 
 import { asLiteral, asIdentifier, iife, nodeEnvironment } from '../common/code';
 import { isDebugEnabled } from '../common/debug';
-import { statusPresets } from '../common/status-presets';
 import { Polyfill, type ResolvedConfig } from '../config';
 import { GLOBAL_IDENTIFIER } from '../constants';
 import { getGlobalVariables } from '../internal/react-native';
 import { ResolvedBuildOptions } from '../utils/build-options';
 import { resolveHmrConfig } from '../utils/config';
 import { defineEnvFromObject } from '../utils/env';
+import {
+  CompatStatusReporter,
+  mergeReporters,
+  ProgressBarStatusReporter,
+} from '../utils/reporters';
 import { getBaseUrl } from '../utils/server';
+import { getBuildTotalModules } from '../utils/storage';
 import { loadEnv } from './env';
-import { prelude, status, reactRefresh, reactNative, json, svg, babel, swc } from './plugins';
+import { prelude, reporter, reactRefresh, reactNative, json, svg, babel, swc } from './plugins';
 import { printPluginLog } from './plugins/context';
 import { getPersistCachePlugins } from './plugins/utils/persist-cache';
 import { withTransformBoundary } from './plugins/utils/transform-utils';
@@ -165,23 +170,24 @@ export async function resolveRolldownOptions(
     context,
   });
 
-  const statusOptions = (() => {
+  const statusReporter = (() => {
     switch (config.terminal.status) {
       case 'compat':
-        return statusPresets.compat(config.reporter);
+        return new CompatStatusReporter();
 
       case 'progress':
-        return statusPresets.progressBar(
-          config.reporter,
-          context,
+        return new ProgressBarStatusReporter(
+          context.id,
           `[${platform}, ${buildOptions.dev ? 'dev' : 'prod'}]`,
+          getBuildTotalModules(context.storage, context.id),
         );
-
-      case 'none':
-      default:
-        return statusPresets.none(config.reporter);
     }
   })();
+
+  const reporterOptions = {
+    initialTotalModules: getBuildTotalModules(context.storage, context.id),
+    reporter: mergeReporters([statusReporter, config.reporter].filter(isNotNil)),
+  };
 
   const inputOptions: rolldown.InputOptions = {
     platform: 'neutral',
@@ -214,7 +220,7 @@ export async function resolveRolldownOptions(
         svg({ enabled: transformSvg }),
         babel(babelConfig),
         swc(swcConfig),
-        status(statusOptions),
+        reporter(reporterOptions),
         devServerPlugins,
         config.plugins,
       ],

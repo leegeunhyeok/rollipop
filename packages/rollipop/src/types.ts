@@ -12,6 +12,8 @@ export type ReportableEvent =
     }
   | {
       type: 'bundle_build_done';
+      totalModules: number;
+      duration: number;
     }
   | {
       type: 'bundle_build_failed';

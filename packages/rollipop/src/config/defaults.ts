@@ -15,6 +15,7 @@ import {
 import { getInitializeCorePath, getPolyfillScriptPaths } from '../internal/react-native';
 import type { ReportableEvent, Reporter } from '../types';
 import { resolvePackagePath } from '../utils/node-resolve';
+import { ClientLogReporter } from '../utils/reporters';
 import type { PluginFlattenConfig } from './merge-config';
 import type { Config, DevModeConfig, OptimizationConfig, Polyfill, TerminalConfig } from './types';
 
@@ -95,7 +96,7 @@ export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
         return 'compat';
       })(),
     },
-    reporter: new TerminalReporter() as Reporter,
+    reporter: new ClientLogReporter() as Reporter,
     envDir: projectRoot,
     envPrefix: DEFAULT_ENV_PREFIX,
   } satisfies Config;
