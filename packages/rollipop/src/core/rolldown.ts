@@ -91,6 +91,7 @@ export async function resolveRolldownOptions(
   const {
     treeshake: rolldownTreeshake,
     minify: rolldownMinify,
+    lazyBarrel: rolldownLazyBarrel,
     ...rolldownOptimization
   } = config.optimization;
 
@@ -193,6 +194,9 @@ export async function resolveRolldownOptions(
     treeshake: rolldownTreeshake,
     external: rolldownExternal,
     shimMissingExports: rolldownShimMissingExports,
+    experimental: {
+      lazyBarrel: rolldownLazyBarrel,
+    },
     plugins: withTransformBoundary(
       [
         prelude({ modulePaths: preludePaths }),
