@@ -1,0 +1,45 @@
+{
+  "name": "@rollipop/plugin-rozenite",
+  "version": "0.1.0-alpha.12",
+  "type": "module",
+  "bin": "./bin/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leegeunhyeok/rollipop.git",
+    "directory": "packages/plugin-rozenite"
+  },
+  "author": "leegeunhyeok <dev.ghlee@gmail.com> (https://github.com/leegeunhyeok)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leegeunhyeok/rollipop/issues"
+  },
+  "homepage": "https://github.com/leegeunhyeok/rollipop#readme",
+  "scripts": {
+    "prepack": "yarn build",
+    "typecheck": "tsc --noEmit",
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@rozenite/middleware": "1.2.0"
+  },
+  "devDependencies": {
+    "rollipop": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "rollipop": "workspace:*"
+  }
+}

@@ -1,3 +1,4 @@
+import { rozenite } from '@rollipop/plugin-rozenite';
 import { defineConfig, type PluginOption } from 'rollipop';
 
 import { config, hot, worklet } from './plugins';
@@ -8,7 +9,10 @@ function myPlugin(): PluginOption {
 
 export default defineConfig({
   entry: 'index.js',
-  plugins: [myPlugin()],
+  plugins: [
+    myPlugin(),
+    rozenite({ enabled: process.env.WITH_ROZENITE === 'true', logLevel: 'debug' }),
+  ],
   terminal: {
     extraCommands: [
       {
