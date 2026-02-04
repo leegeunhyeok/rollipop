@@ -33,6 +33,8 @@
     "@react-native/babel-preset": "0.83.0",
     "@react-native/metro-config": "0.83.0",
     "@react-native/typescript-config": "0.83.0",
+    "@rollipop/plugin-rozenite": "workspace:*",
+    "@rozenite/react-navigation-plugin": "^1.2.0",
     "@types/jest": "^29.5.13",
     "@types/node": "^22",
     "@types/react": "^19.2.0",

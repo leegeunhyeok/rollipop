@@ -1,43 +1,102 @@
-import { defineConfig } from 'rollipop';
+import type { Plugin, BabelTransformConfig } from 'rollipop';
+import { code, exclude, id, include } from 'rollipop/pluginutils';
 
-export default defineConfig({
-  entry: 'src/index.ts',
-  plugins: [
-    {
-      name: 'noop-serializer',
-      config(config) {
-        if (config.serializer) {
-          config.serializer.prelude = [];
-          config.serializer.polyfills = [];
-        }
-      },
-    },
-    {
-      name: 'resolver-priority',
-      config(config) {
-        if (config.resolver == null) {
-          return;
-        }
+const EXCLUDE_PACKAGES = ['react-native', '@react-native'];
+const REANIMATED_AUTOWORKLETIZATION_KEYWORDS = [
+  'worklet',
+  'useAnimatedGestureHandler',
+  'useAnimatedScrollHandler',
+  'useFrameCallback',
+  'useAnimatedStyle',
+  'useAnimatedProps',
+  'createAnimatedPropAdapter',
+  'useDerivedValue',
+  'useAnimatedReaction',
+  'useWorkletCallback',
+  'withTiming',
+  'withSpring',
+  'withDecay',
+  'withRepeat',
+  'runOnUI',
+  'executeOnUIRuntimeSync',
+];
 
-        if (process.env.ESM_ONLY === '1') {
-          config.resolver.conditionNames = ['import'];
-        }
-
-        if (process.env.CJS_ONLY === '1') {
-          config.resolver.conditionNames = ['require'];
-        }
-      },
-    },
-    {
-      name: 'noop-asset',
-      load: {
-        filter: {
-          id: /\.png$/,
+export function worklet(): Plugin {
+  const workletBabelConfig = {
+    rules: [
+      {
+        filter: [
+          exclude(id(new RegExp(`node_modules/(?:${EXCLUDE_PACKAGES.join('|')})/`))),
+          include(code(new RegExp(REANIMATED_AUTOWORKLETIZATION_KEYWORDS.join('|')))),
+        ],
+        options: {
+          plugins: [[require.resolve('react-native-worklets/plugin'), {}]] as const,
         },
       },
-      handler(id) {
-        return `export default 'asset:${id}'`;
-      },
+    ],
+  } satisfies BabelTransformConfig;
+
+  return {
+    name: 'worklet',
+    config(config) {
+      return {
+        ...config,
+        transformer: {
+          ...config.transformer,
+          babel: {
+            ...config.transformer?.babel,
+            rules: [...(config.transformer?.babel?.rules ?? []), ...workletBabelConfig.rules],
+          },
+        },
+      };
     },
-  ],
-});
+  };
+}
+
+export function config(): Plugin {
+  const log = (...args: any[]) => {
+    if (process.env.SHOW_CONFIG === '1') {
+      console.log(...args);
+    }
+  };
+
+  return {
+    name: 'config',
+    configureServer() {
+      log('configureServer:pre');
+      return () => {
+        log('configureServer:post');
+      };
+    },
+    configResolved(resolvedConfig) {
+      log(resolvedConfig);
+    },
+  };
+}
+
+export function hot(): Plugin | null {
+  if (process.env.HOT !== '1') {
+    return null;
+  }
+
+  let count = 0;
+  return {
+    name: 'hot',
+    configureServer(server) {
+      setInterval(() => {
+        if (server.hot.clients.size === 0) {
+          this.debug('No clients connected, skipping sending message');
+          return;
+        } else {
+          this.debug('Sending message to clients...');
+        }
+
+        server.hot.sendAll('custom-server-event', { message: `Hello from server: ${count++}` });
+      }, 5_000);
+
+      server.hot.on('custom-client-event', (data) => {
+        console.log('Received custom client event:', data);
+      });
+    },
+  };
+}

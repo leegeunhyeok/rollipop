@@ -1,5 +1,13 @@
-import { createStaticNavigation } from '@react-navigation/native';
+import { Button } from '@react-navigation/elements';
+import {
+  NavigationContainer,
+  NavigationContainerRef,
+  ParamListBase,
+  useNavigation,
+} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useReactNavigationDevTools } from '@rozenite/react-navigation-plugin';
+import { useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Animated, { type CSSAnimationKeyframes } from 'react-native-reanimated';
 
@@ -15,6 +23,8 @@ const breathe: CSSAnimationKeyframes = {
 };
 
 function HomeScreen() {
+  const navigation = useNavigation<any>();
+
   return (
     <View style={styles.container}>
       <Animated.View
@@ -32,24 +42,38 @@ function HomeScreen() {
         <Text style={styles.title}>Rollipop</Text>
         <Text style={styles.description}>{import.meta.env.ROLLIPOP_DESCRIPTION}</Text>
       </View>
+      <View style={styles.buttonContainer}>
+        <Button onPress={() => navigation.navigate('get_started')}>Get Started</Button>
+      </View>
     </View>
   );
 }
 
-const RootStack = createNativeStackNavigator({
-  initialRouteName: 'Home',
-  screenOptions: {
-    headerShown: false,
-  },
-  screens: {
-    Home: HomeScreen,
-  },
-});
+function GetStarted() {
+  return (
+    <View style={styles.container}>
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.title}>Hello, world!</Text>
+      </View>
+    </View>
+  );
+}
 
-const Navigation = createStaticNavigation(RootStack);
+const RootStack = createNativeStackNavigator();
 
 export function App() {
-  return <Navigation />;
+  const navigationRef = useRef<NavigationContainerRef<ParamListBase>>(null!);
+
+  useReactNavigationDevTools({ ref: navigationRef });
+
+  return (
+    <NavigationContainer ref={navigationRef}>
+      <RootStack.Navigator initialRouteName="home" screenOptions={{ headerShown: false }}>
+        <RootStack.Screen name="home" component={HomeScreen} />
+        <RootStack.Screen name="get_started" component={GetStarted} />
+      </RootStack.Navigator>
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -65,6 +89,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+  },
+  buttonContainer: {
+    paddingVertical: 16,
   },
   title: {
     fontSize: 24,
