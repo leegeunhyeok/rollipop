@@ -70,7 +70,7 @@ export default defineConfig([
   {
     entry: 'src/commands.ts',
     outDir: 'dist',
-    format: ['esm', 'cjs'],
+    format: 'esm',
     platform: 'node',
     fixedExtension: false,
     dts: true,
@@ -78,7 +78,7 @@ export default defineConfig([
   {
     entry: 'src/pluginutils.ts',
     outDir: 'dist',
-    format: ['esm', 'cjs'],
+    format: 'esm',
     platform: 'node',
     fixedExtension: false,
     dts: true,
