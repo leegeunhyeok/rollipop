@@ -3,7 +3,8 @@
   "tag": "alpha",
   "initialVersions": {
     "rollipop": "0.0.0",
-    "@rollipop/init": "0.1.0-alpha.4"
+    "@rollipop/init": "0.1.0-alpha.4",
+    "@rollipop/plugin-rozenite": "0.1.0-alpha.12"
   },
   "changesets": [
     "chilly-carrots-attack",
@@ -11,6 +12,7 @@
     "eleven-guests-burn",
     "fifty-deserts-act",
     "flat-candles-scream",
+    "forty-ways-behave",
     "frank-dragons-enter",
     "happy-teeth-search",
     "huge-streets-sort",
@@ -23,6 +25,7 @@
     "moody-rice-work",
     "nice-owls-accept",
     "nine-taxis-tap",
+    "olive-yaks-divide",
     "red-flowers-repair",
     "shaggy-rules-guess",
     "sixty-papayas-stare",
