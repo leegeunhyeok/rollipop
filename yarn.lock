@@ -6788,12 +6788,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22":
-  version: 22.19.2
-  resolution: "@types/node@npm:22.19.2"
+"@types/node@npm:^24":
+  version: 24.11.0
+  resolution: "@types/node@npm:24.11.0"
   dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10c0/fd56fc727bdc2cd9582e05db5daab6c8eb7bc5e5640a54cbc64ccc160a61cf50940742be5536f83796bffc83ce7709d5580a9ca85806f57501958821d230ab78
+    undici-types: "npm:~7.16.0"
+  checksum: 10c0/4fb7390259e3b158d25dbecf52de8ce70fa18a4ed0949c9444bb6384517c361fa19781e6821ca8c18dc5f6af43eab72e9e159e07000e6b1286d082e8585d8c41
   languageName: node
   linkType: hard
 
@@ -9149,7 +9149,7 @@ __metadata:
     "@orama/orama": "npm:^3.1.18"
     "@tailwindcss/postcss": "npm:^4.1.18"
     "@types/mdx": "npm:^2.0.13"
-    "@types/node": "npm:^22"
+    "@types/node": "npm:^24"
     "@types/react": "npm:^19.2.7"
     "@types/react-dom": "npm:^19.2.3"
     classnames: "npm:^2.5.1"
@@ -9753,7 +9753,7 @@ __metadata:
     "@rollipop/plugin-rozenite": "workspace:*"
     "@rozenite/react-navigation-plugin": "npm:^1.2.0"
     "@types/jest": "npm:^29.5.13"
-    "@types/node": "npm:^22"
+    "@types/node": "npm:^24"
     "@types/react": "npm:^19.2.0"
     "@types/react-test-renderer": "npm:^19.1.0"
     jest: "npm:^29.6.3"
@@ -15510,7 +15510,7 @@ __metadata:
   resolution: "rollipop-monorepo@workspace:."
   dependencies:
     "@changesets/cli": "npm:^2.30.0"
-    "@types/node": "npm:^22"
+    "@types/node": "npm:^24"
     oxfmt: "npm:^0.36.0"
     oxlint: "npm:^1.51.0"
     oxlint-tsgolint: "npm:^0.16.0"
@@ -16920,13 +16920,6 @@ __metadata:
     "@quansync/fs": "npm:^1.0.0"
     quansync: "npm:^1.0.0"
   checksum: 10c0/12aa85c78114a505fb49adc5fd6c2ce58b1661c517caea7f8943b9f56912634bfd085443a84d7675a0b245598e6220daaff0a69e3dd712819e0d05195fcfb75b
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~6.21.0":
-  version: 6.21.0
-  resolution: "undici-types@npm:6.21.0"
-  checksum: 10c0/c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
   languageName: node
   linkType: hard
 
