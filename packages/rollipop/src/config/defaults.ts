@@ -12,7 +12,9 @@ import {
   DEFAULT_SOURCE_EXTENSIONS,
 } from '../constants';
 import { getInitializeCorePath, getPolyfillScriptPaths } from '../internal/react-native';
+import type { Reporter } from '../types';
 import { resolvePackagePath } from '../utils/node-resolve';
+import { ClientLogReporter } from '../utils/reporters';
 import type { PluginFlattenConfig } from './merge-config';
 import type { Config, DevModeConfig, OptimizationConfig, Polyfill, TerminalConfig } from './types';
 
@@ -82,6 +84,7 @@ export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
     devMode: {
       hmr: true as NonNullable<DevModeConfig['hmr']>,
     },
+    reporter: new ClientLogReporter() as Reporter,
     terminal: {
       status: ((): TerminalConfig['status'] => {
         if (isDebugEnabled()) {

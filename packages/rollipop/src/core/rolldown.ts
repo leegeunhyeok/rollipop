@@ -13,7 +13,6 @@ import { ResolvedBuildOptions } from '../utils/build-options';
 import { resolveHmrConfig } from '../utils/config';
 import { defineEnvFromObject } from '../utils/env';
 import {
-  ClientLogReporter,
   CompatStatusReporter,
   mergeReporters,
   ProgressBarStatusReporter,
@@ -171,7 +170,6 @@ export async function resolveRolldownOptions(
     context,
   });
 
-  const clientLogReporter = new ClientLogReporter();
   const statusReporter = (() => {
     switch (config.terminal.status) {
       case 'compat':
@@ -186,7 +184,7 @@ export async function resolveRolldownOptions(
     }
   })();
 
-  const defaultReporters = [clientLogReporter, statusReporter];
+  const defaultReporters = [statusReporter];
   const reporterOptions = {
     initialTotalModules: getBuildTotalModules(context.storage, context.id),
     reporter: mergeReporters([...defaultReporters, config.reporter].filter(isNotNil)),
@@ -263,7 +261,6 @@ export async function resolveRolldownOptions(
         .filter(isNotNil)
         .join('\n');
     },
-    keepNames: dev,
     minify: buildOptions.minify ?? rolldownMinify,
     sourcemap: buildOptions.sourcemap ?? rolldownSourcemap,
     sourcemapBaseUrl: rolldownSourcemapBaseUrl,

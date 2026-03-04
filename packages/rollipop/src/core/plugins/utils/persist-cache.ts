@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import { exclude, id, include } from '@rollipop/rolldown-pluginutils';
+import { or, exclude, id, include } from '@rollipop/rolldown-pluginutils';
 
 import { logger } from '../../../logger';
 import { xxhash } from '../../../utils/hash';
@@ -21,8 +21,10 @@ export function getPersistCachePlugins(options: PersistCachePluginsOptions) {
 
   const { sourceExtensions, context } = options;
   const includePattern = new RegExp(`\\.(?:${sourceExtensions.join('|')})$`);
-  const excludePattern = /@oxc-project\+runtime/;
-  const filter = [exclude(id(excludePattern)), include(id(includePattern))];
+  const filter = [
+    exclude(or(id(/rolldown\/runtime/), id(/@oxc-project\+runtime/))),
+    include(id(includePattern)),
+  ];
   let cacheHits = 0;
 
   const beforeTransform: Plugin = {
