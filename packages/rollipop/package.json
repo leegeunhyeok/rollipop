@@ -59,6 +59,7 @@
     "build": "tsdown"
   },
   "dependencies": {
+    "@babel/code-frame": "^7.27.1",
     "@babel/core": "^7.28.5",
     "@babel/generator": "^7.28.5",
     "@babel/plugin-transform-flow-strip-types": "^7.27.1",
@@ -95,6 +96,7 @@
     "image-size": "^2.0.2",
     "json-schema-to-ts": "^3.1.1",
     "mime": "^4.1.0",
+    "mitt": "^3.0.1",
     "p-limit": "^7.2.0",
     "source-map": "^0.7.6",
     "strip-ansi": "^7.1.2",
@@ -103,12 +105,10 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@babel/code-frame": "^7.27.1",
     "@types/babel__code-frame": "^7",
     "@types/babel__core": "^7",
     "@types/babel__generator": "^7",
     "magic-string": "^0.30.21",
-    "mitt": "^3.0.1",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
