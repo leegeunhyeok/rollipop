@@ -7,4 +7,7 @@ export default defineConfig({
   platform: 'node',
   fixedExtension: false,
   dts: true,
+  checks: {
+    pluginTimings: false,
+  },
 });

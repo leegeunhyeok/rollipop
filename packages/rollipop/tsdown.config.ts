@@ -42,14 +42,20 @@ const transformToEs5: RolldownPluginOption = {
   },
 };
 
-const runtimeConfig: UserConfig = {
+const commonConfig: UserConfig = {
   outDir: 'dist',
+  fixedExtension: false,
+  checks: {
+    pluginTimings: false,
+  },
+};
+
+const runtimeConfig: UserConfig = {
   format: 'esm',
   platform: 'neutral',
   define: {
     globalThis: '__ROLLIPOP_GLOBAL__',
   },
-  fixedExtension: false,
   treeshake: false,
   logLevel: 'error',
   plugins: [transformToEs5],
@@ -57,30 +63,27 @@ const runtimeConfig: UserConfig = {
 
 export default defineConfig([
   {
+    ...commonConfig,
     entry: 'src/index.ts',
-    outDir: 'dist',
     format: 'esm',
     platform: 'node',
     define: {
       'globalThis.__ROLLIPOP_VERSION__': JSON.stringify(version),
     },
-    fixedExtension: false,
     dts: true,
   },
   {
+    ...commonConfig,
     entry: 'src/commands.ts',
-    outDir: 'dist',
     format: 'esm',
     platform: 'node',
-    fixedExtension: false,
     dts: true,
   },
   {
+    ...commonConfig,
     entry: 'src/pluginutils.ts',
-    outDir: 'dist',
     format: 'esm',
     platform: 'node',
-    fixedExtension: false,
     dts: true,
   },
   {
@@ -88,7 +91,6 @@ export default defineConfig([
     entry: 'src/runtime.ts',
     format: ['esm', 'cjs'],
     platform: 'neutral',
-    fixedExtension: false,
     dts: true,
   },
   {
