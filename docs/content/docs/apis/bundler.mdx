@@ -9,7 +9,7 @@ The Bundler API provides programmatic access to Rollipop's bundling and developm
 Load and resolve the Rollipop configuration file.
 
 ```ts
-function loadConfig(options?: LoadConfigOptions): Promise<ResolvedConfig>
+function loadConfig(options?: LoadConfigOptions): Promise<ResolvedConfig>;
 ```
 
 ### Parameters
@@ -40,10 +40,7 @@ console.log('Resolved config:', config);
 Start the React Native development server.
 
 ```ts
-function runServer(
-  config: ResolvedConfig,
-  options: ServerOptions
-): Promise<DevServer>
+function runServer(config: ResolvedConfig, options: ServerOptions): Promise<DevServer>;
 ```
 
 ### Parameters
@@ -139,10 +136,7 @@ console.log('Dev server running at:', server.instance.listeningOrigin);
 Build a JavaScript bundle for production or development.
 
 ```ts
-function runBuild(
-  config: ResolvedConfig,
-  options: BuildOptions
-): Promise<OutputChunk>
+function runBuild(config: ResolvedConfig, options: BuildOptions): Promise<OutputChunk>;
 ```
 
 ### Parameters

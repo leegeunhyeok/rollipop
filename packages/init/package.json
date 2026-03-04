@@ -1,23 +1,23 @@
 {
   "name": "@rollipop/init",
   "version": "0.1.0-alpha.12",
-  "type": "module",
-  "bin": "./bin/index.js",
-  "files": [
-    "bin",
-    "dist"
-  ],
+  "homepage": "https://github.com/leegeunhyeok/rollipop#readme",
+  "bugs": {
+    "url": "https://github.com/leegeunhyeok/rollipop/issues"
+  },
+  "license": "MIT",
+  "author": "leegeunhyeok <dev.ghlee@gmail.com> (https://github.com/leegeunhyeok)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/leegeunhyeok/rollipop.git",
     "directory": "packages/core"
   },
-  "author": "leegeunhyeok <dev.ghlee@gmail.com> (https://github.com/leegeunhyeok)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/leegeunhyeok/rollipop/issues"
-  },
-  "homepage": "https://github.com/leegeunhyeok/rollipop#readme",
+  "bin": "./bin/index.js",
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "type": "module",
   "scripts": {
     "execute": "node --import @oxc-node/core/register src/index.ts",
     "prepack": "yarn build",

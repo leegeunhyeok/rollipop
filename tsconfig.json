@@ -9,7 +9,7 @@
     "isolatedModules": true,
     "strict": true,
     "allowJs": false,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
-  "exclude": ["**/dist/*"],
+  "exclude": ["**/dist/*"]
 }

@@ -260,7 +260,7 @@ Rolldown introduced a [hook filter feature](https://rolldown.rs/apis/plugin-hook
 
 ```ts title="my-plugin.ts"
 export default function myPlugin() {
-  const jsFileRegex = /\.js$/
+  const jsFileRegex = /\.js$/;
 
   return {
     name: 'my-plugin',
@@ -278,7 +278,7 @@ export default function myPlugin() {
         };
       },
     },
-  }
+  };
 }
 ```
 
@@ -313,8 +313,8 @@ On the client side, use `hot.on` to listen to the events:
 ```ts
 if (import.meta.hot) {
   import.meta.hot.on('my-custom:from-server', (data) => {
-    console.log(data.msg) // hello
-  })
+    console.log(data.msg); // hello
+  });
 }
 ```
 
@@ -324,7 +324,7 @@ To send events from the client to the server, we can use `hot.send`:
 
 ```ts
 if (import.meta.hot) {
-  import.meta.hot.send('my-custom:from-client', { msg: 'Hey!' })
+  import.meta.hot.send('my-custom:from-client', { msg: 'Hey!' });
 }
 ```
 

@@ -93,7 +93,8 @@ export default defineConfig({
 Module resolution configuration.
 
 <Callout>
-`resolver` option is extends Rolldown's [`InputOptions['resolve']`](https://github.com/rolldown/rolldown/blob/v1.0.0-beta.57/packages/rolldown/src/binding.d.cts#L1905).
+  `resolver` option is extends Rolldown's
+  [`InputOptions['resolve']`](https://github.com/rolldown/rolldown/blob/v1.0.0-beta.57/packages/rolldown/src/binding.d.cts#L1905).
 </Callout>
 
 ### resolver.sourceExtensions
@@ -148,7 +149,8 @@ Whether to resolve symlinks to their symlinked location.
 Source code transformation configuration.
 
 <Callout>
-`transformer` option is extends Rolldown's [`TransformOptions`](https://github.com/rolldown/rolldown/blob/v1.0.0-beta.57/packages/rolldown/src/binding.d.cts#L1171).
+  `transformer` option is extends Rolldown's
+  [`TransformOptions`](https://github.com/rolldown/rolldown/blob/v1.0.0-beta.57/packages/rolldown/src/binding.d.cts#L1171).
 </Callout>
 
 ### transformer.svg
@@ -322,7 +324,7 @@ You can specify polyfills in three ways:
 1. **String path**: Simple file path
 
    ```ts
-   polyfills: ['./polyfills/custom.js']
+   polyfills: ['./polyfills/custom.js'];
    ```
 
 2. **Object with code**: Inline polyfill code
@@ -333,7 +335,7 @@ You can specify polyfills in three ways:
        type: 'iife',
        code: 'console.log("Polyfill loaded");',
      },
-   ]
+   ];
    ```
 
 3. **Object with path**: File path with explicit type
@@ -343,7 +345,7 @@ You can specify polyfills in three ways:
        type: 'plain',
        path: './polyfills/global.js',
      },
-   ]
+   ];
    ```
 
 ## watcher
@@ -351,7 +353,8 @@ You can specify polyfills in three ways:
 File watcher configuration for development mode.
 
 <Callout>
-`watcher` option is extends Rolldown's [`DevWatchOptions`](https://github.com/rolldown/rolldown/blob/v1.0.0-beta.57/packages/rolldown/src/binding.d.cts#L1718).
+  `watcher` option is extends Rolldown's
+  [`DevWatchOptions`](https://github.com/rolldown/rolldown/blob/v1.0.0-beta.57/packages/rolldown/src/binding.d.cts#L1718).
 </Callout>
 
 ### watcher.skipWrite
@@ -411,8 +414,8 @@ export default defineConfig({
 
 ```ts
 interface HmrConfig {
-  runtimeImplement?: string;  // Custom HMR runtime source
-  clientImplement?: string;    // Custom HMR client source
+  runtimeImplement?: string; // Custom HMR runtime source
+  clientImplement?: string; // Custom HMR client source
 }
 ```
 

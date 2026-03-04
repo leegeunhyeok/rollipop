@@ -60,9 +60,9 @@ Emitted during module transformation, providing progress information.
 ```ts
 {
   type: 'transform';
-  id: string;                    // Module ID being transformed
-  totalModules: number | undefined;     // Total number of modules
-  transformedModules: number;    // Number of modules transformed
+  id: string; // Module ID being transformed
+  totalModules: number | undefined; // Total number of modules
+  transformedModules: number; // Number of modules transformed
 }
 ```
 
@@ -75,7 +75,7 @@ Emitted when a file change is detected in watch mode.
 ```ts
 {
   type: 'watch_change';
-  id: string;  // Path of the changed file
+  id: string; // Path of the changed file
 }
 ```
 
