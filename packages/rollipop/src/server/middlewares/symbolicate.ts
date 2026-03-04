@@ -1,11 +1,10 @@
-import url from 'url';
-
 import { invariant } from 'es-toolkit';
 import fp from 'fastify-plugin';
 import { asConst, type FromSchema } from 'json-schema-to-ts';
 
 import type { BuildOptions } from '../../core/types';
 import { getBaseBundleName } from '../../utils/bundle';
+import { parseUrl } from '../../utils/url';
 import type { BundlerDevEngine } from '../bundler-pool';
 import type { StackFrameInput } from '../symbolicate';
 import { symbolicate } from '../symbolicate';
@@ -47,7 +46,7 @@ const plugin = fp<SymbolicatePluginOptions>(
         const bundleUrl = stack.find((frame) => frame.file?.startsWith('http'));
         invariant(bundleUrl?.file, 'No bundle URL found in stack frames');
 
-        const { pathname, query } = url.parse(bundleUrl.file, true);
+        const { pathname, query } = parseUrl(bundleUrl.file);
         invariant(pathname, 'No pathname found in bundle URL');
         invariant(query.platform, 'No platform found in query');
         invariant(query.dev, 'No dev found in query');

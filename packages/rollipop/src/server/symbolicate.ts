@@ -1,8 +1,7 @@
-import url from 'url';
-
 import { codeFrameColumns } from '@babel/code-frame';
 import { NullableMappedPosition, SourceMapConsumer } from 'source-map';
 
+import { parseUrl } from '../utils/url';
 import { InMemoryBundle } from './bundle';
 
 export interface StackFrameInput {
@@ -136,7 +135,7 @@ function getCodeFrame(
     const { lineNumber, column, file } = frame;
     const unresolved = file.startsWith('http');
     const source = unresolved ? bundle.code : sourceMapConsumer.sourceContentFor(frame.file);
-    const fileName = unresolved ? (url.parse(file).pathname ?? 'unknown') : file;
+    const fileName = unresolved ? (parseUrl(file).pathname ?? 'unknown') : file;
     let content = '';
 
     if (source) {

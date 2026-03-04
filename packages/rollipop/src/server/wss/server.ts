@@ -1,11 +1,11 @@
 import EventEmitter from 'node:events';
 import { IncomingMessage } from 'node:http';
 import { Duplex } from 'node:stream';
-import url from 'url';
 
 import * as ws from 'ws';
 
 import type { Logger } from '../../common/logger';
+import { parseUrl } from '../../utils/url';
 import { logger as devServerLogger } from '../logger';
 
 export type BufferLike = Parameters<ws.WebSocket['send']>[0];
@@ -103,7 +103,7 @@ export function getWebSocketUpgradeHandler(websocketEndpoints: Record<string, ws
       return;
     }
 
-    const { pathname } = url.parse(request.url, true);
+    const { pathname } = parseUrl(request.url);
     if (pathname != null && websocketEndpoints[pathname]) {
       const wss = websocketEndpoints[pathname];
       wss.handleUpgrade(request, socket, head, (socket) => {
