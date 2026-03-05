@@ -1,5 +1,12 @@
 # rollipop
 
+## 0.1.0-alpha.13
+
+### Patch Changes
+
+- 67d29b4: fix cjs compatibility for commands
+- 49ec649: export esm only
+
 ## 0.1.0-alpha.12
 
 ### Patch Changes
