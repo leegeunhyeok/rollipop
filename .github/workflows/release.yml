@@ -70,6 +70,8 @@ jobs:
         with:
           version: yarn changeset version
           publish: yarn scripts:publish
+          commit: 'chore(release): version packages'
+          title: 'chore(release): version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: ${{ env.BASE_BRANCH }}
