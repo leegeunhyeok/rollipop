@@ -27,8 +27,14 @@
       "default": "./dist/index.js"
     },
     "./commands": {
-      "types": "./dist/commands.d.ts",
-      "default": "./dist/commands.js"
+      "import": {
+        "types": "./dist/commands.d.ts",
+        "default": "./dist/commands.js"
+      },
+      "require": {
+        "types": "./dist/commands.d.cts",
+        "default": "./dist/commands.cjs"
+      }
     },
     "./pluginutils": {
       "types": "./dist/pluginutils.d.ts",

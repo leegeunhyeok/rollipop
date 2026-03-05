@@ -1,3 +1,3 @@
 module.exports = {
-  // commands: require('rollipop/commands'),
+  commands: require('rollipop/commands'),
 };

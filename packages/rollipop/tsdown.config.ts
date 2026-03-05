@@ -75,7 +75,7 @@ export default defineConfig([
   {
     ...commonConfig,
     entry: 'src/commands.ts',
-    format: 'esm',
+    format: ['esm', 'cjs'],
     platform: 'node',
     dts: true,
   },
