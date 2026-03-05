@@ -97,6 +97,7 @@ export default defineConfig([
     ...runtimeConfig,
     entry: 'src/runtime/hmr-runtime.ts',
     noExternal: ['mitt'],
+    inlineOnly: false,
   },
   {
     ...runtimeConfig,
