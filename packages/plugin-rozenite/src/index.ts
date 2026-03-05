@@ -1,1 +1,1 @@
-export { rozenitePlugin as rozenite } from './plugin';
+export { rozenitePlugin as rozenite, type RozenitePluginOptions } from './plugin';
