@@ -1,5 +1,5 @@
-import { rozenite } from '@rollipop/plugin-rozenite';
 import { analyze } from '@rollipop/plugin-analyze';
+import { rozenite } from '@rollipop/plugin-rozenite';
 import { defineConfig, type PluginOption } from 'rollipop';
 
 import { config, hot, worklet } from './plugins';
