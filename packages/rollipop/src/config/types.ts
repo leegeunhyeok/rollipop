@@ -1,7 +1,8 @@
 import type * as babel from '@babel/core';
 import type * as rolldown from '@rollipop/rolldown';
+import type { TransformOptions } from '@rollipop/rolldown/utils';
 import type { TopLevelFilterExpression } from '@rollipop/rolldown-pluginutils';
-import type { DevWatchOptions, TransformOptions } from '@rollipop/rolldown/experimental';
+import type { DevWatchOptions } from '@rollipop/rolldown/experimental';
 import type * as swc from '@swc/core';
 
 import type { Plugin } from '../core/plugins/types';
