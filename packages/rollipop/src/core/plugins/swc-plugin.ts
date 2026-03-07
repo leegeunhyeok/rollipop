@@ -1,14 +1,27 @@
 import type * as rolldown from '@rollipop/rolldown';
+import { id, include } from '@rollipop/rolldown-pluginutils';
 import * as swc from '@swc/core';
 
 import type { TransformerConfig } from '../../config';
 import { mergeSwcOptions } from '../../utils/swc';
+import { ROLLDOWN_RUNTIME_EXCLUDE_FILTER } from './shared/filters';
 import { cacheable } from './utils';
 import { getFlag, TransformFlag } from './utils/transform-utils';
 
 function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
   const { rules = [] } = options ?? {};
   const swcOptionsById: Map<string, swc.Options[]> = new Map();
+
+  const swcHelpersResolvePlugin: rolldown.Plugin = {
+    name: 'rollipop:swc-helpers-resolve',
+    resolveId: {
+      order: 'pre',
+      filter: [include(id(/^@swc\/helpers/)), ROLLDOWN_RUNTIME_EXCLUDE_FILTER],
+      handler(source, _importer, extraOptions) {
+        return this.resolve(source, import.meta.dirname, extraOptions);
+      },
+    },
+  };
 
   const swcRules = rules.map(({ filter, options }, index) => {
     return {
@@ -32,13 +45,14 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
       swcOptionsById.clear();
     },
     transform: {
+      filter: [ROLLDOWN_RUNTIME_EXCLUDE_FILTER],
       handler(code, id) {
         if (getFlag(this, id) & TransformFlag.SKIP_ALL) {
           return;
         }
 
         const swcOptions = swcOptionsById.get(id) ?? [];
-        const baseOptions = getPreset();
+        const baseOptions = getPreset(id);
         const result = swc.transformSync(code, {
           filename: id,
           configFile: false,
@@ -55,10 +69,12 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
     },
   };
 
-  return [...swcRules, swcPlugin].map(cacheable);
+  const cacheablePlugins = [...swcRules, swcPlugin];
+
+  return [swcHelpersResolvePlugin, ...cacheablePlugins.map(cacheable)];
 }
 
-function getPreset(): swc.Options {
+function getPreset(id: string): swc.Options {
   return {
     jsc: {
       target: 'es5',
@@ -79,8 +95,9 @@ function getPreset(): swc.Options {
         setPublicClassFields: true,
         privateFieldsAsProperties: true,
       },
+      externalHelpers: true,
     },
-    isModule: true,
+    isModule: id.endsWith('.cjs') ? 'commonjs' : true,
   };
 }
 

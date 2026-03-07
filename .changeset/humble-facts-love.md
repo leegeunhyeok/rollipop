@@ -1,0 +1,5 @@
+---
+"rollipop": patch
+---
+
+enable `externalHelpers`

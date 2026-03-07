@@ -6270,6 +6270,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/helpers@npm:^0.5.19":
+  version: 0.5.19
+  resolution: "@swc/helpers@npm:0.5.19"
+  dependencies:
+    tslib: "npm:^2.8.0"
+  checksum: 10c0/30317ee644d390c88dd975b11b5260f7c70602bfb81ec386b3807d97a763215df7f501e43b0246e0773150fcfd835349bcdcb3b220d121e485ee528a72b5fd79
+  languageName: node
+  linkType: hard
+
 "@swc/types@npm:^0.1.25":
   version: 0.1.25
   resolution: "@swc/types@npm:0.1.25"
@@ -15837,6 +15846,7 @@ __metadata:
     "@svgr/core": "npm:^8.1.0"
     "@svgr/plugin-jsx": "npm:^8.1.0"
     "@swc/core": "npm:^1.15.18"
+    "@swc/helpers": "npm:^0.5.19"
     "@types/babel__code-frame": "npm:^7"
     "@types/babel__core": "npm:^7"
     "@types/babel__generator": "npm:^7"

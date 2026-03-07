@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 import type * as rolldown from '@rollipop/rolldown';
-import type { TransformOptions } from '@rollipop/rolldown/experimental';
+import type { TransformOptions } from '@rollipop/rolldown/utils';
 import { invariant, isNotNil, merge } from 'es-toolkit';
 
 import { asLiteral, asIdentifier, iife, nodeEnvironment } from '../common/code';

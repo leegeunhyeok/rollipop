@@ -1,10 +1,11 @@
 import fs from 'node:fs';
 
-import { or, exclude, id, include } from '@rollipop/rolldown-pluginutils';
+import { id, include } from '@rollipop/rolldown-pluginutils';
 
 import { logger } from '../../../logger';
 import { xxhash } from '../../../utils/hash';
 import type { BundlerContext } from '../../types';
+import { ROLLDOWN_RUNTIME_EXCLUDE_FILTER } from '../shared/filters';
 import type { Plugin } from '../types';
 import { TransformFlag, getFlag, setFlag } from './transform-utils';
 
@@ -21,10 +22,7 @@ export function getPersistCachePlugins(options: PersistCachePluginsOptions) {
 
   const { sourceExtensions, context } = options;
   const includePattern = new RegExp(`\\.(?:${sourceExtensions.join('|')})$`);
-  const filter = [
-    exclude(or(id(/rolldown\/runtime/), id(/@oxc-project\+runtime/))),
-    include(id(includePattern)),
-  ];
+  const filter = [ROLLDOWN_RUNTIME_EXCLUDE_FILTER, include(id(includePattern))];
   let cacheHits = 0;
 
   const beforeTransform: Plugin = {
