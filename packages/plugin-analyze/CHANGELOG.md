@@ -1,5 +1,13 @@
 # @rollipop/plugin-analyze
 
+## 0.1.0-alpha.14
+
+### Patch Changes
+
+- Updated dependencies [2c1a088]
+- Updated dependencies [7438e0b]
+  - rollipop@0.1.0-alpha.14
+
 ## 0.1.0-alpha.13
 
 ### Patch Changes

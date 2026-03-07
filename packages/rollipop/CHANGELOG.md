@@ -1,5 +1,12 @@
 # rollipop
 
+## 0.1.0-alpha.14
+
+### Patch Changes
+
+- 2c1a088: enable `externalHelpers`
+- 7438e0b: bump version up dependencies
+
 ## 0.1.0-alpha.13
 
 ### Patch Changes
