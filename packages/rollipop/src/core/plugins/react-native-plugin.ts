@@ -136,16 +136,6 @@ function reactNativePlugin(
 
   const replaceHMRClientPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-replace-hmr-client',
-    resolveId: {
-      filter: [include(id(/\/HMRClient\.js$/))],
-      async handler(id, importer) {
-        const resolvedId = await this.resolve(id, importer, { skipSelf: true });
-
-        if (resolvedId?.id === hmrClientPath) {
-          await this.load({ id: resolvedId.id });
-        }
-      },
-    },
     load: {
       filter: [include(id(exactRegex(hmrClientPath)))],
       handler(id) {
