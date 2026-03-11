@@ -2,7 +2,7 @@ import { codeFrameColumns } from '@babel/code-frame';
 import { NullableMappedPosition, SourceMapConsumer } from 'source-map';
 
 import { parseUrl } from '../utils/url';
-import { InMemoryBundle } from './bundle';
+import type { Bundle } from './bundle';
 
 export interface StackFrameInput {
   file?: string;
@@ -62,18 +62,18 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
 );
 
 export async function symbolicate(
-  bundle: InMemoryBundle,
+  bundle: Bundle,
   stack: StackFrameInput[],
 ): Promise<SymbolicateResult> {
   const sourceMapConsumer = await bundle.sourceMapConsumer;
   const symbolicatedStack = stack
     .filter((frame) => frame.file?.startsWith('http'))
-    .map((frame) => originalPositionFor(sourceMapConsumer, frame))
+    .map((frame) => (sourceMapConsumer ? originalPositionFor(sourceMapConsumer, frame) : frame))
     .map((frame) => collapseFrame(frame));
 
   return {
     stack: symbolicatedStack,
-    codeFrame: getCodeFrame(sourceMapConsumer, symbolicatedStack, bundle),
+    codeFrame: getCodeFrame(symbolicatedStack, bundle, sourceMapConsumer),
   };
 }
 
@@ -119,9 +119,9 @@ function convertFrameKey(key: keyof NullableMappedPosition): keyof StackFrameInp
 }
 
 function getCodeFrame(
-  sourceMapConsumer: SourceMapConsumer,
   frames: StackFrameInput[],
-  bundle: InMemoryBundle,
+  bundle: Bundle,
+  sourceMapConsumer?: SourceMapConsumer,
 ): CodeFrame | null {
   const frame = frames.find((frame) => {
     return frame.lineNumber != null && frame.column != null && !isCollapsed(frame);
@@ -134,7 +134,10 @@ function getCodeFrame(
   try {
     const { lineNumber, column, file } = frame;
     const unresolved = file.startsWith('http');
-    const source = unresolved ? bundle.code : sourceMapConsumer.sourceContentFor(frame.file);
+    const source =
+      sourceMapConsumer == null || unresolved
+        ? bundle.code
+        : sourceMapConsumer.sourceContentFor(frame.file);
     const fileName = unresolved ? (parseUrl(file).pathname ?? 'unknown') : file;
     let content = '';
 
