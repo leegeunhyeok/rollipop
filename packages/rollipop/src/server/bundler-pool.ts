@@ -10,7 +10,7 @@ import { getBaseBundleName } from '../utils/bundle';
 import { bindReporter } from '../utils/config';
 import { normalizeRolldownError } from '../utils/errors';
 import { taskHandler } from '../utils/promise';
-import { InMemoryBundle } from './bundle';
+import { type Bundle, FileSystemBundle, InMemoryBundle } from './bundle';
 import { logger } from './logger';
 import type { ServerOptions } from './types';
 
@@ -44,7 +44,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private readonly initializeHandle: ReturnType<typeof taskHandler>;
   private readonly isHmrEnabled: boolean;
   private readonly _id: string;
-  private bundle: InMemoryBundle | null = null;
+  private bundle: Bundle | null = null;
   private buildFailedError: Error | null = null;
   private _devEngine: DevEngine | null = null;
   private _state: 'idle' | 'initializing' | 'ready' = 'idle';
@@ -122,7 +122,9 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
         } else {
           const output = errorOrResult.output[0];
           const sourceMap = output.map?.toString();
-          this.bundle = new InMemoryBundle(output.code, sourceMap, this.sourceMappingURL);
+          this.bundle = this.config.devMode.useFileSystemBundle
+            ? new FileSystemBundle(this.config.root, this.id, output.code)
+            : new InMemoryBundle(output.code, sourceMap, this.sourceMappingURL);
           this.buildFailedError = null;
           logger.debug('Build completed', {
             bundlerId: this.id,

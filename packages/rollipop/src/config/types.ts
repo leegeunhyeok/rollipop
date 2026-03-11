@@ -1,8 +1,8 @@
 import type * as babel from '@babel/core';
 import type * as rolldown from '@rollipop/rolldown';
-import type { TransformOptions } from '@rollipop/rolldown/utils';
 import type { TopLevelFilterExpression } from '@rollipop/rolldown-pluginutils';
 import type { DevWatchOptions } from '@rollipop/rolldown/experimental';
+import type { TransformOptions } from '@rollipop/rolldown/utils';
 import type * as swc from '@swc/core';
 
 import type { Plugin } from '../core/plugins/types';
@@ -339,6 +339,15 @@ export interface DevModeConfig {
    * Defaults to `true`.
    */
   hmr?: boolean | HmrConfig;
+  /**
+   * Whether to use file system bundle instead of in-memory bundle.
+   *
+   * When enabled, the bundle will be saved to the file system and loaded from the file system if the file is modified.
+   * This is useful for raw bundle debugging purposes.
+   *
+   * Defaults to: `false`
+   */
+  useFileSystemBundle?: boolean;
 }
 
 export interface HmrConfig {
