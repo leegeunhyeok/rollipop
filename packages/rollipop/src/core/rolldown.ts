@@ -5,7 +5,7 @@ import type { TransformOptions } from '@rollipop/rolldown/utils';
 import { invariant, isNotNil, merge } from 'es-toolkit';
 
 import { asLiteral, asIdentifier, iife, nodeEnvironment } from '../common/code';
-import { isDebugEnabled } from '../common/debug';
+import { isDebugEnabled } from '../common/env';
 import { Polyfill, type ResolvedConfig } from '../config';
 import { GLOBAL_IDENTIFIER } from '../constants';
 import { getGlobalVariables } from '../internal/react-native';

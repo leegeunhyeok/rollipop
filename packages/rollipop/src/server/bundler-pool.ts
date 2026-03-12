@@ -1,8 +1,10 @@
 import EventEmitter from 'node:events';
 
+import type { OutputChunk } from '@rollipop/rolldown';
 import * as rolldownExperimental from '@rollipop/rolldown/experimental';
 import { invariant } from 'es-toolkit';
 
+import { getBundleStoreMode } from '../common/env';
 import type { ResolvedConfig } from '../config';
 import { Bundler } from '../core/bundler';
 import type { BuildOptions, DevEngine } from '../core/types';
@@ -10,7 +12,7 @@ import { getBaseBundleName } from '../utils/bundle';
 import { bindReporter } from '../utils/config';
 import { normalizeRolldownError } from '../utils/errors';
 import { taskHandler } from '../utils/promise';
-import { type Bundle, FileSystemBundle, InMemoryBundle } from './bundle';
+import { type BundleStore, FileSystemBundleStore, InMemoryBundleStore } from './bundle';
 import { logger } from './logger';
 import type { ServerOptions } from './types';
 
@@ -44,7 +46,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private readonly initializeHandle: ReturnType<typeof taskHandler>;
   private readonly isHmrEnabled: boolean;
   private readonly _id: string;
-  private bundle: Bundle | null = null;
+  private bundleStore: BundleStore | null = null;
   private buildFailedError: Error | null = null;
   private _devEngine: DevEngine | null = null;
   private _state: 'idle' | 'initializing' | 'ready' = 'idle';
@@ -121,10 +123,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
           this.emit('buildFailed', normalizedError);
         } else {
           const output = errorOrResult.output[0];
-          const sourceMap = output.map?.toString();
-          this.bundle = this.config.devMode.useFileSystemBundle
-            ? new FileSystemBundle(this.config.root, this.id, output.code)
-            : new InMemoryBundle(output.code, sourceMap, this.sourceMappingURL);
+          this.updateBundleStore(output);
           this.buildFailedError = null;
           logger.debug('Build completed', {
             bundlerId: this.id,
@@ -141,6 +140,13 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     this.initializeHandle.resolve();
   }
 
+  private updateBundleStore(output: OutputChunk) {
+    this.bundleStore =
+      getBundleStoreMode() === 'fs'
+        ? new FileSystemBundleStore(this.config.root, this.id, output.code)
+        : new InMemoryBundleStore(output.code, output.map?.toString(), this.sourceMappingURL);
+  }
+
   async getBundle() {
     await this.ensureInitialized;
 
@@ -149,12 +155,12 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     if (state.lastFullBuildFailed) {
       throw new Error(this.buildFailedError?.message ?? 'Build failed');
     }
-    if (state.hasStaleOutput || this.bundle == null) {
+    if (state.hasStaleOutput || this.bundleStore == null) {
       await this.devEngine.ensureLatestBuildOutput();
     }
-    invariant(this.bundle, 'Bundle is not available');
+    invariant(this.bundleStore, 'Bundle is not available');
 
-    return this.bundle;
+    return this.bundleStore;
   }
 }
 

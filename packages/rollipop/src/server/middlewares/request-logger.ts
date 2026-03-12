@@ -2,7 +2,7 @@ import type { NextHandleFunction } from '@fastify/middie';
 import chalk from 'chalk';
 import type { FastifyRequest } from 'fastify';
 
-import { isDebugEnabled } from '../../common/debug';
+import { isDebugEnabled } from '../../common/env';
 import { logger } from '../logger';
 
 const requestLogger: NextHandleFunction = (req: FastifyRequest, _res, next) => {

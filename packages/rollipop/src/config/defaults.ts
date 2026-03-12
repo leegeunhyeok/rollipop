@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import { isDebugEnabled } from '../common/debug';
+import { isDebugEnabled } from '../common/env';
 import { generateSourceFromAst, stripFlowSyntax } from '../common/transformer';
 import {
   DEFAULT_ASSET_EXTENSIONS,

@@ -2,7 +2,7 @@ import chalk, { type ChalkInstance } from 'chalk';
 import dayjs from 'dayjs';
 import { invariant } from 'es-toolkit';
 
-import { isDebugEnabled } from './debug';
+import { isDebugEnabled } from './env';
 
 export type LogLevel = 'trace' | 'debug' | 'log' | 'info' | 'warn' | 'error';
 

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseDebugKeys } from '../debug';
+import { parseDebugKeys } from '../env';
 
-describe('debug', () => {
+describe('env', () => {
   describe('parseDebugKeys', () => {
     it('should parse debug keys (truthy values)', () => {
       process.env.DEBUG_FOO = 'yes';

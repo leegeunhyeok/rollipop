@@ -14,13 +14,13 @@ import { replaceSourceMappingURL } from '../utils/source-map';
 
 type SourceMapConsumerType = BasicSourceMapConsumer | IndexedSourceMapConsumer;
 
-export interface Bundle {
+export interface BundleStore {
   code: string;
   sourceMap: string | undefined;
   sourceMapConsumer: Promise<SourceMapConsumerType> | undefined;
 }
 
-export class InMemoryBundle implements Bundle {
+export class InMemoryBundleStore implements BundleStore {
   private lazySourceMapConsumer: Promise<SourceMapConsumerType> | null = null;
 
   constructor(
@@ -50,7 +50,7 @@ export class InMemoryBundle implements Bundle {
   }
 }
 
-export class FileSystemBundle implements Bundle {
+export class FileSystemBundleStore implements BundleStore {
   private readonly bundleFilePath: string;
   private holder: { code: string; mtimeMs: number };
 

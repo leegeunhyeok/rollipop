@@ -2,7 +2,7 @@ import { codeFrameColumns } from '@babel/code-frame';
 import { NullableMappedPosition, SourceMapConsumer } from 'source-map';
 
 import { parseUrl } from '../utils/url';
-import type { Bundle } from './bundle';
+import type { BundleStore } from './bundle';
 
 export interface StackFrameInput {
   file?: string;
@@ -62,10 +62,10 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
 );
 
 export async function symbolicate(
-  bundle: Bundle,
+  bundleStore: BundleStore,
   stack: StackFrameInput[],
 ): Promise<SymbolicateResult> {
-  const sourceMapConsumer = await bundle.sourceMapConsumer;
+  const sourceMapConsumer = await bundleStore.sourceMapConsumer;
   const symbolicatedStack = stack
     .filter((frame) => frame.file?.startsWith('http'))
     .map((frame) => (sourceMapConsumer ? originalPositionFor(sourceMapConsumer, frame) : frame))
@@ -73,7 +73,7 @@ export async function symbolicate(
 
   return {
     stack: symbolicatedStack,
-    codeFrame: getCodeFrame(symbolicatedStack, bundle, sourceMapConsumer),
+    codeFrame: getCodeFrame(symbolicatedStack, bundleStore, sourceMapConsumer),
   };
 }
 
@@ -120,7 +120,7 @@ function convertFrameKey(key: keyof NullableMappedPosition): keyof StackFrameInp
 
 function getCodeFrame(
   frames: StackFrameInput[],
-  bundle: Bundle,
+  bundleStore: BundleStore,
   sourceMapConsumer?: SourceMapConsumer,
 ): CodeFrame | null {
   const frame = frames.find((frame) => {
@@ -136,7 +136,7 @@ function getCodeFrame(
     const unresolved = file.startsWith('http');
     const source =
       sourceMapConsumer == null || unresolved
-        ? bundle.code
+        ? bundleStore.code
         : sourceMapConsumer.sourceContentFor(frame.file);
     const fileName = unresolved ? (parseUrl(file).pathname ?? 'unknown') : file;
     let content = '';
