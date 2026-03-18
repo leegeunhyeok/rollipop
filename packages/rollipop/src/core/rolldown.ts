@@ -197,10 +197,13 @@ export async function resolveRolldownOptions(
     tsconfig: config.tsconfig,
     resolve: mergedResolveOptions,
     transform: mergedTransformOptions,
-    optimization: rolldownOptimization,
     treeshake: rolldownTreeshake,
     external: rolldownExternal,
     shimMissingExports: rolldownShimMissingExports,
+    optimization: {
+      ...rolldownOptimization,
+      inlineConst: false,
+    },
     experimental: {
       lazyBarrel: rolldownLazyBarrel,
     },
