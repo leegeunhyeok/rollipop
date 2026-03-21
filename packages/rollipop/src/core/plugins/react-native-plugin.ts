@@ -17,7 +17,6 @@ import {
   resolveScaledAssets,
 } from '../assets';
 import type { BuildType } from '../types';
-import { cacheable } from './utils';
 import { TransformFlag, getFlag, setFlag } from './utils/transform-utils';
 
 export interface ReactNativePluginOptions {
@@ -147,12 +146,7 @@ function reactNativePlugin(
 
   const devServerPlugins = buildType === 'serve' ? [replaceHMRClientPlugin] : null;
 
-  return [
-    cacheable(codegenPlugin),
-    cacheable(stripFlowSyntaxPlugin),
-    assetPlugin,
-    ...(devServerPlugins ?? []),
-  ];
+  return [codegenPlugin, stripFlowSyntaxPlugin, assetPlugin, ...(devServerPlugins ?? [])];
 }
 
 export { reactNativePlugin as reactNative };

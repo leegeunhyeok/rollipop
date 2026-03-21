@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 
 import type * as rolldown from '@rollipop/rolldown';
+import { rollipopReactRefreshWrapperPlugin as reactRefresh } from '@rollipop/rolldown/experimental';
 import type { TransformOptions } from '@rollipop/rolldown/utils';
 import { invariant, isNotNil, merge } from 'es-toolkit';
 
@@ -20,9 +21,8 @@ import {
 import { getBaseUrl } from '../utils/server';
 import { getBuildTotalModules } from '../utils/storage';
 import { loadEnv } from './env';
-import { prelude, reporter, reactRefresh, reactNative, json, svg, babel, swc } from './plugins';
+import { prelude, reporter, reactNative, json, svg, babel, swc } from './plugins';
 import { printPluginLog } from './plugins/context';
-import { getPersistCachePlugins } from './plugins/utils/persist-cache';
 import { withTransformBoundary } from './plugins/utils/transform-utils';
 import type { BundlerContext, DevEngineOptions } from './types';
 
@@ -163,12 +163,15 @@ export async function resolveRolldownOptions(
     rolldownTransform,
   );
 
-  const devServerPlugins = isDevServerMode ? [reactRefresh()] : null;
-  const { beforeTransform, afterTransform } = getPersistCachePlugins({
-    enabled: cache,
-    sourceExtensions,
-    context,
-  });
+  const devServerPlugins = isDevServerMode
+    ? [
+        reactRefresh({
+          cwd: config.root,
+          include: [/\.[tj]sx?(?:$|\?)/],
+          exclude: [/\/node_modules\//],
+        }),
+      ]
+    : null;
 
   const statusReporter = (() => {
     switch (config.terminal.status) {
@@ -207,29 +210,26 @@ export async function resolveRolldownOptions(
     experimental: {
       lazyBarrel: rolldownLazyBarrel,
     },
-    plugins: withTransformBoundary(
-      [
-        prelude({ modulePaths: preludePaths }),
-        reactNative(config, {
-          dev,
-          platform,
-          buildType: context.buildType,
-          codegenFilter: codegen.filter,
-          flowFilter: flow.filter,
-          assetsDir: buildOptions.assetsDir,
-          assetExtensions: resolvedAssetExtensions,
-          assetRegistryPath,
-        }),
-        json(),
-        svg({ enabled: transformSvg }),
-        babel(babelConfig),
-        swc(swcConfig),
-        reporter(reporterOptions),
-        devServerPlugins,
-        config.plugins,
-      ],
-      { context, beforeTransform, afterTransform },
-    ),
+    plugins: withTransformBoundary(context, [
+      prelude({ modulePaths: preludePaths }),
+      reactNative(config, {
+        dev,
+        platform,
+        buildType: context.buildType,
+        codegenFilter: codegen.filter,
+        flowFilter: flow.filter,
+        assetsDir: buildOptions.assetsDir,
+        assetExtensions: resolvedAssetExtensions,
+        assetRegistryPath,
+      }),
+      json(),
+      svg({ enabled: transformSvg }),
+      babel(babelConfig),
+      swc(swcConfig),
+      reporter(reporterOptions),
+      devServerPlugins,
+      config.plugins,
+    ]),
     checks: {
       /**
        * Disable eval check because react-native uses `eval` to execute code.
@@ -245,6 +245,8 @@ export async function resolveRolldownOptions(
         defaultHandler(level, log);
       }
     },
+    // `@rollipop/rolldown` specific options
+    id: context.id,
   };
 
   const outputOptions: rolldown.OutputOptions = {
@@ -274,6 +276,7 @@ export async function resolveRolldownOptions(
     strictExecutionOrder: true,
     // `@rollipop/rolldown` specific options
     globalIdentifiers: rolldownGlobalIdentifiers,
+    persistentCache: cache,
   };
 
   const finalOptions = await applyDangerouslyOverrideOptionsFinalizer(

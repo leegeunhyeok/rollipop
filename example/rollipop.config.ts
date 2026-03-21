@@ -1,11 +1,11 @@
 import { analyze } from '@rollipop/plugin-analyze';
 import { rozenite } from '@rollipop/plugin-rozenite';
-import { defineConfig, type PluginOption } from 'rollipop';
+import { defineConfig, BuiltinPlugins, type PluginOption } from 'rollipop';
 
-import { config, hot, worklet } from './plugins';
+import { config, hot } from './plugins';
 
 function myPlugin(): PluginOption {
-  return [hot(), worklet(), config()];
+  return [hot(), BuiltinPlugins.worklets(), config()];
 }
 
 export default defineConfig({
