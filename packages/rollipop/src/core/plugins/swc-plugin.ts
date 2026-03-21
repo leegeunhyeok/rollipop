@@ -5,7 +5,6 @@ import * as swc from '@swc/core';
 import type { TransformerConfig } from '../../config';
 import { mergeSwcOptions } from '../../utils/swc';
 import { ROLLDOWN_RUNTIME_EXCLUDE_FILTER } from './shared/filters';
-import { cacheable } from './utils';
 import { getFlag, TransformFlag } from './utils/transform-utils';
 
 function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
@@ -69,9 +68,7 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
     },
   };
 
-  const cacheablePlugins = [...swcRules, swcPlugin];
-
-  return [swcHelpersResolvePlugin, ...cacheablePlugins.map(cacheable)];
+  return [swcHelpersResolvePlugin, ...swcRules, swcPlugin];
 }
 
 function getPreset(id: string): swc.Options {

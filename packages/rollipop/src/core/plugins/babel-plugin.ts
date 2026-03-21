@@ -4,7 +4,7 @@ import { invariant } from 'es-toolkit';
 
 import type { TransformerConfig } from '../../config';
 import { mergeBabelOptions } from '../../utils/babel';
-import { cacheable, isJSX, isTS } from './utils';
+import { isJSX, isTS } from './utils';
 import { getFlag, TransformFlag } from './utils/transform-utils';
 
 function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
@@ -60,7 +60,7 @@ function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
     },
   };
 
-  return [...babelRules, babelPlugin].map(cacheable);
+  return [...babelRules, babelPlugin];
 }
 
 function getPreset(flags: TransformFlag, id: string): babel.TransformOptions {

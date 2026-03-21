@@ -54,16 +54,12 @@ export function getFlagFromModuleInfo(moduleInfo: rolldown.ModuleInfo | null): T
 
 export interface TransformBoundaryPluginOptions {
   context: BundlerContext;
-  beforeTransform?: PluginOption;
-  afterTransform?: PluginOption;
 }
 
 export function withTransformBoundary(
+  context: BundlerContext,
   plugins: PluginOption,
-  options: TransformBoundaryPluginOptions,
 ): PluginOption {
-  const { context } = options;
-
   const initializer: Plugin = {
     name: 'rollipop:transform-initializer',
     transform: {
@@ -84,11 +80,5 @@ export function withTransformBoundary(
     },
   };
 
-  return [
-    initializer,
-    changeWatcherPlugin,
-    options?.beforeTransform,
-    plugins,
-    options?.afterTransform,
-  ];
+  return [initializer, changeWatcherPlugin, plugins];
 }
