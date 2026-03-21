@@ -73,24 +73,31 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
 
 function getPreset(id: string): swc.Options {
   return {
+    env: {
+      targets: { node: 9999 },
+      // See:
+      // - Hermes's supported features: https://github.com/facebook/hermes/blob/main/doc/Features.md
+      // - Swc's transform preset: https://github.com/swc-project/swc/blob/v1.15.18/crates/swc_ecma_preset_env/src/transform_data.rs
+      include: [
+        'transform-block-scoping',
+        // `assumptions.setPublicClassFields`
+        'transform-class-properties',
+        // `assumptions.privateFieldsAsProperties`
+        'transform-private-methods',
+        'transform-private-property-in-object',
+      ],
+    },
     jsc: {
-      target: 'es5',
       parser: {
         // Parse as TypeScript code because Flow modules can be `.js` files with type annotations
         syntax: 'typescript',
         // Always enable JSX parsing because Flow modules can be `.js` files with JSX syntax
         tsx: true,
       },
-      keepClassNames: true,
-      loose: false,
       transform: {
         react: {
           runtime: 'preserve',
         },
-      },
-      assumptions: {
-        setPublicClassFields: true,
-        privateFieldsAsProperties: true,
       },
       externalHelpers: true,
     },

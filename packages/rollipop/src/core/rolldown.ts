@@ -137,7 +137,7 @@ export async function resolveRolldownOptions(
   const mergedTransformOptions = merge(
     {
       cwd: config.root,
-      target: 'es2015',
+      target: 'esnext',
       jsx: {
         runtime: 'automatic',
         development: dev,
@@ -149,12 +149,6 @@ export async function resolveRolldownOptions(
         'process.env.DEBUG_ROLLIPOP': asLiteral(isDebugEnabled()),
         ...defineEnvFromObject(env),
         ...defineEnvFromObject(builtInEnv),
-      },
-      typescript: {
-        removeClassFieldsWithoutInitializer: true,
-      },
-      assumptions: {
-        setPublicClassFields: true,
       },
       helpers: {
         mode: 'Runtime',
