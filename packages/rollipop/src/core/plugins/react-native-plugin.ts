@@ -6,7 +6,7 @@ import {
   type TopLevelFilterExpression,
 } from '@rollipop/rolldown-pluginutils';
 
-import { stripFlowSyntax, generateSourceFromAst } from '../../common/transformer';
+import { stripFlowTypes } from '../../common/transformer';
 import { ResolvedConfig } from '../../config';
 import { DEFAULT_HMR_CLIENT_PATH } from '../../constants';
 import { getDefaultRuntimeImplements, resolveHmrConfig } from '../../utils/config';
@@ -55,7 +55,7 @@ function reactNativePlugin(
     transform: {
       order: 'pre',
       filter: flowFilter,
-      handler(code, id) {
+      async handler(code, id) {
         const flags = getFlag(this, id);
 
         if (flags & TransformFlag.SKIP_ALL) {
@@ -66,7 +66,7 @@ function reactNativePlugin(
           return { meta: setFlag(this, id, TransformFlag.STRIP_FLOW_REQUIRED) };
         }
 
-        const result = generateSourceFromAst(stripFlowSyntax(code), id);
+        const result = await stripFlowTypes(id, code);
 
         return {
           code: result.code,

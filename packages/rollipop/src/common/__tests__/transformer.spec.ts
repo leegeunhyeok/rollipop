@@ -6,9 +6,9 @@ import { describe, it, expect } from 'vitest';
 
 import { getErrorStack } from '../../testing/error-stack';
 import { evaluateContext } from '../../testing/evaluate-context';
-import { stripFlowSyntax, generateSourceFromAst } from '../transformer';
+import { stripFlowTypes } from '../transformer';
 
-describe('stripFlowSyntax', () => {
+describe('stripFlowTypes', () => {
   const FLOW_1 = dedent`
   // @flow
   const values: ReadonlyArray<?number> = [1, 2, 3, null, 4, 5];
@@ -32,8 +32,8 @@ describe('stripFlowSyntax', () => {
   boom();
   `;
 
-  it('should strip Flow syntax', () => {
-    const { code, map } = generateSourceFromAst(stripFlowSyntax(FLOW_1), 'test.js');
+  it('should strip Flow syntax', async () => {
+    const { code, map } = await stripFlowTypes('test.js', FLOW_1);
     const { evaluate } = evaluateContext();
     expect(code).not.toContain('@flow');
     expect(() => evaluate(code)).not.toThrow();
@@ -41,7 +41,7 @@ describe('stripFlowSyntax', () => {
   });
 
   it('should return the correct source map', async () => {
-    const { code, map } = generateSourceFromAst(stripFlowSyntax(FLOW_2), 'test.js');
+    const { code, map } = await stripFlowTypes('test.js', FLOW_2);
     const { evaluate } = evaluateContext();
     const consumer = await new SourceMapConsumer(map!);
 
