@@ -1,11 +1,26 @@
-import transform from 'fast-flow-transform';
+import path from 'node:path';
 
-export async function stripFlowTypes(id: string, code: string) {
-  const result = await transform({
-    filename: id,
-    source: code,
-    sourcemap: true,
-  });
+import { generate } from '@babel/generator';
+import flowRemoveTypes from 'flow-remove-types';
+import * as hermesParser from 'hermes-parser';
 
-  return result;
+export function stripFlowTypes(code: string) {
+  const typeRemoved = flowRemoveTypes(code, { all: true, removeEmptyImports: true });
+  return { code: typeRemoved.toString(), map: typeRemoved.generateMap() };
+}
+
+export function stripFlowSyntax(code: string) {
+  const { code: typeRemovedCode } = stripFlowTypes(code);
+  const ast = parseFlowSyntax(typeRemovedCode);
+  return ast;
+}
+
+export function parseFlowSyntax(code: string) {
+  const ast = hermesParser.parse(code, { flow: 'all', babel: true });
+  return ast;
+}
+
+export function generateSourceFromAst(ast: babel.Node, id: string) {
+  const generated = generate(ast, { sourceMaps: true, sourceFileName: path.basename(id) });
+  return { code: generated.code, map: generated.map };
 }
