@@ -1,13 +1,15 @@
+import chalk from 'chalk';
 import { invariant } from 'es-toolkit';
 import fp from 'fastify-plugin';
 import { asConst, type FromSchema } from 'json-schema-to-ts';
 
+import { isDebugEnabled } from '../../common/env';
 import type { BuildOptions } from '../../core/types';
 import { getBaseBundleName } from '../../utils/bundle';
 import { parseUrl } from '../../utils/url';
 import type { BundlerDevEngine } from '../bundler-pool';
 import type { StackFrameInput } from '../symbolicate';
-import { symbolicate } from '../symbolicate';
+import { symbolicate, type SymbolicateResult } from '../symbolicate';
 
 const bodySchema = asConst({
   type: 'object',
@@ -57,14 +59,60 @@ const plugin = fp<SymbolicatePluginOptions>(
           dev: query.dev === 'true',
         });
         const bundle = await bundler.getBundle();
+        const symbolicateResult = await symbolicate(bundle, stack);
 
-        await reply
-          .header('Content-Type', 'application/json')
-          .send(await symbolicate(bundle, stack));
+        if (isDebugEnabled()) {
+          printSymbolicateResult(stack, symbolicateResult);
+        }
+
+        await reply.header('Content-Type', 'application/json').send(symbolicateResult);
       },
     });
   },
   { name: 'symbolicate' },
 );
+
+function printSymbolicateResult(
+  rawStackFrame: StackFrameInput[],
+  symbolicateResult: SymbolicateResult,
+) {
+  console.log();
+  console.log('Symbolicate result:');
+  console.log();
+
+  if (symbolicateResult.codeFrame != null) {
+    console.log(symbolicateResult.codeFrame.content);
+    console.log();
+  }
+
+  console.log('Stack trace:');
+  symbolicateResult.stack.forEach((stackFrame) => {
+    const symbol = stackFrame.methodName ?? '<anonymous>';
+    const file = stackFrame.file ?? 'unknown';
+    const location =
+      stackFrame.lineNumber != null && stackFrame.column != null
+        ? `(${chalk.gray.underline(`${file}:${stackFrame.lineNumber}:${stackFrame.column}`)})`
+        : '';
+
+    console.log(`  at ${symbol} ${location}`);
+  });
+
+  console.log();
+  console.log('Raw stack trace:');
+  rawStackFrame
+    .filter((stackFrame) => stackFrame.file?.startsWith('http'))
+    .forEach((stackFrame) => {
+      const url = new URL(stackFrame.file!);
+      const bundleName = url.pathname.slice(1);
+      const symbol = stackFrame.methodName ?? '<anonymous>';
+      const location =
+        stackFrame.lineNumber != null && stackFrame.column != null
+          ? `(${chalk.gray.underline(`${bundleName}:${stackFrame.lineNumber}:${stackFrame.column}`)})`
+          : '';
+      console.log(`  at ${symbol} ${location}`);
+    });
+
+  console.log();
+}
 
 export { plugin as symbolicate };
