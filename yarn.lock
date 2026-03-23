@@ -131,7 +131,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.29.0, @babel/generator@npm:^7.29.1":
+"@babel/generator@npm:^7.29.0":
   version: 7.29.1
   resolution: "@babel/generator@npm:7.29.1"
   dependencies:
@@ -10116,6 +10116,109 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-flow-transform-darwin-arm64@npm:0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform-darwin-arm64@npm:0.0.3"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"fast-flow-transform-darwin-x64@npm:0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform-darwin-x64@npm:0.0.3"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"fast-flow-transform-linux-arm64-gnu@npm:0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform-linux-arm64-gnu@npm:0.0.3"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"fast-flow-transform-linux-arm64-musl@npm:0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform-linux-arm64-musl@npm:0.0.3"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"fast-flow-transform-linux-x64-gnu@npm:0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform-linux-x64-gnu@npm:0.0.3"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"fast-flow-transform-linux-x64-musl@npm:0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform-linux-x64-musl@npm:0.0.3"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"fast-flow-transform-win32-arm64-msvc@npm:0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform-win32-arm64-msvc@npm:0.0.3"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"fast-flow-transform-win32-x64-msvc@npm:0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform-win32-x64-msvc@npm:0.0.3"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"fast-flow-transform@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "fast-flow-transform@npm:0.0.3"
+  dependencies:
+    fast-flow-transform-darwin-arm64: "npm:0.0.3"
+    fast-flow-transform-darwin-x64: "npm:0.0.3"
+    fast-flow-transform-linux-arm64-gnu: "npm:0.0.3"
+    fast-flow-transform-linux-arm64-musl: "npm:0.0.3"
+    fast-flow-transform-linux-x64-gnu: "npm:0.0.3"
+    fast-flow-transform-linux-x64-musl: "npm:0.0.3"
+    fast-flow-transform-win32-arm64-msvc: "npm:0.0.3"
+    fast-flow-transform-win32-x64-msvc: "npm:0.0.3"
+    source-map: "npm:^0.7.6"
+  peerDependencies:
+    "@parcel/plugin": ^2.16.1
+    "@parcel/source-map": ^2.1.1
+    vite: ^7.0.0
+  dependenciesMeta:
+    fast-flow-transform-darwin-arm64:
+      optional: true
+    fast-flow-transform-darwin-x64:
+      optional: true
+    fast-flow-transform-linux-arm64-gnu:
+      optional: true
+    fast-flow-transform-linux-arm64-musl:
+      optional: true
+    fast-flow-transform-linux-x64-gnu:
+      optional: true
+    fast-flow-transform-linux-x64-musl:
+      optional: true
+    fast-flow-transform-win32-arm64-msvc:
+      optional: true
+    fast-flow-transform-win32-x64-msvc:
+      optional: true
+  peerDependenciesMeta:
+    "@parcel/plugin":
+      optional: true
+    "@parcel/source-map":
+      optional: true
+    vite:
+      optional: true
+  bin:
+    fast-flow-transform: dist/cli/index.js
+  checksum: 10c0/236324b893e81019837538ead465313ea2cb3efe2203e34ec83f052b57aedf5545f97ca497566aecfc20577280b82ff859a1eaef1ab36340b0e4b8ae8e2ae2e1
+  languageName: node
+  linkType: hard
+
 "fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2, fast-glob@npm:^3.3.3":
   version: 3.3.3
   resolution: "fast-glob@npm:3.3.3"
@@ -10362,20 +10465,6 @@ __metadata:
   version: 0.0.6
   resolution: "flow-enums-runtime@npm:0.0.6"
   checksum: 10c0/f0b9ca52dbf9cf30264ebf1af034ac7b80fb5e5ef009efc789b89a90aa17349a3ff5672b3b27c6eb89d5e02808fc0dfb7effbfc5a793451694d6cce48774d51e
-  languageName: node
-  linkType: hard
-
-"flow-remove-types@npm:^2.304.0":
-  version: 2.304.0
-  resolution: "flow-remove-types@npm:2.304.0"
-  dependencies:
-    hermes-parser: "npm:0.33.3"
-    pirates: "npm:^3.0.2"
-    vlq: "npm:^0.2.1"
-  bin:
-    flow-node: flow-node
-    flow-remove-types: flow-remove-types
-  checksum: 10c0/93ff1ac8438bafb6f3bd827aacb374ccf0b821e97d855bcd9b41b126aa02411f951d8ecd0747ad4a6a33d435799583c05951478c96b850d265eac7823e79be54
   languageName: node
   linkType: hard
 
@@ -10934,7 +11023,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hermes-parser@npm:0.33.3, hermes-parser@npm:^0.33.3":
+"hermes-parser@npm:0.33.3":
   version: 0.33.3
   resolution: "hermes-parser@npm:0.33.3"
   dependencies:
@@ -13901,13 +13990,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-modules-regexp@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "node-modules-regexp@npm:1.0.0"
-  checksum: 10c0/d4a9b6425a18e9fadd38f21a7f7820b3bfda4663c7d3b9f80043e3f5f7e27a0a1e04f524077b00a15ae77148cd81319da5772900229d89541062f7e876b36763
-  languageName: node
-  linkType: hard
-
 "node-releases@npm:^2.0.27":
   version: 2.0.27
   resolution: "node-releases@npm:2.0.27"
@@ -14603,15 +14685,6 @@ __metadata:
   bin:
     pino: bin.js
   checksum: 10c0/ae1c57f2baac85dd5d63a3500746d5ea1cfc4bfcbf356eaec94d42a782eeb80caa4d4614de43a036cf48e2aed46d855a7ff21b126f55a63811def52a894ef937
-  languageName: node
-  linkType: hard
-
-"pirates@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "pirates@npm:3.0.2"
-  dependencies:
-    node-modules-regexp: "npm:^1.0.0"
-  checksum: 10c0/f71519f64abff750ad00398e7a0f724e7d3af0ce14c0cf149a47dd9e1fae5e9aea24cb3a63b4ce8dce8b051f7d44531af6743078e33f72cb8602c5a7365185d1
   languageName: node
   linkType: hard
 
@@ -15830,7 +15903,6 @@ __metadata:
   dependencies:
     "@babel/code-frame": "npm:^7.29.0"
     "@babel/core": "npm:^7.29.0"
-    "@babel/generator": "npm:^7.29.1"
     "@babel/plugin-transform-flow-strip-types": "npm:^7.27.1"
     "@babel/plugin-transform-typescript": "npm:^7.28.6"
     "@commander-js/extra-typings": "npm:^14.0.0"
@@ -15861,11 +15933,10 @@ __metadata:
     dotenv: "npm:^17.3.1"
     dotenv-expand: "npm:^12.0.3"
     es-toolkit: "npm:^1.45.1"
+    fast-flow-transform: "npm:^0.0.3"
     fastify: "npm:^5.8.1"
     fastify-plugin: "npm:^5.1.0"
-    flow-remove-types: "npm:^2.304.0"
     gradient-string: "npm:^3.0.0"
-    hermes-parser: "npm:^0.33.3"
     image-size: "npm:^2.0.2"
     json-schema-to-ts: "npm:^3.1.1"
     magic-string: "npm:^0.30.21"
@@ -17693,13 +17764,6 @@ __metadata:
   bin:
     vitest: vitest.mjs
   checksum: 10c0/b913cd32032c95f29ff08c931f4b4c6fd6d2da498908d6770952c561a1b8d75c62499a1f04cadf82fb89cc0f9a33f29fb5dfdb899f6dbb27686a9d91571be5fa
-  languageName: node
-  linkType: hard
-
-"vlq@npm:^0.2.1":
-  version: 0.2.3
-  resolution: "vlq@npm:0.2.3"
-  checksum: 10c0/d1557b404353ca75c7affaaf403d245a3273a7d1c6b3380ed7f04ae3f080e4658f41ac700d6f48acb3cd4875fe7bc7da4924b3572cd5584a5de83b35b1de5e12
   languageName: node
   linkType: hard
 

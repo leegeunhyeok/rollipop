@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 import { isDebugEnabled } from '../common/env';
-import { generateSourceFromAst, stripFlowSyntax } from '../common/transformer';
+import { stripFlowTypes } from '../common/transformer';
 import {
   DEFAULT_ASSET_EXTENSIONS,
   DEFAULT_ASSET_REGISTRY_PATH,
@@ -18,7 +18,7 @@ import { ClientLogReporter } from '../utils/reporters';
 import type { PluginFlattenConfig } from './merge-config';
 import type { Config, DevModeConfig, OptimizationConfig, Polyfill, TerminalConfig } from './types';
 
-export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
+export async function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
   let reactNativePath: string;
   try {
     reactNativePath =
@@ -52,12 +52,16 @@ export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
     },
     serializer: {
       prelude: [getInitializeCorePath(projectRoot)],
-      polyfills: getPolyfillScriptPaths(reactNativePath).map(
-        (path) =>
-          ({
+      polyfills: await Promise.all(
+        getPolyfillScriptPaths(reactNativePath).map(async (path) => {
+          const code = fs.readFileSync(path, 'utf-8');
+          const result = await stripFlowTypes(path, code);
+
+          return {
             type: 'iife',
-            code: generateSourceFromAst(stripFlowSyntax(fs.readFileSync(path, 'utf-8')), path).code,
-          }) satisfies Polyfill,
+            code: result.code,
+          } satisfies Polyfill;
+        }),
       ),
     },
     watcher: {
@@ -103,5 +107,5 @@ export function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
   return defaultConfig;
 }
 
-export type DefaultConfig = ReturnType<typeof getDefaultConfig>;
+export type DefaultConfig = Awaited<ReturnType<typeof getDefaultConfig>>;
 export type ResolvedConfig = DefaultConfig & PluginFlattenConfig;
