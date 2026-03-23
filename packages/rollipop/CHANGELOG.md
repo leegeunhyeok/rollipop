@@ -1,5 +1,11 @@
 # rollipop
 
+## 0.1.0-alpha.15
+
+### Patch Changes
+
+- 359affa: perf: migrate to native bindings
+
 ## 0.1.0-alpha.14
 
 ### Patch Changes
