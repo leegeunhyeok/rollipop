@@ -24,3 +24,6 @@ package.tgz
 
 # local env files
 *.local
+
+# coverage
+coverage/

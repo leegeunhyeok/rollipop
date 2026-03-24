@@ -113,6 +113,7 @@
     "@types/babel__code-frame": "^7",
     "@types/babel__core": "^7",
     "@types/babel__generator": "^7",
+    "@vitest/coverage-v8": "4.0.18",
     "magic-string": "^0.30.21",
     "tsdown": "catalog:",
     "typescript": "catalog:",
