@@ -26,10 +26,8 @@
     "build": "tsdown"
   },
   "dependencies": {
-    "fast-glob": "^3.3.3",
-    "picocolors": "^1.1.1",
-    "which-pm": "^3.0.1",
-    "xcode": "^3.0.1"
+    "oxc-parser": "^0.121.0",
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@oxc-node/core": "^0.0.35",
