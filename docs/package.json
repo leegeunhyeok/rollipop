@@ -2,6 +2,7 @@
   "name": "docs",
   "private": true,
   "scripts": {
+    "typecheck": "next typegen && tsc --noEmit",
     "build": "next build",
     "dev": "next dev",
     "start": "serve out",
@@ -11,25 +12,25 @@
     "@orama/orama": "^3.1.18",
     "classnames": "^2.5.1",
     "codehike": "^1.0.7",
-    "fumadocs-core": "16.0.10",
-    "fumadocs-mdx": "13.0.7",
-    "fumadocs-ui": "16.0.10",
-    "lucide-react": "^0.562.0",
-    "mermaid": "^11.12.2",
-    "next": "16.1.1",
+    "fumadocs-core": "^16.7.5",
+    "fumadocs-mdx": "^14.2.11",
+    "fumadocs-ui": "^16.7.5",
+    "lucide-react": "^1.0.1",
+    "mermaid": "^11.13.0",
+    "next": "16.2.1",
     "next-themes": "^0.4.6",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/mdx": "^2.0.13",
     "@types/node": "^24",
-    "@types/react": "^19.2.7",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "postcss": "^8.5.6",
-    "serve": "^14.2.5",
-    "tailwindcss": "^4.1.18",
+    "postcss": "^8.5.8",
+    "serve": "^14.2.6",
+    "tailwindcss": "^4.2.2",
     "typescript": "catalog:"
   }
 }
