@@ -1,5 +1,4 @@
 import { HomeNavBar } from '@/components/navbar';
-import { Sidebar } from '@/components/sidebar';
 import { source } from '@/lib/source';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 
@@ -11,10 +10,10 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       sidebar={{
         collapsible: false,
         className: '!ps-0',
-        component: <Sidebar mobileOnly />,
       }}
       containerProps={{
-        className: '!px-2 sm:!px-4 pt-4 md:!px-12 md:pt-[42px] lg:pt-[56px] lg:items-center',
+        className:
+          'pt-4 md:pt-[42px] lg:pt-[56px] lg:items-center !block [&_[data-sidebar-placeholder]]:!hidden [&_[data-sidebar-panel]]:!hidden',
       }}
       searchToggle={{ enabled: false }}
       themeSwitch={{ enabled: false }}

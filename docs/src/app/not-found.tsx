@@ -1,5 +1,4 @@
 import { HomeNavBar } from '@/components/navbar';
-import { Sidebar } from '@/components/sidebar';
 import { source } from '@/lib/source';
 import cn from 'classnames';
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
@@ -14,10 +13,10 @@ export default function NotFoundPage() {
       sidebar={{
         collapsible: false,
         className: '!ps-0',
-        component: <Sidebar mobileOnly />,
       }}
       containerProps={{
-        className: '!px-4 pt-4 md:!px-12 md:pt-[42px] lg:pt-[56px] lg:items-center',
+        className:
+          '!px-4 pt-4 md:!px-12 md:pt-[42px] lg:pt-[56px] lg:items-center !block [&_[data-sidebar-placeholder]]:!hidden [&_[data-sidebar-panel]]:!hidden',
       }}
       searchToggle={{ enabled: false }}
       themeSwitch={{ enabled: false }}

@@ -6,7 +6,7 @@ import type { PropsWithChildren } from 'react';
 
 export default function HomePage() {
   return (
-    <div className="flex max-w-[1200px] flex-1 flex-col gap-4 p-4 xs:p-8 pt-16 xs:pt-20 text-center">
+    <div className="flex max-w-[1200px] flex-1 flex-col gap-4 mx-auto p-4 xs:p-8 pt-16 xs:pt-20 text-center">
       <section className="flex items-center justify-center flex-col gap-4 mt-8 mb-0 md:mb-16">
         <div className="flex w-full max-w-[600px] drop-shadow-[0_0_16px_rgba(66,165,245,0.5)] xs:drop-shadow-[0_0_25px_rgba(66,165,245,0.5)] max-[1100px]:pl-0 justify-center items-center">
           <img
