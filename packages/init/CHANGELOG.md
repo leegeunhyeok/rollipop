@@ -1,5 +1,11 @@
 # @rollipop/init
 
+## 0.1.0-alpha.15
+
+### Patch Changes
+
+- 922142f: update `commands` instead of patching script
+
 ## 0.1.0-alpha.14
 
 ## 0.1.0-alpha.13
