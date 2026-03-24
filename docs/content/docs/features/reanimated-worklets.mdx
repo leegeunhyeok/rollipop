@@ -1,0 +1,32 @@
+---
+title: Reanimated & Worklets
+---
+
+Rollipop includes a built-in worklet transformation plugin powered by Oxc. This plugin enables native worklet syntax support used by [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/) (v4+).
+
+## Setup
+
+Add the `worklets()` plugin to your configuration:
+
+```ts title="rollipop.config.ts"
+import { defineConfig, BuiltinPlugins } from 'rollipop';
+
+export default defineConfig({
+  plugins: [BuiltinPlugins.worklets()],
+});
+```
+
+The plugin automatically detects the installed `react-native-worklets` version and configures itself accordingly.
+
+## How It Works
+
+The worklet plugin transforms functions marked with the `'worklet'` directive into a format that can be executed on the UI thread. Unlike Babel-based alternatives, this plugin uses Oxc for native-speed transformations directly within the Rolldown build pipeline.
+
+- **Oxc-based**: Native performance without Babel overhead
+- **Auto-detection**: Reads the `react-native-worklets` version from your project
+- **Mode-aware**: Adjusts behavior based on `development` or `production` mode
+
+## Requirements
+
+- `react-native-worklets` must be installed in your project
+- Compatible with React Native Reanimated 4+

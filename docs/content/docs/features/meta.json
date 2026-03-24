@@ -1,5 +1,5 @@
 {
   "title": "Features",
-  "pages": ["dev-server", "devtools", "env", "flow", "svg", "reporter", "custom-command"],
+  "pages": ["dev-server", "env", "flow", "svg", "devtools", "analyze", "reanimated-worklets", "reporter", "custom-command"],
   "defaultOpen": true
 }

@@ -1,0 +1,58 @@
+---
+title: Bundle Analysis
+---
+
+The `@rollipop/plugin-analyze` plugin generates an interactive visualization of your bundle, helping you identify large modules and optimize bundle size.
+
+## Installation
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tab value="npm">```bash npm install --save-dev @rollipop/plugin-analyze ```</Tab>
+  <Tab value="pnpm">```bash pnpm add -D @rollipop/plugin-analyze ```</Tab>
+  <Tab value="yarn">```bash yarn add -D @rollipop/plugin-analyze ```</Tab>
+</Tabs>
+
+## Usage
+
+```ts title="rollipop.config.ts"
+import { defineConfig } from 'rollipop';
+import { analyzePlugin } from '@rollipop/plugin-analyze';
+
+export default defineConfig({
+  plugins: [analyzePlugin()],
+});
+```
+
+After building, the plugin generates two outputs:
+
+- **JSON data file** (`analyze-data.json`): Raw analysis data of the bundle
+- **HTML report** (`index.html`): Interactive visualization generated from the data
+
+You can also upload the JSON data file to the [Analyzer](https://leegeunhyeok.github.io/rolldown-analyzer) web app to view the analysis without generating a local report.
+
+## Options
+
+### analyzeDataFileName
+
+- **Type:** `string`
+- **Default:** `'analyze-data.json'`
+
+Output filename for the analysis data.
+
+### outDir
+
+- **Type:** `string`
+- **Default:** Bundle output directory
+
+Output directory for the analysis report.
+
+### autoOpen
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+Automatically open the analysis report in the browser after the build completes.
+
+```ts
+analyzePlugin({ autoOpen: true });
+```

@@ -348,6 +348,9 @@ You can specify polyfills in three ways:
    ];
    ```
 
+A string to prepend to the bundle before the `renderChunk` hook.
+
+
 ## watcher
 
 File watcher configuration for development mode.
@@ -568,5 +571,132 @@ Prefix for environment variables to be included in the bundle.
 ```ts
 export default defineConfig({
   envPrefix: 'MY_APP_',
+});
+```
+
+## optimization
+
+Build optimization configuration.
+
+### optimization.treeshake
+
+- **Type:** `boolean | TreeshakeConfig`
+- **Default:** `true`
+
+Controls tree-shaking (dead code elimination). When `false`, tree-shaking will be disabled.
+
+### optimization.minify
+
+- **Type:** `boolean | 'dce-only' | MinifyOptions`
+- **Default:** `false`
+
+Control code minification.
+
+- `true`: Enable full minification including code compression and dead code elimination
+- `false`: Disable minification
+- `'dce-only'`: Only perform dead code elimination without code compression
+- `MinifyOptions`: Fine-grained control over minification settings
+
+```ts
+export default defineConfig({
+  optimization: {
+    minify: true,
+  },
+});
+```
+
+### optimization.lazyBarrel
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+Enable lazy barrel optimization. Avoids compiling unused re-export modules in side-effect-free barrel modules, significantly improving build performance for large codebases with many barrel modules.
+
+See [Lazy Barrel Documentation](https://rolldown.rs/in-depth/lazy-barrel-optimization) for details.
+
+## sourcemap
+
+- **Type:** `boolean | 'inline' | 'hidden'`
+- **Default:** `true` in development, `false` in production
+
+Whether to generate sourcemaps.
+
+- `false`: No sourcemap will be generated
+- `true`: A separate sourcemap file will be generated
+- `'inline'`: The sourcemap will be appended to the output as a data URL
+- `'hidden'`: A separate sourcemap file will be generated, but the sourcemap URL comment will not be included in the output
+
+```ts
+export default defineConfig({
+  sourcemap: true,
+});
+```
+
+### sourcemapBaseUrl
+
+- **Type:** `string`
+
+Base URL for links to sourcemap files. When set, absolute URLs will be generated instead of relative ones. Useful when deploying sourcemaps to a separate location like a CDN.
+
+### sourcemapDebugIds
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+Include [debug IDs](https://github.com/tc39/ecma426/blob/main/proposals/debug-id.md) in the sourcemap. A unique debug ID helps identify sourcemaps across different builds.
+
+### sourcemapIgnoreList
+
+- **Type:** `boolean | string | RegExp | ((source: string, sourcemapPath: string) => boolean)`
+- **Default:** `/node_modules/`
+
+Control which source files are included in the sourcemap ignore list. Files in the ignore list are excluded from debugger stepping and error stack traces.
+
+<Callout type="info">
+  Using static values (`boolean`, `string`, or `RegExp`) is significantly more performant than functions. Prefer static patterns when possible.
+</Callout>
+
+### sourcemapPathTransform
+
+- **Type:** `(source: string, sourcemapPath: string) => string`
+
+Transform each path in a sourcemap.
+
+```ts
+export default defineConfig({
+  sourcemapPathTransform: (source) => {
+    return source.replace(/^src\//, '');
+  },
+});
+```
+
+## tsconfig
+
+- **Type:** `boolean | string`
+- **Default:** `true`
+
+Configures TypeScript configuration file resolution and usage. When set to a string, it specifies the path to the `tsconfig.json` file.
+
+## dangerously_overrideRolldownOptions
+
+- **Type:** `RolldownConfig | ((config: RolldownConfig) => RolldownConfig)`
+
+Override Rolldown's internal configuration directly.
+
+<Callout type="warn">
+  This option is **dangerous** and can break the build. Use only when you know exactly what you're doing.
+</Callout>
+
+```ts
+export default defineConfig({
+  dangerously_overrideRolldownOptions: (config) => {
+    return {
+      ...config,
+      input: {
+        ...config.input,
+        // Custom Rolldown input options
+      },
+    };
+  },
 });
 ```
