@@ -34,7 +34,7 @@ export default defineConfig({
     },
   },
   lint: {
-    ignorePatterns: ['rolldown/**', 'example/**', '**/e2e/__fixtures__/**'],
+    ignorePatterns: ['rolldown/**', 'docs/**', 'example/**', '**/e2e/__fixtures__/**'],
     options: {
       typeAware: true,
       typeCheck: true,
