@@ -1,8 +1,13 @@
 import SearchDialog from '@/components/search';
 
 import './global.css';
+import type { Metadata } from 'next';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import { Inter } from 'next/font/google';
+
+export const metadata: Metadata = {
+  title: 'Rollipop',
+};
 
 const inter = Inter({
   subsets: ['latin'],
