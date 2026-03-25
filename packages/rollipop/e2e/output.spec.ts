@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 
 import { build, buildToFile, cleanup, fixturePath } from './helpers';
 
@@ -92,10 +92,15 @@ describe('output', () => {
 
     it('sourcemapOutfile moves sourcemap to custom location', async () => {
       try {
-        const { outfile } = await buildToFile(fixture, outDir, {}, {
-          sourcemap: true,
-          sourcemapOutfile: path.join(outDir, 'maps', 'bundle.js.map'),
-        });
+        const { outfile } = await buildToFile(
+          fixture,
+          outDir,
+          {},
+          {
+            sourcemap: true,
+            sourcemapOutfile: path.join(outDir, 'maps', 'bundle.js.map'),
+          },
+        );
 
         const customMapPath = path.join(fixturePath(fixture), outDir, 'maps', 'bundle.js.map');
         expect(fs.existsSync(customMapPath)).toBe(true);

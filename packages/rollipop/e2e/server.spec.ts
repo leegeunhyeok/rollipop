@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vite-plus/test';
 
 import { loadConfig } from '../src/config';
 import type { DevServer } from '../src/server/types';

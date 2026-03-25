@@ -60,9 +60,9 @@
   "scripts": {
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
-    "test": "vitest --run",
+    "test": "vp test --run",
     "execute": "node bin/index.js",
-    "build": "tsdown"
+    "build": "vp pack"
   },
   "dependencies": {
     "@babel/code-frame": "^7.29.0",
@@ -113,10 +113,8 @@
     "@types/babel__code-frame": "^7",
     "@types/babel__core": "^7",
     "@types/babel__generator": "^7",
-    "@vitest/coverage-v8": "4.0.18",
     "magic-string": "^0.30.21",
-    "tsdown": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vite-plus": "catalog:"
   }
 }

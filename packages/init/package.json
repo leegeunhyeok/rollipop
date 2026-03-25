@@ -22,8 +22,8 @@
     "execute": "node --import @oxc-node/core/register src/index.ts",
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
-    "test": "vitest --run --passWithNoTests",
-    "build": "tsdown"
+    "test": "vp test --run --passWithNoTests",
+    "build": "vp pack"
   },
   "dependencies": {
     "oxc-parser": "^0.121.0",
@@ -31,8 +31,7 @@
   },
   "devDependencies": {
     "@oxc-node/core": "^0.0.35",
-    "tsdown": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vite-plus": "catalog:"
   }
 }

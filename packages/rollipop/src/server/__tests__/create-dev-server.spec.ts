@@ -1,5 +1,5 @@
 // oxlint-disable typescript-eslint(unbound-method)
-import { describe, expect, it, vi, vitest } from 'vitest';
+import { describe, expect, it, vi, vitest } from 'vite-plus/test';
 
 import { createTestConfig } from '../../testing/config';
 import { createDevServer } from '../create-dev-server';

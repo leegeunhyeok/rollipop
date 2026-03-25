@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { describe, it, expect, vitest, beforeEach } from 'vitest';
+import { describe, it, expect, vitest, beforeEach } from 'vite-plus/test';
 
 import { DEFAULT_ENV_PREFIX } from '../../constants';
 import { loadEnv } from '../env';

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 
 import type { ResolvedConfig } from '../src/config/defaults';
 import {
@@ -315,22 +315,14 @@ describe('plugin system', () => {
 
   describe('plugin option flattening', () => {
     it('filters out null and false plugins', async () => {
-      const plugins = await flattenPluginOption([
-        { name: 'real-plugin' },
-        null,
-        false,
-        undefined,
-      ]);
+      const plugins = await flattenPluginOption([{ name: 'real-plugin' }, null, false, undefined]);
 
       expect(plugins).toHaveLength(1);
       expect(plugins[0].name).toBe('real-plugin');
     });
 
     it('flattens nested plugin arrays', async () => {
-      const plugins = await flattenPluginOption([
-        { name: 'a' },
-        [{ name: 'b' }, [{ name: 'c' }]],
-      ]);
+      const plugins = await flattenPluginOption([{ name: 'a' }, [{ name: 'b' }, [{ name: 'c' }]]]);
 
       expect(plugins.map((p) => p.name)).toEqual(['a', 'b', 'c']);
     });

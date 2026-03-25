@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test';
+
 import { setupPackage, setupReactNativeConfig } from '../init';
 
 describe('setupReactNativeConfig', () => {
@@ -19,13 +21,8 @@ describe('setupReactNativeConfig', () => {
     const result = setupReactNativeConfig(tmpDir);
 
     expect(result).toBe('created');
-    const content = fs.readFileSync(
-      path.join(tmpDir, 'react-native.config.js'),
-      'utf8',
-    );
-    expect(content).toBe(
-      `module.exports = {\n  commands: require('rollipop/commands'),\n};\n`,
-    );
+    const content = fs.readFileSync(path.join(tmpDir, 'react-native.config.js'), 'utf8');
+    expect(content).toBe(`module.exports = {\n  commands: require('rollipop/commands'),\n};\n`);
   });
 
   it('injects commands into existing config without commands', () => {
@@ -37,10 +34,7 @@ describe('setupReactNativeConfig', () => {
     const result = setupReactNativeConfig(tmpDir);
 
     expect(result).toBe('updated');
-    const content = fs.readFileSync(
-      path.join(tmpDir, 'react-native.config.js'),
-      'utf8',
-    );
+    const content = fs.readFileSync(path.join(tmpDir, 'react-native.config.js'), 'utf8');
     expect(content).toContain("commands: require('rollipop/commands')");
     expect(content).toContain('project:');
   });
@@ -92,10 +86,7 @@ describe('setupReactNativeConfig', () => {
     const result = setupReactNativeConfig(tmpDir);
 
     expect(result).toBe('updated');
-    const content = fs.readFileSync(
-      path.join(tmpDir, 'react-native.config.js'),
-      'utf8',
-    );
+    const content = fs.readFileSync(path.join(tmpDir, 'react-native.config.js'), 'utf8');
     expect(content).toContain('project: {},');
     expect(content).toContain("commands: require('rollipop/commands')");
   });
@@ -109,26 +100,17 @@ describe('setupReactNativeConfig', () => {
     const result = setupReactNativeConfig(tmpDir);
 
     expect(result).toBe('updated');
-    const content = fs.readFileSync(
-      path.join(tmpDir, 'react-native.config.js'),
-      'utf8',
-    );
+    const content = fs.readFileSync(path.join(tmpDir, 'react-native.config.js'), 'utf8');
     expect(content).not.toContain(',,');
   });
 
   it('handles empty object export', () => {
-    fs.writeFileSync(
-      path.join(tmpDir, 'react-native.config.js'),
-      `module.exports = {};\n`,
-    );
+    fs.writeFileSync(path.join(tmpDir, 'react-native.config.js'), `module.exports = {};\n`);
 
     const result = setupReactNativeConfig(tmpDir);
 
     expect(result).toBe('updated');
-    const content = fs.readFileSync(
-      path.join(tmpDir, 'react-native.config.js'),
-      'utf8',
-    );
+    const content = fs.readFileSync(path.join(tmpDir, 'react-native.config.js'), 'utf8');
     expect(content).toContain("commands: require('rollipop/commands')");
   });
 });
@@ -152,27 +134,19 @@ describe('setupPackage', () => {
 
     setupPackage(tmpDir);
 
-    const pkg = JSON.parse(
-      fs.readFileSync(path.join(tmpDir, 'package.json'), 'utf8'),
-    );
+    const pkg = JSON.parse(fs.readFileSync(path.join(tmpDir, 'package.json'), 'utf8'));
     expect(pkg.devDependencies.rollipop).toBe('latest');
   });
 
   it('preserves existing devDependencies', () => {
     fs.writeFileSync(
       path.join(tmpDir, 'package.json'),
-      JSON.stringify(
-        { name: 'test-app', devDependencies: { typescript: '^5.0.0' } },
-        null,
-        2,
-      ),
+      JSON.stringify({ name: 'test-app', devDependencies: { typescript: '^5.0.0' } }, null, 2),
     );
 
     setupPackage(tmpDir);
 
-    const pkg = JSON.parse(
-      fs.readFileSync(path.join(tmpDir, 'package.json'), 'utf8'),
-    );
+    const pkg = JSON.parse(fs.readFileSync(path.join(tmpDir, 'package.json'), 'utf8'));
     expect(pkg.devDependencies.typescript).toBe('^5.0.0');
     expect(pkg.devDependencies.rollipop).toBe('latest');
   });

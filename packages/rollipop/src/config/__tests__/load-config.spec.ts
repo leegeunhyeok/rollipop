@@ -1,4 +1,4 @@
-import { describe, it, expect, vitest } from 'vitest';
+import { describe, it, expect, vitest } from 'vite-plus/test';
 
 import type { Plugin } from '../../core/plugins/types';
 import type { ResolvedConfig } from '../defaults';

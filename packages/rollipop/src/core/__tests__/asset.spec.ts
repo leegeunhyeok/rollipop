@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import { describe, it, expect, vitest, beforeAll } from 'vitest';
+import { describe, it, expect, vitest, beforeAll } from 'vite-plus/test';
 
 import { resolveAssetPath, resolveScaledAssets } from '../assets';
 
