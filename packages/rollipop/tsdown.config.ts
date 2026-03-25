@@ -95,13 +95,11 @@ export default defineConfig([
   },
   {
     ...runtimeConfig,
+    format: 'iife',
     entry: 'src/runtime/hmr-runtime.ts',
-    noExternal: ['mitt'],
-    inlineOnly: false,
-  },
-  {
-    ...runtimeConfig,
-    entry: 'src/runtime/hmr-client.ts',
-    external: /.*/,
+    deps: {
+      alwaysBundle: ['mitt'],
+      onlyBundle: false,
+    },
   },
 ]);

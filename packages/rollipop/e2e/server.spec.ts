@@ -3,8 +3,8 @@ import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { loadConfig } from '../src/config';
-import { runServer } from '../src/utils/run-server';
 import type { DevServer } from '../src/server/types';
+import { runServer } from '../src/utils/run-server';
 
 const EXAMPLE_DIR = path.resolve(import.meta.dirname, '../../../example');
 const PORT = 10321 + Math.floor(Math.random() * 1000);
@@ -27,7 +27,7 @@ beforeAll(async () => {
     host: HOST,
     buildOptions: { cache: false },
   });
-}, 30_000);
+});
 
 afterAll(async () => {
   await server?.instance.close();
@@ -44,43 +44,31 @@ describe('dev server', () => {
   });
 
   describe('bundle serving', () => {
-    it(
-      'GET /index.bundle?platform=ios&dev=true returns valid JS bundle',
-      async () => {
-        const res = await fetch(`${BASE_URL}/index.bundle?platform=ios&dev=true`);
+    it('GET /index.bundle?platform=ios&dev=true returns valid JS bundle', async () => {
+      const res = await fetch(`${BASE_URL}/index.bundle?platform=ios&dev=true`);
 
-        expect(res.status).toBe(200);
-        expect(res.headers.get('Content-Type')).toContain('application/javascript');
+      expect(res.status).toBe(200);
+      expect(res.headers.get('Content-Type')).toContain('application/javascript');
 
-        const code = await res.text();
-        expect(code.length).toBeGreaterThan(0);
-      },
-      120_000,
-    );
+      const code = await res.text();
+      expect(code.length).toBeGreaterThan(0);
+    }, 120_000);
 
-    it(
-      'GET /index.bundle?platform=android&dev=true returns valid JS bundle',
-      async () => {
-        const res = await fetch(`${BASE_URL}/index.bundle?platform=android&dev=true`);
+    it('GET /index.bundle?platform=android&dev=true returns valid JS bundle', async () => {
+      const res = await fetch(`${BASE_URL}/index.bundle?platform=android&dev=true`);
 
-        expect(res.status).toBe(200);
-        const code = await res.text();
-        expect(code.length).toBeGreaterThan(0);
-      },
-      120_000,
-    );
+      expect(res.status).toBe(200);
+      const code = await res.text();
+      expect(code.length).toBeGreaterThan(0);
+    }, 120_000);
 
-    it(
-      'GET /index.bundle?platform=ios&dev=false returns production bundle',
-      async () => {
-        const res = await fetch(`${BASE_URL}/index.bundle?platform=ios&dev=false`);
+    it('GET /index.bundle?platform=ios&dev=false returns production bundle', async () => {
+      const res = await fetch(`${BASE_URL}/index.bundle?platform=ios&dev=false`);
 
-        expect(res.status).toBe(200);
-        const code = await res.text();
-        expect(code.length).toBeGreaterThan(0);
-      },
-      120_000,
-    );
+      expect(res.status).toBe(200);
+      const code = await res.text();
+      expect(code.length).toBeGreaterThan(0);
+    }, 120_000);
   });
 
   describe('bundle content - development', () => {
@@ -178,26 +166,22 @@ describe('dev server', () => {
   });
 
   describe('source map serving', () => {
-    it(
-      'GET /index.map?platform=ios&dev=true returns valid source map',
-      async () => {
-        // Ensure bundle is built first
-        await fetch(`${BASE_URL}/index.bundle?platform=ios&dev=true`);
+    it('GET /index.map?platform=ios&dev=true returns valid source map', async () => {
+      // Ensure bundle is built first
+      await fetch(`${BASE_URL}/index.bundle?platform=ios&dev=true`);
 
-        const res = await fetch(`${BASE_URL}/index.map?platform=ios&dev=true`);
+      const res = await fetch(`${BASE_URL}/index.map?platform=ios&dev=true`);
 
-        expect(res.status).toBe(200);
-        expect(res.headers.get('Content-Type')).toContain('application/json');
+      expect(res.status).toBe(200);
+      expect(res.headers.get('Content-Type')).toContain('application/json');
 
-        const map = (await res.json()) as Record<string, unknown>;
-        expect(map.version).toBe(3);
-        expect(map.sources).toBeDefined();
-        expect(Array.isArray(map.sources)).toBe(true);
-        expect((map.sources as unknown[]).length).toBeGreaterThan(0);
-        expect(map.mappings).toBeDefined();
-      },
-      120_000,
-    );
+      const map = (await res.json()) as Record<string, unknown>;
+      expect(map.version).toBe(3);
+      expect(map.sources).toBeDefined();
+      expect(Array.isArray(map.sources)).toBe(true);
+      expect((map.sources as unknown[]).length).toBeGreaterThan(0);
+      expect(map.mappings).toBeDefined();
+    }, 120_000);
   });
 
   describe('error handling', () => {

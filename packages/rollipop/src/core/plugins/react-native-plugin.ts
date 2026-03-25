@@ -139,7 +139,10 @@ function reactNativePlugin(
       filter: [include(id(exactRegex(hmrClientPath)))],
       handler(id) {
         this.debug(`Replacing HMR client: ${id}`);
-        return hmrConfig?.clientImplement ?? defaultRuntimeImplements.clientImplement;
+        return {
+          code: hmrConfig?.clientImplement ?? defaultRuntimeImplements.clientImplement,
+          moduleType: 'ts',
+        };
       },
     },
   };

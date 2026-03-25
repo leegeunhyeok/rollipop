@@ -6,6 +6,7 @@ export default defineConfig({
   },
   test: {
     globalSetup: ['./e2e/global-setup.ts'],
+    hookTimeout: 30_000,
     coverage: {
       include: ['src/**'],
       exclude: [

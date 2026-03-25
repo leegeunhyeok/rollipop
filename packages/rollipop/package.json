@@ -50,8 +50,8 @@
         "default": "./dist/runtime.cjs"
       }
     },
-    "./hmr-runtime": "./dist/hmr-runtime.js",
-    "./hmr-client": "./dist/hmr-client.js",
+    "./hmr-runtime": "./dist/hmr-runtime.iife.js",
+    "./hmr-client": "./src/runtime/hmr-client.ts",
     "./client": {
       "types": "./client.d.ts"
     },
