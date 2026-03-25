@@ -1,10 +1,10 @@
+import { GitHubIcon } from '@/components/icons/github';
 import { DocsNavBar } from '@/components/navbar';
 import { SidebarStyles } from '@/components/sidebar';
 import { source } from '@/lib/source';
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import { GitHubIcon } from '@/components/icons/github';
 import cn from 'classnames';
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
+import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import Link from 'next/link';
 
 export default function Layout({ children }: LayoutProps<'/docs'>) {

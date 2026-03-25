@@ -2,10 +2,10 @@
 
 import { useIsScrolled } from '@/hooks/use-is-scrolled';
 import cn from 'classnames';
+import { useSidebar } from 'fumadocs-ui/components/sidebar/base';
+import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { FullSearchTrigger, SearchTrigger } from 'fumadocs-ui/layouts/shared/slots/search-trigger';
 import { ThemeSwitch } from 'fumadocs-ui/layouts/shared/slots/theme-switch';
-import { buttonVariants } from 'fumadocs-ui/components/ui/button';
-import { useSidebar } from 'fumadocs-ui/components/sidebar/base';
 import { MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 

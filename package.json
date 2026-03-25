@@ -6,13 +6,14 @@
     "example",
     "packages/*"
   ],
+  "type": "module",
   "scripts": {
-    "roll": "yarn fmt && yarn lint && yarn typecheck:all && yarn test:all",
-    "fmt": "oxfmt --check",
-    "fmt:fix": "oxfmt",
+    "roll": "vp check && yarn test:all",
+    "fmt": "vp fmt --check",
+    "fmt:fix": "vp fmt",
     "typecheck:all": "yarn workspaces foreach --all --topological-dev run typecheck",
-    "lint": "oxlint --config .oxlintrc.json --type-aware --deny-warnings",
-    "lint:fix": "oxlint --config .oxlintrc.json --type-aware --deny-warnings --fix",
+    "lint": "vp lint --deny-warnings",
+    "lint:fix": "vp lint --deny-warnings --fix",
     "test:all": "yarn workspaces foreach --all --topological-dev --no-private run test",
     "build:all": "yarn workspaces foreach --all --topological-dev --no-private run build",
     "docs:dev": "yarn workspace docs dev",
@@ -23,10 +24,8 @@
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
     "@types/node": "^24",
-    "oxfmt": "^0.36.0",
-    "oxlint": "^1.51.0",
-    "oxlint-tsgolint": "^0.16.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite-plus": "catalog:"
   },
   "packageManager": "yarn@4.13.0"
 }

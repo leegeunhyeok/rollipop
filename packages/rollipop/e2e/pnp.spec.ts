@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vite-plus/test';
 
 const MONOREPO_ROOT = path.resolve(import.meta.dirname, '../../..');
 const ROLLIPOP_DIR = path.resolve(import.meta.dirname, '..');
@@ -36,9 +36,7 @@ function exec(cmd: string, cwd: string): string {
 }
 
 function getYarnVersion(): string {
-  const rootPkg = JSON.parse(
-    fs.readFileSync(path.join(MONOREPO_ROOT, 'package.json'), 'utf-8'),
-  );
+  const rootPkg = JSON.parse(fs.readFileSync(path.join(MONOREPO_ROOT, 'package.json'), 'utf-8'));
   const match = rootPkg.packageManager?.match(/yarn@(.+)/);
   return match?.[1] ?? '4.13.0';
 }
@@ -102,11 +100,11 @@ beforeAll(() => {
           'react-native': examplePkg.dependencies['react-native'],
         },
         devDependencies: {
-          'rollipop': `portal:${ROLLIPOP_DIR}`,
+          rollipop: `portal:${ROLLIPOP_DIR}`,
           '@react-native/babel-preset': examplePkg.devDependencies['@react-native/babel-preset'],
           '@babel/core': examplePkg.devDependencies['@babel/core'],
           '@babel/runtime': examplePkg.devDependencies['@babel/runtime'],
-          'typescript': examplePkg.devDependencies['typescript'],
+          typescript: examplePkg.devDependencies['typescript'],
         },
       },
       null,
@@ -180,34 +178,30 @@ afterAll(() => {
 });
 
 describe('Yarn PnP', () => {
-  it(
-    'builds a React Native bundle under PnP strict resolution',
-    () => {
-      log('Running build under PnP...');
-      exec('yarn node build-test.mjs', tmpDir);
+  it('builds a React Native bundle under PnP strict resolution', () => {
+    log('Running build under PnP...');
+    exec('yarn node build-test.mjs', tmpDir);
 
-      const resultPath = path.join(tmpDir, 'build-result.json');
-      expect(fs.existsSync(resultPath)).toBe(true);
+    const resultPath = path.join(tmpDir, 'build-result.json');
+    expect(fs.existsSync(resultPath)).toBe(true);
 
-      const result = JSON.parse(fs.readFileSync(resultPath, 'utf-8'));
+    const result = JSON.parse(fs.readFileSync(resultPath, 'utf-8'));
 
-      if (!result.success) {
-        throw new Error(`Build failed: ${result.error}\n${result.stack ?? ''}`);
-      }
+    if (!result.success) {
+      throw new Error(`Build failed: ${result.error}\n${result.stack ?? ''}`);
+    }
 
-      expect(result.codeLength).toBeGreaterThan(1000);
-      // User code bundled
-      expect(result.hasAppRegistry).toBe(true);
-      // Default prelude (react-native InitializeCore)
-      expect(result.hasInitializeCore).toBe(true);
-      // Built-in defines & global variables
-      expect(result.hasDevFalse).toBe(true);
-      expect(result.hasGlobal).toBe(true);
-      expect(result.hasBundleStartTime).toBe(true);
-      expect(result.hasNodeEnv).toBe(true);
-      // Default polyfills from react-native
-      expect(result.hasPolyfillIIFE).toBe(true);
-    },
-    300_000,
-  );
+    expect(result.codeLength).toBeGreaterThan(1000);
+    // User code bundled
+    expect(result.hasAppRegistry).toBe(true);
+    // Default prelude (react-native InitializeCore)
+    expect(result.hasInitializeCore).toBe(true);
+    // Built-in defines & global variables
+    expect(result.hasDevFalse).toBe(true);
+    expect(result.hasGlobal).toBe(true);
+    expect(result.hasBundleStartTime).toBe(true);
+    expect(result.hasNodeEnv).toBe(true);
+    // Default polyfills from react-native
+    expect(result.hasPolyfillIIFE).toBe(true);
+  }, 300_000);
 });

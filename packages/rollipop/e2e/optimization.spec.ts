@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vite-plus/test';
 
 import { build } from './helpers';
 
@@ -57,9 +57,13 @@ describe('optimization', () => {
 
   describe('minify options object', () => {
     it('minify with compress.dropConsole removes console.log', async () => {
-      const chunk = await build('optimization/treeshake', {}, {
-        minify: { compress: { dropConsole: true } },
-      });
+      const chunk = await build(
+        'optimization/treeshake',
+        {},
+        {
+          minify: { compress: { dropConsole: true } },
+        },
+      );
 
       expect(chunk.code).not.toContain('console.log');
     });

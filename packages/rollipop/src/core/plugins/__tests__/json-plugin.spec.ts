@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vite-plus/test';
 
 import { testPluginDriver } from '../../../testing/plugin-testing-utils';
 import { json } from '../json-plugin';

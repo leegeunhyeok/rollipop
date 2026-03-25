@@ -2,7 +2,7 @@
 import { codeFrameColumns } from '@babel/code-frame';
 import dedent from 'dedent';
 import { SourceMapConsumer } from 'source-map';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vite-plus/test';
 
 import { getErrorStack } from '../../testing/error-stack';
 import { evaluateContext } from '../../testing/evaluate-context';

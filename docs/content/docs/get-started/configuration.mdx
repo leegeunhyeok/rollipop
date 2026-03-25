@@ -350,7 +350,6 @@ You can specify polyfills in three ways:
 
 A string to prepend to the bundle before the `renderChunk` hook.
 
-
 ## watcher
 
 File watcher configuration for development mode.
@@ -653,7 +652,8 @@ Include [debug IDs](https://github.com/tc39/ecma426/blob/main/proposals/debug-id
 Control which source files are included in the sourcemap ignore list. Files in the ignore list are excluded from debugger stepping and error stack traces.
 
 <Callout type="info">
-  Using static values (`boolean`, `string`, or `RegExp`) is significantly more performant than functions. Prefer static patterns when possible.
+  Using static values (`boolean`, `string`, or `RegExp`) is significantly more performant than
+  functions. Prefer static patterns when possible.
 </Callout>
 
 ### sourcemapPathTransform
@@ -684,7 +684,8 @@ Configures TypeScript configuration file resolution and usage. When set to a str
 Override Rolldown's internal configuration directly.
 
 <Callout type="warn">
-  This option is **dangerous** and can break the build. Use only when you know exactly what you're doing.
+  This option is **dangerous** and can break the build. Use only when you know exactly what you're
+  doing.
 </Callout>
 
 ```ts

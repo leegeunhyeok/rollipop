@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vite-plus/test';
 
 import { build, fixturePath } from './helpers';
 
@@ -87,7 +87,10 @@ describe('resolver', () => {
           },
         }),
       );
-      fs.writeFileSync(path.join(pkgDir, 'react-native.js'), "export const source = 'react-native';");
+      fs.writeFileSync(
+        path.join(pkgDir, 'react-native.js'),
+        "export const source = 'react-native';",
+      );
       fs.writeFileSync(path.join(pkgDir, 'esm.js'), "export const source = 'esm';");
       fs.writeFileSync(path.join(pkgDir, 'default.js'), "export const source = 'default';");
     });
@@ -130,7 +133,10 @@ describe('resolver', () => {
           main: './main.js',
         }),
       );
-      fs.writeFileSync(path.join(pkgDir, 'react-native.js'), "export const source = 'react-native-field';");
+      fs.writeFileSync(
+        path.join(pkgDir, 'react-native.js'),
+        "export const source = 'react-native-field';",
+      );
       fs.writeFileSync(path.join(pkgDir, 'browser.js'), "export const source = 'browser-field';");
       fs.writeFileSync(path.join(pkgDir, 'main.js'), "export const source = 'main-field';");
     });

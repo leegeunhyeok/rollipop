@@ -29,7 +29,7 @@
   "scripts": {
     "prepack": "yarn build",
     "typecheck": "tsc --noEmit",
-    "build": "tsdown"
+    "build": "vp pack"
   },
   "dependencies": {
     "open": "^11.0.0",
@@ -37,8 +37,8 @@
   },
   "devDependencies": {
     "rollipop": "workspace:*",
-    "tsdown": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
   },
   "peerDependencies": {
     "rollipop": "workspace:*"

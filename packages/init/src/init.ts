@@ -2,11 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { parseSync, Visitor } from 'oxc-parser';
-import type {
-  AssignmentExpression,
-  ObjectExpression,
-  ObjectProperty,
-} from 'oxc-parser';
+import type { AssignmentExpression, ObjectExpression, ObjectProperty } from 'oxc-parser';
 
 const RN_CONFIG_FILE = 'react-native.config.js';
 const COMMANDS_REQUIRE = "require('rollipop/commands')";
@@ -17,10 +13,7 @@ export function setupReactNativeConfig(cwd: string): SetupResult {
   const configPath = path.join(cwd, RN_CONFIG_FILE);
 
   if (!fs.existsSync(configPath)) {
-    fs.writeFileSync(
-      configPath,
-      `module.exports = {\n  commands: ${COMMANDS_REQUIRE},\n};\n`,
-    );
+    fs.writeFileSync(configPath, `module.exports = {\n  commands: ${COMMANDS_REQUIRE},\n};\n`);
     return 'created';
   }
 
@@ -31,9 +24,7 @@ export function setupReactNativeConfig(cwd: string): SetupResult {
     case 'already-configured':
       return 'already-configured';
     case 'has-other-commands':
-      throw new Error(
-        `'commands' property already exists with a different value`,
-      );
+      throw new Error(`'commands' property already exists with a different value`);
     case 'not-object-export':
       return 'manual-required';
     case 'injectable': {
@@ -91,7 +82,11 @@ function analyzeConfig(content: string): AnalyzeResult {
     const afterLastProp = content.substring(lastProp.end, closingBrace);
     const commaIndex = afterLastProp.indexOf(',');
     if (commaIndex !== -1) {
-      return { status: 'injectable', insertOffset: lastProp.end + commaIndex + 1, needsComma: false };
+      return {
+        status: 'injectable',
+        insertOffset: lastProp.end + commaIndex + 1,
+        needsComma: false,
+      };
     }
     return { status: 'injectable', insertOffset: lastProp.end, needsComma: true };
   }
@@ -110,9 +105,7 @@ function isModuleExports(node: AssignmentExpression): boolean {
   );
 }
 
-function findCommandsProperty(
-  obj: ObjectExpression,
-): ObjectProperty | null {
+function findCommandsProperty(obj: ObjectExpression): ObjectProperty | null {
   for (const prop of obj.properties) {
     if (prop.type !== 'Property') continue;
     const p = prop as ObjectProperty;
@@ -126,19 +119,12 @@ function findCommandsProperty(
   return null;
 }
 
-function isRollipopCommandsRequire(
-  prop: ObjectProperty,
-  content: string,
-): boolean {
+function isRollipopCommandsRequire(prop: ObjectProperty, content: string): boolean {
   const valueSource = content.substring(prop.value.start, prop.value.end);
   return valueSource.includes('rollipop/commands');
 }
 
-function applyInjection(
-  content: string,
-  insertOffset: number,
-  needsComma: boolean,
-): string {
+function applyInjection(content: string, insertOffset: number, needsComma: boolean): string {
   const before = content.substring(0, insertOffset);
   const after = content.substring(insertOffset);
   const comma = needsComma ? ',' : '';
