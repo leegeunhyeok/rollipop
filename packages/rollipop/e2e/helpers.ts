@@ -13,12 +13,10 @@ import {
 } from '../src/constants';
 import { Bundler } from '../src/core/bundler';
 import type { Plugin } from '../src/core/plugins/types';
-import type { BuildOptions } from '../src/core/types';
 import { resolveRolldownOptions } from '../src/core/rolldown';
+import type { BuildOptions } from '../src/core/types';
 
 export const FIXTURES_DIR = path.resolve(import.meta.dirname, '__fixtures__');
-
-process.env.ROLLIPOP_HMR_CLIENT_PATH = path.resolve(FIXTURES_DIR, '_mock', 'hmr-client.js');
 
 export function fixturePath(...segments: string[]): string {
   return path.join(FIXTURES_DIR, ...segments);
@@ -80,7 +78,8 @@ export function createConfig(fixture: string, options: TestConfigOptions = {}): 
     reactNative: {
       reactNativePath: '',
       codegen: { filter: { code: /(?!)/ } },
-      assetRegistryPath: '',
+      assetRegistryPath: '/dummy-asset-registry.js',
+      hmrClientPath: path.resolve(FIXTURES_DIR, '_mock', 'hmr-client.js'),
       globalIdentifiers: [],
       ...options.reactNative,
     },

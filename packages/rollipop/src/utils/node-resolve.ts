@@ -1,6 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+export function resolveFrom(basePath: string, lookupPath: string) {
+  if (path.isAbsolute(lookupPath)) {
+    return lookupPath;
+  }
+
+  return require.resolve(lookupPath, {
+    paths: [basePath],
+  });
+}
+
 export function resolvePackagePath(basePath: string, packageName: string) {
   let packagePath: string | null = null;
 

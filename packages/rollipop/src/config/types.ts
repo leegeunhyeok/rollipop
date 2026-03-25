@@ -372,7 +372,13 @@ export interface ReactNativeConfig {
    *
    * Defaults to: `react-native/Libraries/Image/AssetRegistry.js`
    */
-  assetRegistryPath?: string;
+  assetRegistryPath?: string | ((root: string) => MaybePromise<string>);
+  /**
+   * Path to HMR client file.
+   *
+   * Defaults to: `react-native/Libraries/Utilities/HMRClient.js`
+   */
+  hmrClientPath?: string | ((root: string) => MaybePromise<string>);
   /**
    * Reserved global identifiers of React Native.
    *

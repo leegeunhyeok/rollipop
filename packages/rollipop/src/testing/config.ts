@@ -5,6 +5,7 @@ import {
   DEFAULT_ASSET_EXTENSIONS,
   DEFAULT_ASSET_REGISTRY_PATH,
   DEFAULT_ENV_PREFIX,
+  DEFAULT_HMR_CLIENT_PATH,
   DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
   DEFAULT_RESOLVER_CONDITION_NAMES,
   DEFAULT_RESOLVER_MAIN_FIELDS,
@@ -59,6 +60,7 @@ export function createTestConfig(basePath: string): ResolvedConfig {
         },
       },
       assetRegistryPath: DEFAULT_ASSET_REGISTRY_PATH,
+      hmrClientPath: DEFAULT_HMR_CLIENT_PATH,
       globalIdentifiers: DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
     },
     devMode: {

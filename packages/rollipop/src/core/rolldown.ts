@@ -13,6 +13,7 @@ import { getGlobalVariables } from '../internal/react-native';
 import { ResolvedBuildOptions } from '../utils/build-options';
 import { resolveHmrConfig } from '../utils/config';
 import { defineEnvFromObject } from '../utils/env';
+import { resolveFrom } from '../utils/node-resolve';
 import {
   CompatStatusReporter,
   mergeReporters,
@@ -78,8 +79,8 @@ export async function resolveRolldownOptions(
 
   // Serializer
   const {
-    prelude: preludePaths,
     polyfills,
+    prelude: preludePaths,
     banner: rolldownBanner,
     footer: rolldownFooter,
     postBanner: rolldownPostBanner,
@@ -104,6 +105,7 @@ export async function resolveRolldownOptions(
   const {
     codegen,
     assetRegistryPath,
+    hmrClientPath,
     globalIdentifiers: rolldownGlobalIdentifiers,
   } = config.reactNative;
 
@@ -214,7 +216,16 @@ export async function resolveRolldownOptions(
         flowFilter: flow.filter,
         assetsDir: buildOptions.assetsDir,
         assetExtensions: resolvedAssetExtensions,
-        assetRegistryPath,
+        assetRegistryPath: resolveFrom(
+          config.root,
+          typeof assetRegistryPath === 'function'
+            ? await assetRegistryPath(config.root)
+            : assetRegistryPath,
+        ),
+        hmrClientPath: resolveFrom(
+          config.root,
+          typeof hmrClientPath === 'function' ? await hmrClientPath(config.root) : hmrClientPath,
+        ),
       }),
       json(),
       svg({ enabled: transformSvg }),

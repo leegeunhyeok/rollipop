@@ -6,6 +6,7 @@ import {
   DEFAULT_ASSET_EXTENSIONS,
   DEFAULT_ASSET_REGISTRY_PATH,
   DEFAULT_ENV_PREFIX,
+  DEFAULT_HMR_CLIENT_PATH,
   DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
   DEFAULT_RESOLVER_CONDITION_NAMES,
   DEFAULT_RESOLVER_MAIN_FIELDS,
@@ -16,7 +17,14 @@ import type { Reporter } from '../types';
 import { resolvePackagePath } from '../utils/node-resolve';
 import { ClientLogReporter } from '../utils/reporters';
 import type { PluginFlattenConfig } from './merge-config';
-import type { Config, DevModeConfig, OptimizationConfig, Polyfill, TerminalConfig } from './types';
+import type {
+  Config,
+  DevModeConfig,
+  OptimizationConfig,
+  Polyfill,
+  ReactNativeConfig,
+  TerminalConfig,
+} from './types';
 
 export async function getDefaultConfig(projectRoot: string, mode?: Config['mode']) {
   let reactNativePath: string;
@@ -82,7 +90,12 @@ export async function getDefaultConfig(projectRoot: string, mode?: Config['mode'
           code: /\bcodegenNativeComponent</,
         },
       },
-      assetRegistryPath: DEFAULT_ASSET_REGISTRY_PATH,
+      assetRegistryPath: DEFAULT_ASSET_REGISTRY_PATH as NonNullable<
+        NonNullable<ReactNativeConfig>['assetRegistryPath']
+      >,
+      hmrClientPath: DEFAULT_HMR_CLIENT_PATH as NonNullable<
+        NonNullable<ReactNativeConfig>['hmrClientPath']
+      >,
       globalIdentifiers: DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
     },
     devMode: {

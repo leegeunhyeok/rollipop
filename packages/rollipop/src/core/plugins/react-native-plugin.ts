@@ -8,7 +8,6 @@ import {
 
 import { stripFlowTypes } from '../../common/transformer';
 import { ResolvedConfig } from '../../config';
-import { DEFAULT_HMR_CLIENT_PATH } from '../../constants';
 import { getDefaultRuntimeImplements, resolveHmrConfig } from '../../utils/config';
 import {
   AssetData,
@@ -28,15 +27,22 @@ export interface ReactNativePluginOptions {
   assetsDir?: string;
   assetExtensions: string[];
   assetRegistryPath: string;
+  hmrClientPath: string;
 }
 
 function reactNativePlugin(
   config: ResolvedConfig,
   options: ReactNativePluginOptions,
 ): rolldown.Plugin[] {
-  const { buildType, flowFilter, codegenFilter, assetsDir, assetExtensions, assetRegistryPath } =
-    options;
-  const assetExtensionRegex = new RegExp(`\\.(?:${assetExtensions.join('|')})$`);
+  const {
+    buildType,
+    flowFilter,
+    codegenFilter,
+    assetsDir,
+    assetExtensions,
+    assetRegistryPath,
+    hmrClientPath,
+  } = options;
 
   const codegenPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-codegen-marker',
@@ -84,7 +90,7 @@ function reactNativePlugin(
   const assetPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-asset',
     load: {
-      filter: [include(id(assetExtensionRegex))],
+      filter: [include(id(new RegExp(`\\.(?:${assetExtensions.join('|')})$`)))],
       async handler(id) {
         this.debug(`Asset ${id} found`);
 
@@ -126,13 +132,6 @@ function reactNativePlugin(
 
   const defaultRuntimeImplements = getDefaultRuntimeImplements();
   const hmrConfig = resolveHmrConfig(config);
-  const hmrClientPath = require.resolve(
-    process.env.ROLLIPOP_HMR_CLIENT_PATH ?? DEFAULT_HMR_CLIENT_PATH,
-    {
-      paths: [config.root],
-    },
-  );
-
   const replaceHMRClientPlugin: rolldown.Plugin = {
     name: 'rollipop:react-native-replace-hmr-client',
     load: {

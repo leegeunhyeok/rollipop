@@ -1,6 +1,9 @@
 // Utility Types
 export type MaybePromise<T> = T | Promise<T>;
 export type NullValue<T = void> = T | undefined | null | void;
+export type DeepRequired<T> = {
+  [K in keyof T]-?: T[K] extends object ? DeepRequired<T[K]> : T[K];
+};
 
 export interface Reporter {
   update(event: ReportableEvent): void;
