@@ -16,12 +16,12 @@ export default function NotFoundPage() {
       }}
       containerProps={{
         className:
-          '!px-4 pt-4 md:!px-12 md:pt-[42px] lg:pt-[56px] lg:items-center !block [&_[data-sidebar-placeholder]]:!hidden [&_[data-sidebar-panel]]:!hidden',
+          'pt-4 md:pt-[42px] lg:pt-[56px] lg:items-center !block [&_[data-sidebar-placeholder]]:!hidden [&_[data-sidebar-panel]]:!hidden',
       }}
       searchToggle={{ enabled: false }}
       themeSwitch={{ enabled: false }}
     >
-      <div className="flex max-w-[1200px] flex-1 flex-col justify-center gap-4 px-8 pb-[100px] text-center">
+      <div className="mx-auto flex min-h-[calc(100vh-56px)] max-w-[1200px] flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
         <h1 className="mx-auto w-full font-bold text-3xl sm:text-4xl">404</h1>
         <p>Oops! This page seems to have wandered off</p>
         <Link
