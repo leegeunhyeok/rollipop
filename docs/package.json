@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "typecheck": "next typegen && tsc --noEmit",
-    "build": "next build",
+    "build": "next build && yarn generate-md",
+    "generate-md": "node scripts/generate-md.mjs",
     "dev": "next dev",
     "start": "serve out",
     "postinstall": "fumadocs-mdx"
