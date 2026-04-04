@@ -19,7 +19,7 @@ export class FileStorage {
     if (FileStorage.instance == null) {
       FileStorage.instance = new FileStorage(basePath);
     }
-    return new FileStorage(basePath);
+    return FileStorage.instance;
   }
 
   private constructor(private readonly basePath: string) {
