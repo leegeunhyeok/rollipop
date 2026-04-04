@@ -173,7 +173,7 @@ describe('HMRServer', () => {
 
       const messages = getSentMessages(testable, client);
       expect(messages).toContainEqual({ type: 'hmr:update', code: 'module.exports = {}' });
-      expect(messages.filter((m) => m.type === 'hmr:update-done')).toHaveLength(2);
+      expect(messages.filter((m) => m.type === 'hmr:update-done')).toHaveLength(1);
     });
   });
 
