@@ -161,7 +161,6 @@ export class HMRServer extends WebSocketServer {
     } satisfies HMRServerMessage;
 
     this.send(client, JSON.stringify(updateMessage));
-    this.send(client, JSON.stringify({ type: 'hmr:update-done' }));
     this.done(client);
   }
 
