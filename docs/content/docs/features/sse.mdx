@@ -145,12 +145,3 @@ const req = http.get(
 );
 ```
 
-### LLM Integration
-
-An LLM agent can observe bundler state via SSE to decide when to proceed:
-
-1. Connect to `GET /sse/events`
-2. Make code changes
-3. Wait for `watch_change` → `bundle_build_started` → `bundle_build_done` or `bundle_build_failed`
-4. If failed, read the error and fix the code
-5. If needed, trigger `POST /reset-cache` to clear stale cache

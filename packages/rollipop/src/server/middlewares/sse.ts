@@ -23,8 +23,8 @@ const plugin = fp<SSEPluginOptions>(
       // Send initial comment to flush headers and confirm connection
       res.write(':ok\n\n');
 
-      eventBus.subscribe(res);
-      request.raw.on('close', () => eventBus.unsubscribe(res));
+      eventBus.addClient(res);
+      request.raw.on('close', () => eventBus.removeClient(res));
     });
   },
   { name: 'sse' },

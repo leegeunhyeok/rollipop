@@ -19,6 +19,7 @@ import { errorHandler } from './error';
 import { DevServerLogger, logger } from './logger';
 import { control } from './middlewares/control';
 import { requestLogger } from './middlewares/request-logger';
+import { mcp } from './mcp/server';
 import { serveAssets } from './middlewares/serve-assets';
 import { serveBundle } from './middlewares/serve-bundle';
 import { sse } from './middlewares/sse';
@@ -138,6 +139,7 @@ export async function createDevServer(
     .use(devMiddleware)
     .register(sse, { eventBus: sseEventBus })
     .register(control, { projectRoot, eventBus: sseEventBus })
+    .register(mcp, { projectRoot, eventBus: sseEventBus })
     .register(symbolicate, { getBundler })
     .register(serveBundle, { getBundler })
     .register(serveAssets, {
