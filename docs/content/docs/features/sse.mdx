@@ -1,0 +1,156 @@
+---
+title: Server-Sent Events
+---
+
+The dev server exposes a Server-Sent Events (SSE) endpoint that streams bundler state in real-time. This is useful for integrating with external tools such as LLMs, CI dashboards, or custom monitoring.
+
+## SSE Endpoint
+
+```
+GET /sse/events
+```
+
+The endpoint returns a `text/event-stream` response. Each event is formatted as:
+
+```
+event: <event_type>
+data: <json_payload>
+```
+
+### Event Types
+
+#### `bundle_build_started`
+
+Emitted when a bundle build starts.
+
+```json
+{ "type": "bundle_build_started", "id": "ios-true" }
+```
+
+#### `bundle_build_done`
+
+Emitted when a bundle build completes successfully.
+
+```json
+{ "type": "bundle_build_done", "id": "ios-true", "totalModules": 1270, "duration": 1523.45 }
+```
+
+#### `bundle_build_failed`
+
+Emitted when a bundle build fails.
+
+```json
+{ "type": "bundle_build_failed", "id": "ios-true", "error": "SyntaxError: Unexpected token" }
+```
+
+#### `watch_change`
+
+Emitted when a file change is detected.
+
+```json
+{ "type": "watch_change", "id": "ios-true", "file": "src/App.tsx" }
+```
+
+#### `client_log`
+
+Emitted when the app logs to the console.
+
+```json
+{ "type": "client_log", "data": ["Hello from the app"] }
+```
+
+#### `device_connected` / `device_disconnected`
+
+Emitted when a device connects or disconnects via HMR.
+
+```json
+{ "type": "device_connected", "clientId": 0 }
+```
+
+#### `server_ready`
+
+Emitted once when the dev server is ready.
+
+```json
+{ "type": "server_ready", "host": "localhost", "port": 8081 }
+```
+
+#### `cache_reset`
+
+Emitted when the control API clears the build cache.
+
+```json
+{ "type": "cache_reset" }
+```
+
+### Bundler ID
+
+Events that originate from the bundler include an `id` field. This identifies the specific bundler instance, since multiple instances can run simultaneously for different configurations:
+
+- `ios-true` — iOS, development mode
+- `android-true` — Android, development mode
+- `ios-false` — iOS, production mode
+
+## Control API
+
+The dev server also provides an HTTP endpoint to trigger actions externally.
+
+### `ALL /reset-cache`
+
+Clears the entire build cache.
+
+```
+curl http://localhost:8081/reset-cache
+```
+
+## Usage Examples
+
+### curl
+
+```bash
+# Stream events
+curl -N http://localhost:8081/sse/events
+
+# Reset cache
+curl http://localhost:8081/reset-cache
+```
+
+### Node.js
+
+```ts
+import http from 'node:http';
+
+const req = http.get(
+  'http://localhost:8081/sse/events',
+  { headers: { Accept: 'text/event-stream' } },
+  (res) => {
+    res.setEncoding('utf8');
+    res.on('data', (chunk) => {
+      for (const message of chunk.split('\n\n')) {
+        if (!message.trim() || message.startsWith(':')) continue;
+
+        let event = '';
+        let data = '';
+        for (const line of message.split('\n')) {
+          if (line.startsWith('event: ')) event = line.slice(7);
+          if (line.startsWith('data: ')) data = line.slice(6);
+        }
+
+        if (event && data) {
+          console.log(event, JSON.parse(data));
+        }
+      }
+    });
+  },
+);
+```
+
+### LLM Integration
+
+An LLM agent can observe bundler state via SSE to decide when to proceed:
+
+1. Connect to `GET /sse/events`
+2. Make code changes
+3. Wait for `watch_change` → `bundle_build_started` → `bundle_build_done` or `bundle_build_failed`
+4. If failed, read the error and fix the code
+5. If needed, trigger `POST /reset-cache` to clear stale cache

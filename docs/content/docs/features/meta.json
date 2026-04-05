@@ -9,6 +9,7 @@
     "analyze",
     "reanimated-worklets",
     "reporter",
+    "sse",
     "custom-command"
   ],
   "defaultOpen": true

@@ -8,7 +8,9 @@ vitest.mock('../../core/bundler', () => ({
     createId: vi.fn((_config: any, opts: any) => `${opts.platform}-${opts.dev}`),
     devEngine: vi.fn().mockResolvedValue({
       run: vi.fn().mockResolvedValue(undefined),
-      getBundleState: vi.fn().mockResolvedValue({ lastFullBuildFailed: false, hasStaleOutput: false }),
+      getBundleState: vi
+        .fn()
+        .mockResolvedValue({ lastFullBuildFailed: false, hasStaleOutput: false }),
     }),
   },
 }));

@@ -20,10 +20,7 @@ function createMockSourceMapConsumer(mappings: Map<string, any>) {
   };
 }
 
-function createMockBundleStore(
-  sourceMapConsumer: any,
-  code = 'var x = 1;',
-): BundleStore {
+function createMockBundleStore(sourceMapConsumer: any, code = 'var x = 1;'): BundleStore {
   return {
     code,
     sourceMap: '{}',

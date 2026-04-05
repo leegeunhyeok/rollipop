@@ -8,6 +8,7 @@ import { getBundleStoreMode } from '../common/env';
 import type { ResolvedConfig } from '../config';
 import { Bundler } from '../core/bundler';
 import type { BuildOptions, DevEngine } from '../core/types';
+import type { ReportableEvent } from '../types';
 import { getBaseBundleName } from '../utils/bundle';
 import { bindReporter } from '../utils/config';
 import { normalizeRolldownError } from '../utils/errors';
@@ -55,6 +56,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     private readonly options: BundlerDevEngineOptions,
     private readonly config: ResolvedConfig,
     private readonly buildOptions: BuildOptions,
+    private readonly onReporterEvent?: (id: string, event: ReportableEvent) => void,
   ) {
     super();
     this._id = Bundler.createId(config, buildOptions);
@@ -91,48 +93,56 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
 
     this._state = 'initializing';
 
-    const devEngine = await Bundler.devEngine(bindReporter(this.config, this), this.buildOptions, {
-      host: this.options.server.host,
-      port: this.options.server.port,
-      onHmrUpdates: (errorOrResult) => {
-        if (!this.isHmrEnabled) {
-          return;
-        }
+    const onEvent = this.onReporterEvent
+      ? (event: ReportableEvent) => this.onReporterEvent!(this._id, event)
+      : undefined;
 
-        if (errorOrResult instanceof Error) {
-          logger.error('Failed to handle HMR updates', {
-            bundlerId: this.id,
-            error: errorOrResult,
-          });
-          const normalizedError = normalizeRolldownError(errorOrResult);
-          this.emit('buildFailed', normalizedError);
-        } else {
-          logger.trace('Detected changed files', {
-            bundlerId: this.id,
-            changedFiles: errorOrResult.changedFiles,
-          });
-          this.emit('hmrUpdates', errorOrResult.updates);
-        }
+    const devEngine = await Bundler.devEngine(
+      bindReporter(this.config, this, onEvent),
+      this.buildOptions,
+      {
+        host: this.options.server.host,
+        port: this.options.server.port,
+        onHmrUpdates: (errorOrResult) => {
+          if (!this.isHmrEnabled) {
+            return;
+          }
+
+          if (errorOrResult instanceof Error) {
+            logger.error('Failed to handle HMR updates', {
+              bundlerId: this.id,
+              error: errorOrResult,
+            });
+            const normalizedError = normalizeRolldownError(errorOrResult);
+            this.emit('buildFailed', normalizedError);
+          } else {
+            logger.trace('Detected changed files', {
+              bundlerId: this.id,
+              changedFiles: errorOrResult.changedFiles,
+            });
+            this.emit('hmrUpdates', errorOrResult.updates);
+          }
+        },
+        onOutput: (errorOrResult) => {
+          if (errorOrResult instanceof Error) {
+            const normalizedError = normalizeRolldownError(errorOrResult);
+            logger.trace('onOutput', { bundlerId: this.id });
+            logger.error(errorOrResult.message);
+            this.buildFailedError = normalizedError;
+            this.emit('buildFailed', normalizedError);
+          } else {
+            const output = errorOrResult.output[0];
+            this.updateBundleStore(output);
+            this.buildFailedError = null;
+            logger.debug('Build completed', {
+              bundlerId: this.id,
+              bundleName: output.name,
+            });
+          }
+        },
+        rebuildStrategy: 'auto',
       },
-      onOutput: (errorOrResult) => {
-        if (errorOrResult instanceof Error) {
-          const normalizedError = normalizeRolldownError(errorOrResult);
-          logger.trace('onOutput', { bundlerId: this.id });
-          logger.error(errorOrResult.message);
-          this.buildFailedError = normalizedError;
-          this.emit('buildFailed', normalizedError);
-        } else {
-          const output = errorOrResult.output[0];
-          this.updateBundleStore(output);
-          this.buildFailedError = null;
-          logger.debug('Build completed', {
-            bundlerId: this.id,
-            bundleName: output.name,
-          });
-        }
-      },
-      rebuildStrategy: 'auto',
-    });
+    );
 
     await devEngine.run();
     this._devEngine = devEngine;
@@ -170,6 +180,7 @@ export class BundlerPool {
   constructor(
     private readonly config: ResolvedConfig,
     private readonly resolvedServerOptions: Required<Pick<ServerOptions, 'host' | 'port'>>,
+    private readonly onReporterEvent?: (id: string, event: ReportableEvent) => void,
   ) {}
 
   private instanceKey(bundleName: string, buildOptions: BuildOptions) {
@@ -191,6 +202,7 @@ export class BundlerPool {
         },
         this.config,
         buildOptions,
+        this.onReporterEvent,
       );
       logger.debug('Setting new bundler instance', { key });
       BundlerPool.instances.set(key, instance);
