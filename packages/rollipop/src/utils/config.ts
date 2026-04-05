@@ -3,11 +3,12 @@ import fs from 'node:fs';
 
 import type { HmrConfig, ResolvedConfig } from '../config';
 import type { BundlerDevEngineEventMap } from '../server/bundler-pool';
-import type { Reporter } from '../types';
+import type { ReportableEvent, Reporter } from '../types';
 
 export function bindReporter(
   config: ResolvedConfig,
   eventSource: EventEmitter<BundlerDevEngineEventMap>,
+  onEvent?: (event: ReportableEvent) => void,
 ): ResolvedConfig {
   const originalReporter = config.reporter;
   const reporter: Reporter = {
@@ -34,6 +35,7 @@ export function bindReporter(
           break;
       }
       originalReporter?.update(event);
+      onEvent?.(event);
     },
   };
 

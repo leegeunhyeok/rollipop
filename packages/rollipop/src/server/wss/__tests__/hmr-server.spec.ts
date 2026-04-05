@@ -47,10 +47,7 @@ vitest.mock('../server', async () => {
  */
 interface TestableHMRServer {
   onMessage(client: WebSocketClient, data: Buffer): void;
-  sendUpdateToClient(
-    client: WebSocketClient,
-    update: { type: string; code?: string },
-  ): void;
+  sendUpdateToClient(client: WebSocketClient, update: { type: string; code?: string }): void;
   sendReloadToClient(client: WebSocketClient): void;
   cleanup(client: WebSocketClient): void;
   send: Mock;
