@@ -25,14 +25,14 @@ describe('SSEEventBus', () => {
     bus = new SSEEventBus();
   });
 
-  describe('subscribe / unsubscribe', () => {
+  describe('addClient / removeClient', () => {
     it('should track client count', () => {
       const res = createMockResponse();
 
       expect(bus.clientCount).toBe(0);
-      bus.subscribe(res);
+      bus.addClient(res);
       expect(bus.clientCount).toBe(1);
-      bus.unsubscribe(res);
+      bus.removeClient(res);
       expect(bus.clientCount).toBe(0);
     });
   });
@@ -41,8 +41,8 @@ describe('SSEEventBus', () => {
     it('should send SSE-formatted message to all subscribed clients', () => {
       const res1 = createMockResponse();
       const res2 = createMockResponse();
-      bus.subscribe(res1);
-      bus.subscribe(res2);
+      bus.addClient(res1);
+      bus.addClient(res2);
 
       const event: SSEEvent = { type: 'server_ready', host: 'localhost', port: 8081 };
       bus.emit(event);
@@ -52,10 +52,10 @@ describe('SSEEventBus', () => {
       expect(res2.write).toHaveBeenCalledWith(expected);
     });
 
-    it('should not send to unsubscribed clients', () => {
+    it('should not send to removed clients', () => {
       const res = createMockResponse();
-      bus.subscribe(res);
-      bus.unsubscribe(res);
+      bus.addClient(res);
+      bus.removeClient(res);
 
       bus.emit({ type: 'bundle_build_started', id: 'ios-true' });
 
@@ -64,7 +64,7 @@ describe('SSEEventBus', () => {
 
     it('should skip closed connections', () => {
       const res = createMockResponse();
-      bus.subscribe(res);
+      bus.addClient(res);
       (res as unknown as { closed: boolean }).closed = true;
 
       bus.emit({ type: 'bundle_build_started', id: 'ios-true' });
@@ -74,7 +74,7 @@ describe('SSEEventBus', () => {
 
     it('should format different event types correctly', () => {
       const res = createMockResponse();
-      bus.subscribe(res);
+      bus.addClient(res);
 
       bus.emit({ type: 'bundle_build_done', id: 'ios-true', totalModules: 42, duration: 1500 });
       bus.emit({ type: 'watch_change', id: 'ios-true', file: 'src/App.tsx' });
@@ -84,6 +84,29 @@ describe('SSEEventBus', () => {
       expect(res.chunks[0]).toContain('"totalModules":42');
       expect(res.chunks[1]).toContain('event: watch_change');
       expect(res.chunks[1]).toContain('"file":"src/App.tsx"');
+    });
+
+    it('should notify listeners registered via collect', () => {
+      const events: SSEEvent[] = [];
+      bus.collect(events);
+
+      bus.emit({ type: 'bundle_build_started', id: 'ios-true' });
+      bus.emit({ type: 'bundle_build_done', id: 'ios-true', totalModules: 10, duration: 100 });
+
+      expect(events).toHaveLength(2);
+      expect(events[0].type).toBe('bundle_build_started');
+      expect(events[1].type).toBe('bundle_build_done');
+    });
+
+    it('should stop collecting after unsubscribe', () => {
+      const events: SSEEvent[] = [];
+      const unsubscribe = bus.collect(events);
+
+      bus.emit({ type: 'bundle_build_started', id: 'ios-true' });
+      unsubscribe();
+      bus.emit({ type: 'bundle_build_done', id: 'ios-true', totalModules: 10, duration: 100 });
+
+      expect(events).toHaveLength(1);
     });
   });
 });

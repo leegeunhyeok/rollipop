@@ -1,0 +1,56 @@
+---
+title: MCP Server
+---
+
+The dev server embeds an [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server at `/mcp`, allowing LLM agents like Claude Code to interact with the bundler through standard MCP tooling.
+
+## Setup
+
+Add the MCP server to your project's `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "rollipop": {
+      "type": "http",
+      "url": "http://localhost:8081/mcp"
+    }
+  }
+}
+```
+
+Make sure the dev server is running before starting the LLM agent.
+
+## Available Tools
+
+### `reset_cache`
+
+Clears the entire build cache. The bundler will rebuild from scratch on next file change.
+
+### `get_build_events`
+
+Subscribes to bundler events for a specified duration and returns all collected events.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `duration` | number | 10000 | How long to listen in milliseconds (1000-60000) |
+
+Returns a JSON array of events collected during the listening period. Event types include:
+
+- `bundle_build_started` / `bundle_build_done` / `bundle_build_failed` — build lifecycle
+- `watch_change` — file change detected
+- `client_log` — app console output
+- `device_connected` / `device_disconnected` — device lifecycle
+- `cache_reset` — cache cleared via control API
+
+See [SSE](/docs/features/sse) for the full event type reference.
+
+## LLM Workflow
+
+An LLM agent can use MCP tools to interact with the bundler:
+
+1. Call `get_build_events` to observe bundler state
+2. Make code changes
+3. Call `get_build_events` again to wait for `bundle_build_done` or `bundle_build_failed`
+4. If failed, read the error and fix the code
+5. If needed, call `reset_cache` to clear stale cache
