@@ -24,7 +24,7 @@ data: <json_payload>
 Emitted when a bundle build starts.
 
 ```json
-{ "type": "bundle_build_started", "id": "ios-true" }
+{ "type": "bundle_build_started", "id": "<id>" }
 ```
 
 #### `bundle_build_done`
@@ -32,7 +32,7 @@ Emitted when a bundle build starts.
 Emitted when a bundle build completes successfully.
 
 ```json
-{ "type": "bundle_build_done", "id": "ios-true", "totalModules": 1270, "duration": 1523.45 }
+{ "type": "bundle_build_done", "id": "<id>", "totalModules": 1270, "duration": 1523.45 }
 ```
 
 #### `bundle_build_failed`
@@ -40,7 +40,7 @@ Emitted when a bundle build completes successfully.
 Emitted when a bundle build fails.
 
 ```json
-{ "type": "bundle_build_failed", "id": "ios-true", "error": "SyntaxError: Unexpected token" }
+{ "type": "bundle_build_failed", "id": "<id>", "error": "SyntaxError: Unexpected token" }
 ```
 
 #### `watch_change`
@@ -48,7 +48,7 @@ Emitted when a bundle build fails.
 Emitted when a file change is detected.
 
 ```json
-{ "type": "watch_change", "id": "ios-true", "file": "src/App.tsx" }
+{ "type": "watch_change", "id": "<id>", "file": "src/App.tsx" }
 ```
 
 #### `client_log`
@@ -82,14 +82,6 @@ Emitted when the control API clears the build cache.
 ```json
 { "type": "cache_reset" }
 ```
-
-### Bundler ID
-
-Events that originate from the bundler include an `id` field. This identifies the specific bundler instance, since multiple instances can run simultaneously for different configurations:
-
-- `ios-true` — iOS, development mode
-- `android-true` — Android, development mode
-- `ios-false` — iOS, production mode
 
 ## Control API
 
