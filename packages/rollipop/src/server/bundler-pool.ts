@@ -4,7 +4,6 @@ import type { OutputChunk } from '@rollipop/rolldown';
 import * as rolldownExperimental from '@rollipop/rolldown/experimental';
 import { invariant } from 'es-toolkit';
 
-import { getBundleStoreMode } from '../common/env';
 import type { ResolvedConfig } from '../config';
 import { Bundler } from '../core/bundler';
 import type { BuildOptions, DevEngine } from '../core/types';
@@ -13,7 +12,7 @@ import { getBaseBundleName } from '../utils/bundle';
 import { bindReporter } from '../utils/config';
 import { normalizeRolldownError } from '../utils/errors';
 import { taskHandler } from '../utils/promise';
-import { type BundleStore, FileSystemBundleStore, InMemoryBundleStore } from './bundle';
+import { type BundleStore, FileSystemBundleStore } from './bundle';
 import { logger } from './logger';
 import type { ServerOptions } from './types';
 
@@ -76,14 +75,6 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
 
   get ensureInitialized() {
     return this.initializeHandle.task;
-  }
-
-  get sourceMappingURL() {
-    const { host, port } = this.options.server;
-    const { platform, dev } = this.buildOptions;
-    const [name] = this.config.entry.split('.');
-
-    return `http://${host}:${port}/${name}.bundle.map?platform=${platform}&dev=${dev}`;
   }
 
   private async initialize() {
@@ -151,10 +142,12 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   }
 
   private updateBundleStore(output: OutputChunk) {
-    this.bundleStore =
-      getBundleStoreMode() === 'fs'
-        ? new FileSystemBundleStore(this.config.root, this.id, output.code)
-        : new InMemoryBundleStore(output.code, output.map?.toString(), this.sourceMappingURL);
+    this.bundleStore = new FileSystemBundleStore(
+      this.config.root,
+      this.id,
+      output.code,
+      output.map?.toString(),
+    );
   }
 
   async getBundle() {

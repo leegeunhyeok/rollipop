@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { invariant } from 'es-toolkit';
 import {
   SourceMapConsumer,
   type BasicSourceMapConsumer,
@@ -10,7 +9,6 @@ import {
 
 import { getSharedDataPath } from '../core/fs/data';
 import { logger } from '../logger';
-import { replaceSourceMappingURL } from '../utils/source-map';
 
 type SourceMapConsumerType = BasicSourceMapConsumer | IndexedSourceMapConsumer;
 
@@ -20,41 +18,13 @@ export interface BundleStore {
   sourceMapConsumer: Promise<SourceMapConsumerType> | undefined;
 }
 
-export class InMemoryBundleStore implements BundleStore {
-  private lazySourceMapConsumer: Promise<SourceMapConsumerType> | null = null;
-
-  constructor(
-    private readonly _code: string,
-    private readonly _sourceMap: string | undefined,
-    sourceMappingURL: string,
-  ) {
-    this._code = replaceSourceMappingURL(this._code, sourceMappingURL);
-  }
-
-  get code() {
-    return this._code;
-  }
-
-  get sourceMap() {
-    return this._sourceMap;
-  }
-
-  get sourceMapConsumer() {
-    invariant(this._sourceMap, 'Source map is not available');
-
-    if (this.lazySourceMapConsumer == null) {
-      this.lazySourceMapConsumer = new SourceMapConsumer(this._sourceMap);
-    }
-
-    return this.lazySourceMapConsumer;
-  }
-}
-
 export class FileSystemBundleStore implements BundleStore {
   private readonly bundleFilePath: string;
+  private readonly _sourceMap: string | undefined;
+  private lazySourceMapConsumer: Promise<SourceMapConsumerType> | null = null;
   private holder: { code: string; mtimeMs: number };
 
-  constructor(projectRoot: string, id: string, code: string) {
+  constructor(projectRoot: string, id: string, code: string, sourceMap: string | undefined) {
     const sharedDataPath = getSharedDataPath(projectRoot);
     const bundlesPath = path.join(sharedDataPath, 'bundles');
     const bundleFilePath = path.join(bundlesPath, `${id}.bundle`);
@@ -67,6 +37,7 @@ export class FileSystemBundleStore implements BundleStore {
     const stats = fs.statSync(bundleFilePath);
 
     this.bundleFilePath = bundleFilePath;
+    this._sourceMap = sourceMap;
     this.holder = {
       code,
       mtimeMs: stats.mtimeMs,
@@ -95,13 +66,18 @@ export class FileSystemBundleStore implements BundleStore {
   }
 
   get sourceMap() {
-    // FileSystem bundle can be modified. so, we can't return the source map.
-    return undefined;
+    // A modified fs bundle no longer matches the cached source map.
+    return this.isStale() ? undefined : this._sourceMap;
   }
 
   get sourceMapConsumer() {
-    // FileSystem bundle can be modified. so, we can't return the source map consumer.
-    return undefined;
+    if (this.isStale() || this._sourceMap == null) {
+      return undefined;
+    }
+    if (this.lazySourceMapConsumer == null) {
+      this.lazySourceMapConsumer = new SourceMapConsumer(this._sourceMap);
+    }
+    return this.lazySourceMapConsumer;
   }
 
   isStale() {

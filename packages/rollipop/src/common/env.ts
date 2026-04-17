@@ -37,13 +37,3 @@ export function isDebugEnabled() {
   }
   return debugKeys[DEBUG_KEY] ?? false;
 }
-
-export function getBundleStoreMode() {
-  switch (process.env.BUNDLE_STORE) {
-    case 'fs':
-    case 'memory':
-      return process.env.BUNDLE_STORE;
-    default:
-      return 'memory';
-  }
-}
