@@ -13,7 +13,7 @@ export default defineConfig({
       'example/andorid/**',
       'example/ios/**',
       'rolldown/**',
-      '**/e2e/__fixtures__/**',
+      '**/__fixtures__/**',
       '**/.**',
     ],
     experimentalSortImports: {
@@ -34,7 +34,7 @@ export default defineConfig({
     },
   },
   lint: {
-    ignorePatterns: ['rolldown/**', 'docs/**', 'example/**', '**/e2e/__fixtures__/**'],
+    ignorePatterns: ['rolldown/**', 'docs/**', 'example/**', '**/__fixtures__/**'],
     options: {
       typeAware: true,
       typeCheck: true,

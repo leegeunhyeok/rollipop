@@ -204,7 +204,17 @@ export class HMRServer extends WebSocketServer {
     }
 
     if (instance != null) {
-      void instance.devEngine.removeClient(String(client.id));
+      try {
+        void instance.devEngine.removeClient(String(client.id));
+      } catch (error) {
+        // `devEngine` throws an invariant error if the client disconnects
+        // before the underlying bundler finishes initializing. Log and
+        // continue so the cleanup path isn't left half-done.
+        this.logger.warn(
+          `Skipped devEngine.removeClient for client ${client.id}: ` +
+            (error instanceof Error ? error.message : String(error)),
+        );
+      }
     }
 
     this.bindings.delete(client.id);
