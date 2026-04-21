@@ -6,7 +6,7 @@ import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import fp from 'fastify-plugin';
 import { z } from 'zod';
 
-import { FileSystemCache } from '../../core/cache/file-system-cache';
+import { resetCache } from '../../utils/reset-cache';
 import type { SSEEventBus } from '../sse/event-bus';
 import type { SSEEvent } from '../sse/types';
 
@@ -35,7 +35,7 @@ function createMcpServer(options: McpPluginOptions): McpServer {
         'Clear the entire build cache. The bundler will rebuild from scratch on next change.',
     },
     async () => {
-      FileSystemCache.clearAll(projectRoot);
+      resetCache(projectRoot);
       eventBus.emit({ type: 'cache_reset' });
       return { content: [{ type: 'text' as const, text: 'Cache cleared successfully.' }] };
     },
@@ -84,17 +84,13 @@ const sessions = new Map<string, SessionEntry>();
 
 const plugin = fp<McpPluginOptions>(
   (fastify, options) => {
-    fastify.addContentTypeParser(
-      'application/json',
-      { parseAs: 'string' },
-      (_req, body, done) => {
-        try {
-          done(null, JSON.parse(body as string));
-        } catch (error) {
-          done(error as Error, undefined);
-        }
-      },
-    );
+    fastify.addContentTypeParser('application/json', { parseAs: 'string' }, (_req, body, done) => {
+      try {
+        done(null, JSON.parse(body as string));
+      } catch (error) {
+        done(error as Error, undefined);
+      }
+    });
 
     fastify.post('/mcp', async (request, reply) => {
       const sessionId = request.headers['mcp-session-id'] as string | undefined;

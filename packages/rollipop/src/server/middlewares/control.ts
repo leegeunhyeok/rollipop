@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 
-import { FileSystemCache } from '../../core/cache/file-system-cache';
+import { resetCache } from '../../utils/reset-cache';
 import type { SSEEventBus } from '../sse/event-bus';
 
 export interface ControlPluginOptions {
@@ -11,7 +11,7 @@ export interface ControlPluginOptions {
 const plugin = fp<ControlPluginOptions>(
   (fastify, { projectRoot, eventBus }) => {
     fastify.all('/reset-cache', async (_request, reply) => {
-      FileSystemCache.clearAll(projectRoot);
+      resetCache(projectRoot);
       eventBus.emit({ type: 'cache_reset' });
       return reply.send({ success: true, message: 'Cache cleared' });
     });
