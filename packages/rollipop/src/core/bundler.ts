@@ -9,7 +9,6 @@ import { Logo } from '../common/logo';
 import type { ResolvedConfig } from '../config/defaults';
 import { resolveBuildOptions, type ResolvedBuildOptions } from '../utils/build-options';
 import { createId } from '../utils/id';
-import { FileSystemCache } from './cache/file-system-cache';
 import { FileStorage } from './fs/storage';
 import { getOverrideOptionsForDevServer, resolveRolldownOptions } from './rolldown';
 import type { BuildType, BuildOptions, BundlerContext, DevEngine, DevEngineOptions } from './types';
@@ -60,10 +59,9 @@ export class Bundler {
   ) {
     const id = Bundler.createId(config, buildOptions);
     const root = config.root;
-    const cache = new FileSystemCache(config.root, id);
     const storage = FileStorage.getInstance(config.root);
     const state: BundlerState = { hmrUpdates: new Set() };
-    const context: BundlerContext = { id, root, cache, storage, buildType, state };
+    const context: BundlerContext = { id, root, storage, buildType, state };
 
     return context;
   }

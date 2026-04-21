@@ -1,7 +1,6 @@
 import type * as rolldown from '@rollipop/rolldown';
 import type { DevEngine as BaseDevEngine, DevOptions } from '@rollipop/rolldown/experimental';
 
-import type { FileSystemCache } from './cache/file-system-cache';
 import type { FileStorage } from './fs/storage';
 
 export interface BuildOptions {
@@ -73,7 +72,6 @@ export type DevEngineOptions = Omit<DevOptions, 'watch'> & {
 export interface BundlerContext {
   id: string;
   root: string;
-  cache: FileSystemCache;
   storage: FileStorage;
   buildType: BuildType;
   state: BundlerState;
