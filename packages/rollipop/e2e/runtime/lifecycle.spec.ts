@@ -102,7 +102,7 @@ describe('runtime e2e: lifecycle', () => {
   }, 180_000);
 
   describe('GET /bundlers/:id/status', () => {
-    it('returns the latest build SSE event for a known id', async () => {
+    it('returns { id, status } as JSON for a known id', async () => {
       const sse = await subscribeSSE(ts.baseUrl);
       try {
         // Drive a *fresh* build and capture the bundler id from its SSE
@@ -118,17 +118,7 @@ describe('runtime e2e: lifecycle', () => {
         const res = await fetch(`${ts.baseUrl}/bundlers/${doneEvent.id}/status`);
         expect(res.status).toBe(200);
         expect(res.headers.get('Content-Type')).toContain('application/json');
-
-        const body = (await res.json()) as Record<string, unknown>;
-        // Shape matches what the SSE stream pushed for this bundler.
-        expect(body).toEqual(
-          expect.objectContaining({
-            type: 'bundle_build_done',
-            id: doneEvent.id,
-            totalModules: doneEvent.totalModules,
-            duration: doneEvent.duration,
-          }),
-        );
+        expect(await res.json()).toEqual({ id: doneEvent.id, status: 'build-done' });
       } finally {
         sse.close();
       }

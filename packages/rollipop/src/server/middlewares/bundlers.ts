@@ -27,10 +27,7 @@ const plugin = fp<BundlersPluginOptions>(
         if (!instance) {
           return reply.status(404).send({ error: 'not found' });
         }
-        // Shape matches the SSE event bus: clients receive the same object
-        // here as would arrive live on `/sse/events`. `null` means no build
-        // has been observed for this bundler yet (still initializing).
-        return reply.send(instance.statusEvent);
+        return reply.send({ id: instance.id, status: instance.status });
       },
     );
   },
