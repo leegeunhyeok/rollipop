@@ -1,5 +1,15 @@
 # @rollipop/plugin-rozenite
 
+## 0.1.0-alpha.16
+
+### Patch Changes
+
+- Updated dependencies [915ef17]
+- Updated dependencies [a80492f]
+- Updated dependencies [7ea2625]
+- Updated dependencies [14ebb2c]
+  - rollipop@0.1.0-alpha.16
+
 ## 0.1.0-alpha.15
 
 ### Patch Changes
