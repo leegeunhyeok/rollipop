@@ -100,4 +100,41 @@ describe('runtime e2e: lifecycle', () => {
       sse.close();
     }
   }, 180_000);
+
+  describe('GET /bundlers/:id/status', () => {
+    it('returns { id, status } as JSON for a known id', async () => {
+      const sse = await subscribeSSE(ts.baseUrl);
+      try {
+        // Drive a *fresh* build and capture the bundler id from its SSE
+        // event. Prior tests in this file already built the ios/dev
+        // bundler, so the response would come from cache with no new
+        // events. Using `platform=android` forces a new BundlerDevEngine
+        // instance (see utils/id.ts#createId).
+        const [doneEvent] = await Promise.all([
+          sse.waitFor('bundle_build_done', undefined, 120_000),
+          fetch(`${ts.baseUrl}/index.bundle?platform=android&dev=true`),
+        ]);
+
+        const res = await fetch(`${ts.baseUrl}/bundlers/${doneEvent.id}/status`);
+        expect(res.status).toBe(200);
+        expect(res.headers.get('Content-Type')).toContain('application/json');
+        expect(await res.json()).toEqual({ id: doneEvent.id, status: 'build-done' });
+      } finally {
+        sse.close();
+      }
+    }, 180_000);
+
+    it('returns 404 with a JSON error for an unknown id', async () => {
+      const res = await fetch(`${ts.baseUrl}/bundlers/does-not-exist/status`);
+      expect(res.status).toBe(404);
+      expect(res.headers.get('Content-Type')).toContain('application/json');
+      expect(await res.json()).toEqual({ error: 'not found' });
+    });
+
+    it('leaves the community packager-status handler on bare /status intact', async () => {
+      const res = await fetch(`${ts.baseUrl}/status`);
+      expect(res.status).toBe(200);
+      expect(await res.text()).toBe('packager-status:running');
+    });
+  });
 });
