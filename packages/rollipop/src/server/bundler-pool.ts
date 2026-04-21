@@ -105,7 +105,15 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
               error: errorOrResult,
             });
             const normalizedError = normalizeRolldownError(errorOrResult);
-            this.emit('buildFailed', normalizedError);
+            // Route through the reporter pipeline so subscribers downstream
+            // (SSE bus, custom reporters) observe `bundle_build_failed` for
+            // HMR-time errors — not just full builds. `bindReporter` also
+            // re-emits the local `buildFailed` event, which HMRServer uses
+            // to dispatch `hmr:error` to the connected client.
+            this.config.reporter?.update({
+              type: 'bundle_build_failed',
+              error: normalizedError,
+            });
           } else {
             logger.trace('Detected changed files', {
               bundlerId: this.id,
