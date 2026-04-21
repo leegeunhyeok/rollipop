@@ -32,13 +32,9 @@ const EVENT_STYLES: Record<SSEEvent['type'], { label: string; color: (s: string)
   bundle_build_failed: { label: 'build:fail', color: pc.red },
   watch_change: { label: 'watch', color: pc.yellow },
   client_log: { label: 'log', color: pc.cyan },
-  hmr_update: { label: 'hmr:update', color: pc.magenta },
-  hmr_reload: { label: 'hmr:reload', color: pc.magenta },
   device_connected: { label: 'device:on', color: pc.green },
   device_disconnected: { label: 'device:off', color: pc.red },
   cache_reset: { label: 'cache:reset', color: pc.yellow },
-  symbolicate_request: { label: 'sym:req', color: pc.cyan },
-  symbolicate_result: { label: 'sym:res', color: pc.cyan },
 };
 
 function timestamp(): string {
