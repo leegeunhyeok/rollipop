@@ -101,7 +101,7 @@ describe('runtime e2e: lifecycle', () => {
     }
   }, 180_000);
 
-  describe('/status/:id', () => {
+  describe('GET /bundlers/:id/status', () => {
     it('returns the bundler state as plain text for a known id', async () => {
       const sse = await subscribeSSE(ts.baseUrl);
       try {
@@ -115,7 +115,7 @@ describe('runtime e2e: lifecycle', () => {
           fetch(`${ts.baseUrl}/index.bundle?platform=android&dev=true`),
         ]);
 
-        const res = await fetch(`${ts.baseUrl}/status/${doneEvent.id}`);
+        const res = await fetch(`${ts.baseUrl}/bundlers/${doneEvent.id}/status`);
         expect(res.status).toBe(200);
         expect(res.headers.get('Content-Type')).toContain('text/plain');
         expect(await res.text()).toBe('build-done');
@@ -125,12 +125,12 @@ describe('runtime e2e: lifecycle', () => {
     }, 180_000);
 
     it('returns 404 with plain text for an unknown id', async () => {
-      const res = await fetch(`${ts.baseUrl}/status/does-not-exist`);
+      const res = await fetch(`${ts.baseUrl}/bundlers/does-not-exist/status`);
       expect(res.status).toBe(404);
       expect(await res.text()).toBe('not found');
     });
 
-    it('does not shadow the community packager-status handler on bare /status', async () => {
+    it('leaves the community packager-status handler on bare /status intact', async () => {
       const res = await fetch(`${ts.baseUrl}/status`);
       expect(res.status).toBe(200);
       expect(await res.text()).toBe('packager-status:running');
