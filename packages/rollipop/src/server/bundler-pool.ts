@@ -42,6 +42,8 @@ export interface BundlerDevEngineEventMap {
   hmrUpdates: [rolldownExperimental.BindingClientHmrUpdate[]];
 }
 
+export type BundlerStatus = 'idle' | 'building' | 'build-done' | 'build-failed';
+
 export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private readonly initializeHandle: ReturnType<typeof taskHandler>;
   private readonly isHmrEnabled: boolean;
@@ -50,6 +52,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private buildFailedError: Error | null = null;
   private _devEngine: DevEngine | null = null;
   private _state: 'idle' | 'initializing' | 'ready' = 'idle';
+  private _status: BundlerStatus = 'idle';
 
   constructor(
     private readonly options: BundlerDevEngineOptions,
@@ -61,11 +64,30 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     this._id = Bundler.createId(config, buildOptions);
     this.initializeHandle = taskHandler();
     this.isHmrEnabled = Boolean(buildOptions.dev && config.devMode.hmr);
+
+    // Track build lifecycle transitions. `bindReporter` re-emits each reporter
+    // event on this EventEmitter, so the listeners below fire whether the
+    // signal originated from the plugin pipeline (full rebuilds) or from
+    // `onHmrUpdates` / `onOutput` (HMR-time updates).
+    this.on('buildStart', () => {
+      this._status = 'building';
+    });
+    this.on('buildDone', () => {
+      this._status = 'build-done';
+    });
+    this.on('buildFailed', () => {
+      this._status = 'build-failed';
+    });
+
     void this.initialize();
   }
 
   get id() {
     return this._id;
+  }
+
+  get status(): BundlerStatus {
+    return this._status;
   }
 
   get devEngine() {
@@ -210,5 +232,19 @@ export class BundlerPool {
 
       return instance;
     }
+  }
+
+  /**
+   * Look up a cached bundler by its reporter-facing id (the same id carried
+   * in SSE events such as `bundle_build_done`). Returns `undefined` when no
+   * instance with that id has been created yet.
+   */
+  getInstanceById(id: string): BundlerDevEngine | undefined {
+    for (const instance of BundlerPool.instances.values()) {
+      if (instance.id === id) {
+        return instance;
+      }
+    }
+    return undefined;
   }
 }

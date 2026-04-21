@@ -17,12 +17,13 @@ import { BundlerPool } from './bundler-pool';
 import { DEFAULT_HOST, DEFAULT_PORT } from './constants';
 import { errorHandler } from './error';
 import { DevServerLogger, logger } from './logger';
+import { mcp } from './mcp/server';
 import { control } from './middlewares/control';
 import { requestLogger } from './middlewares/request-logger';
-import { mcp } from './mcp/server';
 import { serveAssets } from './middlewares/serve-assets';
 import { serveBundle } from './middlewares/serve-bundle';
 import { sse } from './middlewares/sse';
+import { createStatusMiddleware } from './middlewares/status';
 import { symbolicate } from './middlewares/symbolicate';
 import { SSEEventBus } from './sse/event-bus';
 import { toSSEEvent } from './sse/reporter';
@@ -135,6 +136,11 @@ export async function createDevServer(
 
   fastify
     .use(requestLogger)
+    // `status` must be installed before the community middleware: the
+    // latter mounts `statusPageMiddleware` at `/status` with prefix
+    // matching and would otherwise swallow every `/status/<id>` request
+    // before our handler sees it.
+    .use('/status', createStatusMiddleware({ bundlerPool }))
     .use(communityMiddleware)
     .use(devMiddleware)
     .register(sse, { eventBus: sseEventBus })
