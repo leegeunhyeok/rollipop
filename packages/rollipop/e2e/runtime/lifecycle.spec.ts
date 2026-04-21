@@ -102,7 +102,7 @@ describe('runtime e2e: lifecycle', () => {
   }, 180_000);
 
   describe('GET /bundlers/:id/status', () => {
-    it('returns the bundler state as plain text for a known id', async () => {
+    it('returns the latest build SSE event for a known id', async () => {
       const sse = await subscribeSSE(ts.baseUrl);
       try {
         // Drive a *fresh* build and capture the bundler id from its SSE
@@ -117,17 +117,28 @@ describe('runtime e2e: lifecycle', () => {
 
         const res = await fetch(`${ts.baseUrl}/bundlers/${doneEvent.id}/status`);
         expect(res.status).toBe(200);
-        expect(res.headers.get('Content-Type')).toContain('text/plain');
-        expect(await res.text()).toBe('build-done');
+        expect(res.headers.get('Content-Type')).toContain('application/json');
+
+        const body = (await res.json()) as Record<string, unknown>;
+        // Shape matches what the SSE stream pushed for this bundler.
+        expect(body).toEqual(
+          expect.objectContaining({
+            type: 'bundle_build_done',
+            id: doneEvent.id,
+            totalModules: doneEvent.totalModules,
+            duration: doneEvent.duration,
+          }),
+        );
       } finally {
         sse.close();
       }
     }, 180_000);
 
-    it('returns 404 with plain text for an unknown id', async () => {
+    it('returns 404 with a JSON error for an unknown id', async () => {
       const res = await fetch(`${ts.baseUrl}/bundlers/does-not-exist/status`);
       expect(res.status).toBe(404);
-      expect(await res.text()).toBe('not found');
+      expect(res.headers.get('Content-Type')).toContain('application/json');
+      expect(await res.json()).toEqual({ error: 'not found' });
     });
 
     it('leaves the community packager-status handler on bare /status intact', async () => {

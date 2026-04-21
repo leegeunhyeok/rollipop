@@ -25,9 +25,12 @@ const plugin = fp<BundlersPluginOptions>(
       (request, reply) => {
         const instance = bundlerPool.getInstanceById(request.params.id);
         if (!instance) {
-          return reply.status(404).type('text/plain').send('not found');
+          return reply.status(404).send({ error: 'not found' });
         }
-        return reply.type('text/plain').send(instance.status);
+        // Shape matches the SSE event bus: clients receive the same object
+        // here as would arrive live on `/sse/events`. `null` means no build
+        // has been observed for this bundler yet (still initializing).
+        return reply.send(instance.statusEvent);
       },
     );
   },

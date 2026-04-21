@@ -1,7 +1,7 @@
 import type { Mock } from 'vite-plus/test';
 import { beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 
-import type { BundlerDevEngine, BundlerPool, BundlerStatus } from '../bundler-pool';
+import type { BundlerDevEngine, BundlerPool, BundlerStatusEvent } from '../bundler-pool';
 
 interface MockRoute {
   method: string;
@@ -11,14 +11,12 @@ interface MockRoute {
 
 interface MockReply {
   status: Mock;
-  type: Mock;
   send: Mock;
 }
 
 function createMockReply(): MockReply {
   const reply: MockReply = {
     status: vi.fn().mockReturnThis(),
-    type: vi.fn().mockReturnThis(),
     send: vi.fn().mockReturnThis(),
   };
   return reply;
@@ -43,7 +41,7 @@ function registerBundlersRoutes(bundlerPool: BundlerPool) {
   return routes;
 }
 
-function createPool(instances: Array<{ id: string; status: BundlerStatus }>) {
+function createPool(instances: Array<{ id: string; statusEvent: BundlerStatusEvent | null }>) {
   return {
     getInstanceById(id: string) {
       return (instances.find((i) => i.id === id) as unknown as BundlerDevEngine) ?? undefined;
@@ -57,7 +55,17 @@ describe('bundlers plugin', () => {
   let pool: BundlerPool;
 
   beforeEach(() => {
-    pool = createPool([{ id: 'abc', status: 'build-done' }]);
+    pool = createPool([
+      {
+        id: 'abc',
+        statusEvent: {
+          type: 'bundle_build_done',
+          id: 'abc',
+          totalModules: 42,
+          duration: 1200,
+        },
+      },
+    ]);
   });
 
   it('registers GET /bundlers/:id/status', () => {
@@ -66,37 +74,57 @@ describe('bundlers plugin', () => {
     expect(routes[0]).toMatchObject({ method: 'get', path: '/bundlers/:id/status' });
   });
 
-  it('returns the bundler status as plain text for a known id', async () => {
+  it('returns the latest statusEvent as JSON for a known id', async () => {
     const [route] = registerBundlersRoutes(pool);
     const reply = createMockReply();
 
     await route!.handler({ params: { id: 'abc' } }, reply);
 
     expect(reply.status).not.toHaveBeenCalled();
-    expect(reply.type).toHaveBeenCalledWith('text/plain');
-    expect(reply.send).toHaveBeenCalledWith('build-done');
+    expect(reply.send).toHaveBeenCalledWith({
+      type: 'bundle_build_done',
+      id: 'abc',
+      totalModules: 42,
+      duration: 1200,
+    });
   });
 
-  it('returns 404 plain text for an unknown id', async () => {
+  it('returns null when the bundler has not observed any build yet', async () => {
+    pool = createPool([{ id: 'abc', statusEvent: null }]);
+    const [route] = registerBundlersRoutes(pool);
+    const reply = createMockReply();
+
+    await route!.handler({ params: { id: 'abc' } }, reply);
+
+    expect(reply.status).not.toHaveBeenCalled();
+    expect(reply.send).toHaveBeenCalledWith(null);
+  });
+
+  it('returns 404 { error: "not found" } for an unknown id', async () => {
     const [route] = registerBundlersRoutes(pool);
     const reply = createMockReply();
 
     await route!.handler({ params: { id: 'missing' } }, reply);
 
     expect(reply.status).toHaveBeenCalledWith(404);
-    expect(reply.type).toHaveBeenCalledWith('text/plain');
-    expect(reply.send).toHaveBeenCalledWith('not found');
+    expect(reply.send).toHaveBeenCalledWith({ error: 'not found' });
   });
 
-  it('reports the current status for each state transition', async () => {
-    for (const status of ['idle', 'building', 'build-done', 'build-failed'] as BundlerStatus[]) {
-      pool = createPool([{ id: 'abc', status }]);
+  it('mirrors every build-lifecycle SSE event shape', async () => {
+    const cases: BundlerStatusEvent[] = [
+      { type: 'bundle_build_started', id: 'abc' },
+      { type: 'bundle_build_done', id: 'abc', totalModules: 10, duration: 500 },
+      { type: 'bundle_build_failed', id: 'abc', error: 'boom' },
+    ];
+
+    for (const statusEvent of cases) {
+      pool = createPool([{ id: 'abc', statusEvent }]);
       const [route] = registerBundlersRoutes(pool);
       const reply = createMockReply();
 
       await route!.handler({ params: { id: 'abc' } }, reply);
 
-      expect(reply.send).toHaveBeenCalledWith(status);
+      expect(reply.send).toHaveBeenCalledWith(statusEvent);
     }
   });
 });

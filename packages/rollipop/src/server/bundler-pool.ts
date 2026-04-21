@@ -14,6 +14,8 @@ import { normalizeRolldownError } from '../utils/errors';
 import { taskHandler } from '../utils/promise';
 import { type BundleStore, FileSystemBundleStore } from './bundle';
 import { logger } from './logger';
+import { toSSEEvent } from './sse/reporter';
+import type { SSEEvent } from './sse/types';
 import type { ServerOptions } from './types';
 
 export interface DevServerOptions {
@@ -42,7 +44,15 @@ export interface BundlerDevEngineEventMap {
   hmrUpdates: [rolldownExperimental.BindingClientHmrUpdate[]];
 }
 
-export type BundlerStatus = 'idle' | 'building' | 'build-done' | 'build-failed';
+/**
+ * The subset of {@link SSEEvent} that represents a bundler's lifecycle
+ * state — one of these is the most recent build signal for a given
+ * bundler at any point in time.
+ */
+export type BundlerStatusEvent = Extract<
+  SSEEvent,
+  { type: 'bundle_build_started' | 'bundle_build_done' | 'bundle_build_failed' }
+>;
 
 export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private readonly initializeHandle: ReturnType<typeof taskHandler>;
@@ -52,7 +62,7 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
   private buildFailedError: Error | null = null;
   private _devEngine: DevEngine | null = null;
   private _state: 'idle' | 'initializing' | 'ready' = 'idle';
-  private _status: BundlerStatus = 'idle';
+  private _statusEvent: BundlerStatusEvent | null = null;
 
   constructor(
     private readonly options: BundlerDevEngineOptions,
@@ -64,21 +74,6 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     this._id = Bundler.createId(config, buildOptions);
     this.initializeHandle = taskHandler();
     this.isHmrEnabled = Boolean(buildOptions.dev && config.devMode.hmr);
-
-    // Track build lifecycle transitions. `bindReporter` re-emits each reporter
-    // event on this EventEmitter, so the listeners below fire whether the
-    // signal originated from the plugin pipeline (full rebuilds) or from
-    // `onHmrUpdates` / `onOutput` (HMR-time updates).
-    this.on('buildStart', () => {
-      this._status = 'building';
-    });
-    this.on('buildDone', () => {
-      this._status = 'build-done';
-    });
-    this.on('buildFailed', () => {
-      this._status = 'build-failed';
-    });
-
     void this.initialize();
   }
 
@@ -86,8 +81,13 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
     return this._id;
   }
 
-  get status(): BundlerStatus {
-    return this._status;
+  /**
+   * The latest build-lifecycle SSE event for this bundler, or `null` if
+   * no build has been observed yet (i.e. still initializing). The object
+   * is shaped exactly like the event pushed on `/sse/events`.
+   */
+  get statusEvent(): BundlerStatusEvent | null {
+    return this._statusEvent;
   }
 
   get devEngine() {
@@ -106,9 +106,21 @@ export class BundlerDevEngine extends EventEmitter<BundlerDevEngineEventMap> {
 
     this._state = 'initializing';
 
-    const onEvent = this.onReporterEvent
-      ? (event: ReportableEvent) => this.onReporterEvent!(this._id, event)
-      : undefined;
+    // Capture every reporter event that flows through `bindReporter` —
+    // update our cached `statusEvent` when it's a build-lifecycle event,
+    // and forward it to the pool's downstream listener (the SSE bus).
+    const onEvent = (event: ReportableEvent) => {
+      const sseEvent = toSSEEvent(this._id, event);
+      if (
+        sseEvent &&
+        (sseEvent.type === 'bundle_build_started' ||
+          sseEvent.type === 'bundle_build_done' ||
+          sseEvent.type === 'bundle_build_failed')
+      ) {
+        this._statusEvent = sseEvent;
+      }
+      this.onReporterEvent?.(this._id, event);
+    };
 
     const devEngine = await Bundler.devEngine(
       bindReporter(this.config, this, onEvent),
