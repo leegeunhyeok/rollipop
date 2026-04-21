@@ -91,7 +91,7 @@ export default defineConfig({
     {
       ...commonPackConfig,
       entry: { plugins: 'src/plugins/index.ts' },
-      format: 'esm',
+      format: ['esm', 'cjs'],
       platform: 'node',
       dts: true,
     },
