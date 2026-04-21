@@ -9,10 +9,11 @@ Rollipop includes a built-in worklet transformation plugin powered by Oxc. This 
 Add the `worklets()` plugin to your configuration:
 
 ```ts title="rollipop.config.ts"
-import { defineConfig, BuiltinPlugins } from 'rollipop';
+import { defineConfig } from 'rollipop';
+import { worklets } from 'rollipop/plugins';
 
 export default defineConfig({
-  plugins: [BuiltinPlugins.worklets()],
+  plugins: [worklets()],
 });
 ```
 

@@ -40,6 +40,10 @@
       "types": "./dist/pluginutils.d.ts",
       "default": "./dist/pluginutils.js"
     },
+    "./plugins": {
+      "types": "./dist/plugins.d.ts",
+      "default": "./dist/plugins.js"
+    },
     "./runtime": {
       "import": {
         "types": "./dist/runtime.d.ts",

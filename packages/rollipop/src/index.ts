@@ -28,9 +28,6 @@ export * from './config';
 export type * from './types';
 export type * from './types/hmr';
 
-// Builtin plugins
-export * as BuiltinPlugins from './plugins';
-
 // CLI
 export * as cli from './node/cli';
 export * from './node/cli-utils';
