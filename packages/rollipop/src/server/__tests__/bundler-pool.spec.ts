@@ -16,7 +16,6 @@ vitest.mock('../../core/bundler', () => ({
 }));
 
 vitest.mock('../../common/env', () => ({
-  getBundleStoreMode: vi.fn().mockReturnValue('memory'),
   isDebugEnabled: vi.fn().mockReturnValue(false),
 }));
 
