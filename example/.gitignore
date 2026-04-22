@@ -76,3 +76,6 @@ yarn-error.log
 
 # e2e runtime test fixtures (cloned per test run by packages/rollipop/e2e/runtime)
 rollipop-e2e-*
+
+# rollipop vitest prebuild output
+.rollipop/

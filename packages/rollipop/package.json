@@ -50,6 +50,16 @@
         "default": "./dist/plugins.cjs"
       }
     },
+    "./vitest": {
+      "import": {
+        "types": "./dist/vitest.d.ts",
+        "default": "./dist/vitest.js"
+      },
+      "require": {
+        "types": "./dist/vitest.d.cts",
+        "default": "./dist/vitest.cjs"
+      }
+    },
     "./runtime": {
       "import": {
         "types": "./dist/runtime.d.ts",
@@ -121,12 +131,30 @@
     "ws": "^8.19.0",
     "zod": "^4.3.6"
   },
+  "peerDependencies": {
+    "@react-native/jest-preset": "*",
+    "vite": "^5 || ^6 || ^7 || ^8",
+    "vitest": "^1 || ^2 || ^3 || ^4"
+  },
+  "peerDependenciesMeta": {
+    "@react-native/jest-preset": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    },
+    "vitest": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/babel__code-frame": "^7",
     "@types/babel__core": "^7",
     "@types/babel__generator": "^7",
     "magic-string": "^0.30.21",
     "typescript": "catalog:",
-    "vite-plus": "catalog:"
+    "vite": "^8.0.9",
+    "vite-plus": "catalog:",
+    "vitest": "^4.1.5"
   }
 }

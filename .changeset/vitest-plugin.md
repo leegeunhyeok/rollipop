@@ -1,0 +1,5 @@
+---
+"rollipop": minor
+---
+
+Add `vitest()` plugin, exported from `rollipop/vitest`, that runs tests against sources transformed by rollipop's own pipeline. Usage: `import { vitest } from 'rollipop/vitest'` then `vitest()` (or `vitest({ platform, include, exclude, concurrency, root, configFile })`). On test-runner start the plugin prebuilds every matched package (`react-native`, `@react-native/*`, `@react-native-community/*` pulled from the project manifest; extend via `include`, carve out via `exclude`) under `{root}/.rollipop/.vitest/` and aliases those packages to the prebuilt output. Platform-specific variants (`Foo.ios.js` / `Foo.native.js` / `Foo.js`) are resolved at prebuild time so subsequent `require()` chains inside the test runtime see a single flat extension. A small jest-preset port replaces `react-native` internals listed in jest-preset's `setup.js` with trampolines pointing at the corresponding mock files (from `react-native/jest/` for RN ≤ 0.84, or from `@react-native/jest-preset` for RN ≥ 0.85 — added as an optional peer dependency), and the setup file exposes a `jest` shim backed by `vi` so those mock files evaluate unchanged.

@@ -90,7 +90,15 @@ export default defineConfig({
     },
     {
       ...commonPackConfig,
-      entry: { plugins: 'src/plugins/index.ts' },
+      entry: {
+        plugins: 'src/plugins/index.ts',
+        vitest: 'src/vitest.ts',
+        // Runtime setup file referenced by the `vitest()` plugin via
+        // `new URL('./vitest-setup.js', import.meta.url)` — emitted as a
+        // sibling of `dist/vitest.js` so the relative lookup resolves at
+        // runtime in user projects.
+        'vitest-setup': 'src/plugins/vitest/setup.ts',
+      },
       format: ['esm', 'cjs'],
       platform: 'node',
       dts: true,
