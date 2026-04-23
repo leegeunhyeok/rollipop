@@ -96,6 +96,13 @@ export default defineConfig({
       dts: true,
     },
     {
+      ...commonPackConfig,
+      entry: 'src/jest.ts',
+      format: 'cjs',
+      platform: 'node',
+      dts: true,
+    },
+    {
       ...runtimePackConfig,
       entry: 'src/runtime.ts',
       format: ['esm', 'cjs'],

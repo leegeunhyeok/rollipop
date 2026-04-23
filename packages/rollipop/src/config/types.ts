@@ -232,7 +232,40 @@ export type TransformerConfig = Omit<
 };
 
 export type BabelTransformConfig = { rules?: TransformRule<babel.TransformOptions>[] };
-export type SwcTransformConfig = { rules?: TransformRule<swc.Options>[] };
+export type SwcTransformConfig = {
+  rules?: TransformRule<swc.Options>[];
+  /**
+   * Preset overrides applied to every swc call. These mirror the
+   * corresponding fields on `swc.Options` and exist so non-build-time
+   * consumers (e.g. the jest transformer) can flip transform behaviour
+   * without duplicating the chain.
+   */
+  preset?: {
+    /**
+     * When `true` (default) swc emits helper imports against
+     * `@swc/helpers`, which rolldown later resolves into the bundle.
+     * Set to `false` to inline helpers — required when the output is
+     * executed directly (no bundler downstream), e.g. inside jest.
+     */
+    externalHelpers?: boolean;
+    /** `swc.Options['module']` override — use `{ type: 'commonjs' }` to force CJS output. */
+    module?: swc.Options['module'];
+    /**
+     * `swc.Options['jsc']['transform']['react']['runtime']` override —
+     * defaults to `'preserve'` so rolldown handles JSX. jest / other
+     * bundler-less consumers should pick `'automatic'` or `'classic'`.
+     */
+    jsxRuntime?: 'preserve' | 'automatic' | 'classic';
+    /**
+     * Compile-time identifier / member-expression replacements fed to
+     * swc's `jsc.transform.optimizer.globals.vars`. Dotted keys match
+     * nested member expressions (e.g. `"import.meta.env"` rewrites every
+     * `import.meta.env.FOO` to `process.env.FOO`). Useful to substitute
+     * rollipop-specific runtime idioms when emitting stand-alone CJS.
+     */
+    define?: Record<string, string>;
+  };
+};
 
 export interface TransformRule<T = unknown> {
   filter?: rolldown.HookFilter | TopLevelFilterExpression[];

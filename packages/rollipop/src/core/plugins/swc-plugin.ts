@@ -8,7 +8,7 @@ import { ROLLDOWN_RUNTIME_EXCLUDE_FILTER } from './shared/filters';
 import { getFlag, TransformFlag } from './utils/transform-utils';
 
 function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
-  const { rules = [] } = options ?? {};
+  const { rules = [], preset: presetOverrides } = options ?? {};
   const swcOptionsById: Map<string, swc.Options[]> = new Map();
 
   const swcHelpersResolvePlugin: rolldown.Plugin = {
@@ -51,7 +51,7 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
         }
 
         const swcOptions = swcOptionsById.get(id) ?? [];
-        const baseOptions = getPreset(id);
+        const baseOptions = getPreset(id, presetOverrides);
         const result = swc.transformSync(code, {
           filename: id,
           configFile: false,
@@ -71,8 +71,11 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
   return [swcHelpersResolvePlugin, ...swcRules, swcPlugin];
 }
 
-function getPreset(id: string): swc.Options {
-  return {
+function getPreset(
+  id: string,
+  overrides?: NonNullable<TransformerConfig['swc']>['preset'],
+): swc.Options {
+  const preset: swc.Options = {
     env: {
       targets: { node: 9999 },
       // See:
@@ -96,13 +99,34 @@ function getPreset(id: string): swc.Options {
       },
       transform: {
         react: {
-          runtime: 'preserve',
+          runtime: overrides?.jsxRuntime ?? 'preserve',
         },
       },
-      externalHelpers: true,
+      externalHelpers: overrides?.externalHelpers ?? true,
     },
     isModule: id.endsWith('.cjs') ? 'commonjs' : true,
   };
+  if (overrides?.module != null) {
+    preset.module = overrides.module;
+  }
+  if (overrides?.define != null && Object.keys(overrides.define).length > 0) {
+    // Route compile-time replacements through swc's
+    // `jsc.transform.optimizer.globals.vars`. Dotted keys match nested
+    // `MemberExpression`s, so `"import.meta.env"` substitutes the entire
+    // member chain — `import.meta.env.FOO` becomes whatever the value
+    // expression (e.g. `process.env`) combined with the leftover suffix.
+    preset.jsc ??= {};
+    preset.jsc.transform ??= {};
+    preset.jsc.transform.optimizer ??= {};
+    preset.jsc.transform.optimizer.globals = {
+      ...(preset.jsc.transform.optimizer.globals ?? {}),
+      vars: {
+        ...(preset.jsc.transform.optimizer.globals?.vars ?? {}),
+        ...overrides.define,
+      },
+    };
+  }
+  return preset;
 }
 
 export { swcPlugin as swc };

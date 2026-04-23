@@ -50,6 +50,12 @@
         "default": "./dist/plugins.cjs"
       }
     },
+    "./jest": {
+      "require": {
+        "types": "./dist/jest.d.cts",
+        "default": "./dist/jest.cjs"
+      }
+    },
     "./runtime": {
       "import": {
         "types": "./dist/runtime.d.ts",
@@ -82,6 +88,8 @@
     "@commander-js/extra-typings": "^14.0.0",
     "@fastify/middie": "^9.3.1",
     "@inquirer/prompts": "^8.3.0",
+    "@jest/create-cache-key-function": "^29.7.0",
+    "@jest/transform": "^29.7.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@node-rs/xxhash": "^1.7.6",
     "@react-native-community/cli-server-api": "^20.1.2",
@@ -108,6 +116,7 @@
     "fast-flow-transform": "^0.0.3",
     "fastify": "^5.8.1",
     "fastify-plugin": "^5.1.0",
+    "flow-remove-types": "^2.311.0",
     "gradient-string": "^3.0.0",
     "image-size": "^2.0.2",
     "json-schema-to-ts": "^3.1.1",
