@@ -9,6 +9,8 @@
   },
   "changesets": [
     "blue-buses-attack",
+    "bundlers-status",
+    "cache-cleanup",
     "chilly-carrots-attack",
     "clever-lions-taste",
     "crisp-groups-move",
@@ -33,6 +35,7 @@
     "nine-taxis-tap",
     "olive-cats-pay",
     "olive-yaks-divide",
+    "plugins-subpath",
     "quiet-insects-cough",
     "red-flowers-repair",
     "shaggy-rules-guess",
@@ -42,6 +45,7 @@
     "tame-jokes-sin",
     "tasty-mails-attend",
     "ten-cats-jog",
+    "warm-rivers-drift",
     "whole-regions-wave",
     "wicked-regions-accept",
     "young-pandas-walk"

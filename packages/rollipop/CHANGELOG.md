@@ -1,5 +1,25 @@
 # rollipop
 
+## 0.1.0-alpha.16
+
+### Patch Changes
+
+- 915ef17: Add a `GET /bundlers/:id/status` dev-server endpoint that returns the current lifecycle state of the bundler with that id as a JSON snapshot — `{ "id": "<id>", "status": "idle" | "building" | "build-done" | "build-failed" }`. `:id` matches the bundler id carried in build SSE events. Unknown ids return 404 with `{ "error": "not found" }`. Bare `/status` is unaffected and keeps returning the React Native community middleware's `packager-status:running` response.
+- a80492f: Drop the filesystem-cache class now that rolldown owns the build cache natively. The unused `BundlerContext.cache` field, the `FileSystemCache` class, and the `Cache` interface are removed. The remaining live pieces — resolving the cache directory and clearing it — live in `src/utils/reset-cache.ts` as plain functions (`getCacheDirectory`, `resetCache`). The `/reset-cache` control endpoint, the `reset_cache` MCP tool, and the `--reset-cache` CLI flag all continue to work unchanged for callers.
+- 7ea2625: Replace `BuiltinPlugins` namespace with the `rollipop/plugins` sub-path. Built-in plugins are now imported by name:
+
+  ```ts
+  // Before
+  import { BuiltinPlugins } from "rollipop";
+  plugins: [BuiltinPlugins.worklets()];
+
+  // After
+  import { worklets } from "rollipop/plugins";
+  plugins: [worklets()];
+  ```
+
+- 14ebb2c: Always use the filesystem bundle store and drop the `BUNDLE_STORE` env var. Bundles are now written to disk on every build for easier debugging; user-modified files take precedence until the next rebuild overwrites them.
+
 ## 0.1.0-alpha.15
 
 ### Patch Changes
