@@ -16,7 +16,8 @@
   "files": [
     "client.d.ts",
     "bin",
-    "dist"
+    "dist",
+    "src/runtime/hmr-client.ts"
   ],
   "type": "module",
   "main": "./dist/index.js",
