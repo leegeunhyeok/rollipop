@@ -1,5 +1,11 @@
 # rollipop
 
+## 0.1.0-alpha.17
+
+### Patch Changes
+
+- 5985887: Include `src/runtime/hmr-client.ts` in the published tarball. The `./hmr-client` export maps to this raw TypeScript source, but the `files` field in `package.json` only listed `bin`, `dist`, and `client.d.ts` — so consumers hitting `import 'rollipop/hmr-client'` against a published version would fail to resolve the file.
+
 ## 0.1.0-alpha.16
 
 ### Patch Changes

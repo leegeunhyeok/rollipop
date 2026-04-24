@@ -1,5 +1,12 @@
 # @rollipop/plugin-analyze
 
+## 0.1.0-alpha.17
+
+### Patch Changes
+
+- Updated dependencies [5985887]
+  - rollipop@0.1.0-alpha.17
+
 ## 0.1.0-alpha.16
 
 ### Patch Changes
