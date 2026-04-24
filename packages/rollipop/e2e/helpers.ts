@@ -9,6 +9,7 @@ import {
   DEFAULT_ENV_PREFIX,
   DEFAULT_RESOLVER_CONDITION_NAMES,
   DEFAULT_RESOLVER_MAIN_FIELDS,
+  DEFAULT_RUNTIME_TARGET,
   DEFAULT_SOURCE_EXTENSIONS,
 } from '../src/constants';
 import { Bundler } from '../src/core/bundler';
@@ -95,6 +96,7 @@ export function createConfig(fixture: string, options: TestConfigOptions = {}): 
     sourcemapIgnoreList: options.sourcemapIgnoreList,
     sourcemapPathTransform: options.sourcemapPathTransform,
     dangerously_overrideRolldownOptions: options.dangerously_overrideRolldownOptions,
+    runtimeTarget: DEFAULT_RUNTIME_TARGET,
   } as unknown as ResolvedConfig;
 }
 

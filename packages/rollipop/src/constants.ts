@@ -139,3 +139,5 @@ export const DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS = [
 ];
 
 export const DEFAULT_ENV_PREFIX = 'ROLLIPOP_';
+
+export const DEFAULT_RUNTIME_TARGET = 'hermes-v1';

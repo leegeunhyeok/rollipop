@@ -22,11 +22,7 @@ function createMockReply(): MockReply {
   return reply;
 }
 
-type PluginFn = (
-  fastify: unknown,
-  options: { bundlerPool: BundlerPool },
-  done: () => void,
-) => void;
+type PluginFn = (fastify: unknown, options: { bundlerPool: BundlerPool }, done: () => void) => void;
 
 function registerBundlersRoutes(bundlerPool: BundlerPool) {
   const routes: MockRoute[] = [];
