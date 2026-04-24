@@ -230,7 +230,7 @@ export async function resolveRolldownOptions(
       json(),
       svg({ enabled: transformSvg }),
       babel(babelConfig),
-      swc(swcConfig),
+      swc(config.runtimeTarget, swcConfig),
       reporter(reporterOptions),
       devServerPlugins,
       config.plugins,

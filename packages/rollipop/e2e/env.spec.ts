@@ -135,10 +135,10 @@ describe('environment variables', () => {
       expect(dev.code).toContain('NODE_ENV=process.env.NODE_ENV||"development"');
     });
 
-    it('global is replaced with __ROLLIPOP_GLOBAL__', async () => {
+    it('global is replaced with _', async () => {
       const chunk = await build('env/basic');
 
-      expect(chunk.code).toContain('__ROLLIPOP_GLOBAL__');
+      expect(chunk.code).toContain('_');
     });
   });
 });

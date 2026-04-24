@@ -23,7 +23,7 @@ export function iife(body: string, path = '<unknown>') {
    * // foo.js
    * (function (global) {
    *   __BODY__
-   * })(__ROLLIPOP_GLOBAL);
+   * })(_);
    * ```
    */
   const iife = dedent`

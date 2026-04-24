@@ -43,7 +43,7 @@ export class FileSystemBundleStore implements BundleStore {
       mtimeMs: stats.mtimeMs,
     };
 
-    logger.info(`File system bundle created at ${bundleFilePath}`);
+    logger.debug(`File system bundle created at ${bundleFilePath}`);
   }
 
   private update() {

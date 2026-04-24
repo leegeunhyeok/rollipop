@@ -54,7 +54,7 @@ describe('serializer', () => {
       expect(polyfillIdx).toBeLessThan(moduleIdx);
     });
 
-    it('IIFE polyfill is wrapped with __ROLLIPOP_GLOBAL__ scope', async () => {
+    it('IIFE polyfill is wrapped with _ scope', async () => {
       const polyfill: Polyfill = {
         type: 'iife',
         code: 'global.myPolyfill = function() {};',
@@ -64,9 +64,9 @@ describe('serializer', () => {
         serializer: { polyfills: [polyfill] },
       });
 
-      // Should be wrapped in (function(global) { ... })(__ROLLIPOP_GLOBAL__)
+      // Should be wrapped in (function(global) { ... })(_)
       expect(chunk.code).toMatch(/\(function\s*\(global\)/);
-      expect(chunk.code).toContain('__ROLLIPOP_GLOBAL__');
+      expect(chunk.code).toContain('_');
       expect(chunk.code).toContain('myPolyfill');
     });
 

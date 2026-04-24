@@ -7,7 +7,7 @@ declare global {
 
 export const ROLLIPOP_VERSION = globalThis.__ROLLIPOP_VERSION__;
 
-export const GLOBAL_IDENTIFIER = '__ROLLIPOP_GLOBAL__';
+export const GLOBAL_IDENTIFIER = '_';
 
 /**
  * @see {@link https://github.com/facebook/metro/blob/0.81.x/docs/Configuration.md#resolvermainfields}
@@ -74,6 +74,8 @@ export const DEFAULT_ASSET_REGISTRY_PATH = 'react-native/Libraries/Image/AssetRe
 export const DEFAULT_HMR_CLIENT_PATH = 'react-native/Libraries/Utilities/HMRClient.js';
 
 export const DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS = [
+  // Global binding name
+  GLOBAL_IDENTIFIER,
   // polyfillPromise
   'Promise',
   // setUpRegeneratorRuntime
@@ -139,3 +141,5 @@ export const DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS = [
 ];
 
 export const DEFAULT_ENV_PREFIX = 'ROLLIPOP_';
+
+export const DEFAULT_RUNTIME_TARGET = 'hermes-v1';

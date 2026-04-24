@@ -161,6 +161,12 @@ export interface Config {
    */
   plugins?: PluginOption;
   /**
+   * Internal option to specify the runtime target.
+   *
+   * Defaults to 'hermes-v1'.
+   */
+  runtimeTarget?: 'hermes' | 'hermes-v1';
+  /**
    * Rollipop provides default options for Rolldown, but you can override them by this option.
    *
    * **DANGEROUS**: This option is dangerous because it can break the build.

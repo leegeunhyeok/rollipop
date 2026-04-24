@@ -9,6 +9,7 @@ import {
   DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
   DEFAULT_RESOLVER_CONDITION_NAMES,
   DEFAULT_RESOLVER_MAIN_FIELDS,
+  DEFAULT_RUNTIME_TARGET,
   DEFAULT_SOURCE_EXTENSIONS,
 } from '../constants';
 import type { Reporter } from '../types';
@@ -74,6 +75,7 @@ export function createTestConfig(basePath: string): ResolvedConfig {
     },
     envDir: basePath,
     envPrefix: DEFAULT_ENV_PREFIX,
+    runtimeTarget: DEFAULT_RUNTIME_TARGET,
   } satisfies Config;
 
   return defaultConfig;
