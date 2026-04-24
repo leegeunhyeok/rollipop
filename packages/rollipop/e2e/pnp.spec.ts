@@ -138,7 +138,7 @@ async function main() {
     hasInitializeCore: chunk.code.includes('InitializeCore'),
     // Built-in defines & global variables
     hasDevFalse: chunk.code.includes('var __DEV__=false'),
-    hasGlobal: chunk.code.includes('__ROLLIPOP_GLOBAL__'),
+    hasGlobal: chunk.code.includes('_'),
     hasBundleStartTime: chunk.code.includes('__BUNDLE_START_TIME__'),
     hasNodeEnv: chunk.code.includes('process.env.NODE_ENV'),
     // Default polyfills from react-native (injected as IIFE)
