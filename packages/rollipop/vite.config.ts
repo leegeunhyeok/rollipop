@@ -7,6 +7,8 @@ import { invariant } from 'es-toolkit';
 import { defineConfig } from 'vite-plus';
 import type { PackUserConfig } from 'vite-plus/pack';
 
+import { GLOBAL_IDENTIFIER } from './src/constants';
+
 const rawPackageJson = fs.readFileSync(path.join(import.meta.dirname, 'package.json'), 'utf-8');
 const { version } = JSON.parse(rawPackageJson);
 invariant(version, 'could not find version in package.json');
@@ -55,7 +57,7 @@ const runtimePackConfig: PackUserConfig = {
   format: 'esm',
   platform: 'neutral',
   define: {
-    globalThis: '__ROLLIPOP_GLOBAL__',
+    globalThis: GLOBAL_IDENTIFIER,
   },
   treeshake: false,
   logLevel: 'error',
