@@ -3,6 +3,7 @@ import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vite-plus/test';
 
 import { loadConfig } from '../src/config';
+import { GLOBAL_IDENTIFIER } from '../src/constants';
 import type { DevServer } from '../src/server/types';
 import { runServer } from '../src/utils/run-server';
 
@@ -87,8 +88,8 @@ describe('dev server', () => {
       expect(code).toContain('var __DEV__=true');
     });
 
-    it('contains __ROLLIPOP_GLOBAL__ definition', () => {
-      expect(code).toContain('__ROLLIPOP_GLOBAL__');
+    it('contains global identifier definition', () => {
+      expect(code).toContain(`var ${GLOBAL_IDENTIFIER}=typeof globalThis`);
     });
 
     it('contains __BUNDLE_START_TIME__ for performance tracking', () => {
