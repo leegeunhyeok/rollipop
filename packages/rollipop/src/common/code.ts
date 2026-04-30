@@ -7,10 +7,6 @@ export function asLiteral(value: unknown) {
   return JSON.stringify(value);
 }
 
-export function asIdentifier(name: string) {
-  return name;
-}
-
 export function nodeEnvironment(dev: boolean) {
   return dev ? 'development' : 'production';
 }

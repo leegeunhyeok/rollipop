@@ -7,7 +7,7 @@ declare global {
 
 export const ROLLIPOP_VERSION = globalThis.__ROLLIPOP_VERSION__;
 
-export const GLOBAL_IDENTIFIER = '_';
+export const GLOBAL_IDENTIFIER = 'global';
 
 /**
  * @see {@link https://github.com/facebook/metro/blob/0.81.x/docs/Configuration.md#resolvermainfields}

@@ -5,10 +5,9 @@ import { rollipopReactRefreshWrapperPlugin as reactRefresh } from '@rollipop/rol
 import type { TransformOptions } from '@rollipop/rolldown/utils';
 import { invariant, isNotNil, merge } from 'es-toolkit';
 
-import { asLiteral, asIdentifier, iife, nodeEnvironment } from '../common/code';
+import { asLiteral, iife, nodeEnvironment } from '../common/code';
 import { isDebugEnabled } from '../common/env';
 import { Polyfill, type ResolvedConfig } from '../config';
-import { GLOBAL_IDENTIFIER } from '../constants';
 import { getGlobalVariables } from '../internal/react-native';
 import { ResolvedBuildOptions } from '../utils/build-options';
 import { resolveHmrConfig } from '../utils/config';
@@ -146,7 +145,6 @@ export async function resolveRolldownOptions(
       },
       define: {
         __DEV__: asLiteral(dev),
-        global: asIdentifier(GLOBAL_IDENTIFIER),
         'process.env.NODE_ENV': asLiteral(nodeEnvironment(dev)),
         'process.env.DEBUG_ROLLIPOP': asLiteral(isDebugEnabled()),
         ...defineEnvFromObject(env),

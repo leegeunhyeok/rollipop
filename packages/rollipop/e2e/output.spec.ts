@@ -140,10 +140,10 @@ describe('output', () => {
       expect(chunk.code).toContain('nativePerformanceNow');
     });
 
-    it('injects _ with globalThis/window fallback chain', async () => {
+    it('injects global binding', async () => {
       const chunk = await build('serializer/prelude');
 
-      expect(chunk.code).toMatch(/var _=typeof globalThis!=='undefined'\?globalThis/);
+      expect(chunk.code).toMatch(/var global=typeof globalThis!=='undefined'\?globalThis/);
     });
 
     it('injects process polyfill with NODE_ENV', async () => {
