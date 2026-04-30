@@ -24,22 +24,7 @@ describe('setFlag', () => {
     const context = createPluginContext();
     expect(hasFlag(context.meta)).toBe(false);
 
-    const meta = setFlag(context, id, TransformFlag.CODEGEN_REQUIRED);
-    expect(flag(meta)).toBe(TransformFlag.CODEGEN_REQUIRED);
-  });
-
-  describe('when the module info exists', () => {
-    it('should set the flag', () => {
-      const id = 'test.js';
-      const context = createPluginContext({
-        [id]: TransformFlag.CODEGEN_REQUIRED,
-      });
-
-      const meta = setFlag(context, id, TransformFlag.STRIP_FLOW_REQUIRED);
-
-      expect(
-        Boolean(flag(meta) & (TransformFlag.CODEGEN_REQUIRED | TransformFlag.STRIP_FLOW_REQUIRED)),
-      ).toBe(true);
-    });
+    const meta = setFlag(context, id, TransformFlag.SKIP_ALL);
+    expect(flag(meta)).toBe(TransformFlag.SKIP_ALL);
   });
 });

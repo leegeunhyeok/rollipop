@@ -1,12 +1,10 @@
 import type * as rolldown from '@rollipop/rolldown';
+import { exactRegex, id, include } from '@rollipop/rolldown-pluginutils';
 import {
-  exactRegex,
-  id,
-  include,
-  type TopLevelFilterExpression,
-} from '@rollipop/rolldown-pluginutils';
+  rollipopReactNativePlugin,
+  type RollipopReactNativePluginConfig,
+} from '@rollipop/rolldown/experimental';
 
-import { stripFlowTypes } from '../../common/transformer';
 import { ResolvedConfig } from '../../config';
 import { getDefaultRuntimeImplements, resolveHmrConfig } from '../../utils/config';
 import {
@@ -16,18 +14,19 @@ import {
   resolveScaledAssets,
 } from '../assets';
 import type { BuildType } from '../types';
-import { TransformFlag, getFlag, setFlag } from './utils/transform-utils';
+import { TransformFlag, setFlag } from './utils/transform-utils';
 
 export interface ReactNativePluginOptions {
   platform: string;
-  dev: boolean;
   buildType: BuildType;
-  flowFilter: rolldown.HookFilter | TopLevelFilterExpression[];
-  codegenFilter: rolldown.HookFilter | TopLevelFilterExpression[];
   assetsDir?: string;
   assetExtensions: string[];
   assetRegistryPath: string;
   hmrClientPath: string;
+  /**
+   * @internal builtin plugin config
+   */
+  builtinPluginConfig: RollipopReactNativePluginConfig;
 }
 
 function reactNativePlugin(
@@ -36,55 +35,12 @@ function reactNativePlugin(
 ): rolldown.Plugin[] {
   const {
     buildType,
-    flowFilter,
-    codegenFilter,
     assetsDir,
     assetExtensions,
     assetRegistryPath,
     hmrClientPath,
+    builtinPluginConfig,
   } = options;
-
-  const codegenPlugin: rolldown.Plugin = {
-    name: 'rollipop:react-native-codegen-marker',
-    transform: {
-      order: 'pre',
-      filter: codegenFilter,
-      handler(_code, id) {
-        return { meta: setFlag(this, id, TransformFlag.CODEGEN_REQUIRED) };
-      },
-    },
-  };
-
-  const stripFlowSyntaxPlugin: rolldown.Plugin = {
-    name: 'rollipop:react-native-strip-flow-syntax',
-    transform: {
-      order: 'pre',
-      filter: flowFilter,
-      async handler(code, id) {
-        const flags = getFlag(this, id);
-
-        if (flags & TransformFlag.SKIP_ALL) {
-          return;
-        }
-
-        if (flags & TransformFlag.CODEGEN_REQUIRED) {
-          return { meta: setFlag(this, id, TransformFlag.STRIP_FLOW_REQUIRED) };
-        }
-
-        const result = await stripFlowTypes(id, code);
-
-        return {
-          code: result.code,
-          map: result.map,
-          /**
-           * Treat the transformed code as TSX code
-           * because Flow modules can be `.js` files with type annotations and JSX syntax.
-           */
-          moduleType: 'tsx',
-        };
-      },
-    },
-  };
 
   const assets: AssetData[] = [];
   const assetPlugin: rolldown.Plugin = {
@@ -148,7 +104,7 @@ function reactNativePlugin(
 
   const devServerPlugins = buildType === 'serve' ? [replaceHMRClientPlugin] : null;
 
-  return [codegenPlugin, stripFlowSyntaxPlugin, assetPlugin, ...(devServerPlugins ?? [])];
+  return [rollipopReactNativePlugin(builtinPluginConfig), assetPlugin, ...(devServerPlugins ?? [])];
 }
 
 export { reactNativePlugin as reactNative };

@@ -1,7 +1,10 @@
 import type * as babel from '@babel/core';
 import type * as rolldown from '@rollipop/rolldown';
 import type { TopLevelFilterExpression } from '@rollipop/rolldown-pluginutils';
-import type { DevWatchOptions } from '@rollipop/rolldown/experimental';
+import type {
+  DevWatchOptions,
+  RollipopReactNativeWorkletsConfig,
+} from '@rollipop/rolldown/experimental';
 import type { TransformOptions } from '@rollipop/rolldown/utils';
 import type * as swc from '@swc/core';
 
@@ -218,16 +221,6 @@ export type TransformerConfig = Omit<
   'cwd' | 'lang' | 'sourceType' | 'plugins'
 > & {
   /**
-   * Transform SVG assets files to React components using `@svgr/core`.
-   *
-   * Defaults to: `true`
-   */
-  svg?: boolean;
-  /**
-   * Flow specific configuration.
-   */
-  flow?: FlowConfig;
-  /**
    * Babel transformation configuration.
    */
   babel?: BabelTransformConfig;
@@ -235,6 +228,18 @@ export type TransformerConfig = Omit<
    * SWC transformation configuration.
    */
   swc?: SwcTransformConfig;
+  /**
+   * **Rolldown Built-in plugin**
+   *
+   * React Native Worklets transformation configuration.
+   */
+  worklets?: RollipopReactNativeWorkletsConfig;
+  /**
+   * Transform SVG assets files to React components using `@svgr/core`.
+   *
+   * Defaults to: `true`
+   */
+  svg?: boolean;
 };
 
 export type BabelTransformConfig = { rules?: TransformRule<babel.TransformOptions>[] };
@@ -243,13 +248,6 @@ export type SwcTransformConfig = { rules?: TransformRule<swc.Options>[] };
 export interface TransformRule<T = unknown> {
   filter?: rolldown.HookFilter | TopLevelFilterExpression[];
   options: T | ((code: string, id: string) => T);
-}
-
-export interface FlowConfig {
-  /**
-   * Filter for Flow transformation pipeline.
-   */
-  filter?: rolldown.HookFilter | TopLevelFilterExpression[];
 }
 
 export interface SerializerConfig {
@@ -370,10 +368,6 @@ export interface ReactNativeConfig {
    */
   reactNativePath?: string;
   /**
-   * Codegen specific configuration.
-   */
-  codegen?: CodegenConfig;
-  /**
    * Path to asset registry file.
    *
    * Defaults to: `react-native/Libraries/Image/AssetRegistry.js`
@@ -391,13 +385,6 @@ export interface ReactNativeConfig {
    * Defaults to: Global identifier list of React Native 0.83
    */
   globalIdentifiers?: string[];
-}
-
-export interface CodegenConfig {
-  /**
-   * Filter for codegen transformation pipeline.
-   */
-  filter?: rolldown.HookFilter | TopLevelFilterExpression[];
 }
 
 export interface TerminalConfig {
