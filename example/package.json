@@ -48,7 +48,7 @@
     "react-native-svg-transformer": "^1.5.3",
     "react-test-renderer": "19.2.3",
     "rollipop": "workspace:*",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">=22.11.0"
