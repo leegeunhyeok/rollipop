@@ -39,8 +39,7 @@ function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
         }
 
         const babelOptions = babelOptionsById.get(id) ?? [];
-        const shouldTransform = babelOptions.length > 0;
-        if (!shouldTransform) {
+        if (babelOptions.length === 0) {
           return;
         }
 
@@ -49,7 +48,7 @@ function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
           babelrc: false,
           configFile: false,
           sourceMaps: true,
-          ...mergeBabelOptions({}, ...babelOptions),
+          ...mergeBabelOptions(babelOptions),
         });
         invariant(result?.code, `Failed to transform with babel: ${id}`);
 

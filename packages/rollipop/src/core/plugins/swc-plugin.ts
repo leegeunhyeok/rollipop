@@ -63,7 +63,7 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
           // Disables the input source map to prevent error logs when
           // swc cannot find the source map file (e.g., in Yarn PnP environments).
           inputSourceMap: false,
-          ...mergeSwcOptions({}, ...swcOptions),
+          ...mergeSwcOptions(swcOptions),
         });
 
         return { code: result.code, map: result.map };

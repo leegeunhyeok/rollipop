@@ -1,10 +1,7 @@
 import { mergeWith } from 'es-toolkit';
 
-export function mergeBabelOptions(
-  baseOptions: babel.TransformOptions,
-  ...options: babel.TransformOptions[]
-) {
-  return options.reduce((acc, options) => mergeWith(acc, options, merge), baseOptions);
+export function mergeBabelOptions(options: babel.TransformOptions[]) {
+  return options.reduce((acc, options) => mergeWith(acc, options, merge), {});
 }
 
 function merge(target: any, source: any, key: string) {
