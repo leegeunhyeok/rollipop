@@ -86,7 +86,7 @@ beforeAll(() => {
 
   // package.json — minimal deps with portal: link to rollipop
   const examplePkg = JSON.parse(
-    fs.readFileSync(path.join(MONOREPO_ROOT, 'example/package.json'), 'utf-8'),
+    fs.readFileSync(path.join(MONOREPO_ROOT, 'examples/0.84/package.json'), 'utf-8'),
   );
   fs.writeFileSync(
     path.join(tmpDir, 'package.json'),

@@ -5,9 +5,9 @@
  * bundler events to the terminal in real-time.
  *
  * Usage:
- *   node --import @oxc-node/core/register example/sse-client.mts
- *   node --import @oxc-node/core/register example/sse-client.mts 8082
- *   node --import @oxc-node/core/register example/sse-client.mts 8081 192.168.0.1
+ *   node --import @oxc-node/core/register examples/0.84/sse-client.mts
+ *   node --import @oxc-node/core/register examples/0.84/sse-client.mts 8082
+ *   node --import @oxc-node/core/register examples/0.84/sse-client.mts 8081 192.168.0.1
  *
  * Control API:
  *   curl http://localhost:8081/rebuild

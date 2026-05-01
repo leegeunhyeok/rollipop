@@ -78,7 +78,7 @@ yarn workspace rollipop run execute <command> [options]
 To test critical features like starts dev server and builds, use the test project:
 
 ```bash
-cd examples
+cd examples/0.84
 yarn rollipop <command> [options]
 ```
 

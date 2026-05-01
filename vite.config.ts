@@ -10,8 +10,8 @@ export default defineConfig({
       'docs/.source/**',
       'docs/out/**',
       'docs/next-env.d.ts',
-      'example/andorid/**',
-      'example/ios/**',
+      'examples/*/android/**',
+      'examples/*/ios/**',
       'rolldown/**',
       '**/__fixtures__/**',
       '**/.**',
@@ -34,7 +34,7 @@ export default defineConfig({
     },
   },
   lint: {
-    ignorePatterns: ['rolldown/**', 'docs/**', 'example/**', '**/__fixtures__/**'],
+    ignorePatterns: ['rolldown/**', 'docs/**', 'examples/**', '**/__fixtures__/**'],
     options: {
       typeAware: true,
       typeCheck: true,
