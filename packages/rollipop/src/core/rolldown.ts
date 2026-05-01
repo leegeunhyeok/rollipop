@@ -18,6 +18,7 @@ import {
   mergeReporters,
   ProgressBarStatusReporter,
 } from '../utils/reporters';
+import { resolveRuntimeTarget } from '../utils/runtime-target';
 import { getBaseUrl } from '../utils/server';
 import { getBuildTotalModules } from '../utils/storage';
 import { loadEnv } from './env';
@@ -90,7 +91,7 @@ export async function resolveRolldownOptions(
   } = config.serializer;
 
   // Transformer
-  const { flow, babel: babelConfig, swc: swcConfig, ...rolldownTransform } = config.transformer;
+  const { babel: babelConfig, swc: swcConfig, worklets, ...rolldownTransform } = config.transformer;
 
   // Optimization
   const {
@@ -102,7 +103,6 @@ export async function resolveRolldownOptions(
 
   // React Native specific options
   const {
-    codegen,
     assetRegistryPath,
     hmrClientPath,
     globalIdentifiers: rolldownGlobalIdentifiers,
@@ -207,11 +207,8 @@ export async function resolveRolldownOptions(
     plugins: withTransformBoundary(context, [
       prelude({ modulePaths: preludePaths }),
       reactNative(config, {
-        dev,
         platform,
         buildType: context.buildType,
-        codegenFilter: codegen.filter,
-        flowFilter: flow.filter,
         assetsDir: buildOptions.assetsDir,
         assetExtensions: resolvedAssetExtensions,
         assetRegistryPath: resolveFrom(
@@ -224,11 +221,25 @@ export async function resolveRolldownOptions(
           config.root,
           typeof hmrClientPath === 'function' ? await hmrClientPath(config.root) : hmrClientPath,
         ),
+        builtinPluginConfig: {
+          envName: config.mode,
+          runtimeTarget: resolveRuntimeTarget(config.runtimeTarget),
+          worklets: worklets
+            ? merge(
+                {
+                  isRelease: config.mode === 'production',
+                  pluginVersion: resolveReactNativeWorkletsVersion(config.root),
+                },
+                worklets,
+              )
+            : undefined,
+          plugins: [], // TODO
+        },
       }),
       json(),
       svg({ enabled: transformSvg }),
       babel(babelConfig),
-      swc(config.runtimeTarget, swcConfig),
+      swc(swcConfig),
       reporter(reporterOptions),
       devServerPlugins,
       config.plugins,
@@ -348,6 +359,18 @@ async function applyDangerouslyOverrideOptionsFinalizer(
     input: merge(inputOptions, config.dangerously_overrideRolldownOptions?.input ?? {}),
     output: merge(outputOptions, config.dangerously_overrideRolldownOptions?.output ?? {}),
   };
+}
+
+function resolveReactNativeWorkletsVersion(projectRoot: string) {
+  try {
+    const packageJsonPath = require.resolve('react-native-worklets/package.json', {
+      paths: [projectRoot],
+    });
+    const { version } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+    return version as string;
+  } catch {
+    return undefined;
+  }
 }
 
 export function getOverrideOptionsForDevServer(

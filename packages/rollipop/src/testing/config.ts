@@ -29,12 +29,6 @@ export function createTestConfig(basePath: string): ResolvedConfig {
     },
     transformer: {
       svg: true,
-      flow: {
-        filter: {
-          id: /\.jsx?$/,
-          code: /@flow/,
-        },
-      },
     },
     serializer: {
       prelude: [path.join(basePath, '__tests__/react-native/Libraries/Core/InitializeCore.js')],
@@ -55,11 +49,6 @@ export function createTestConfig(basePath: string): ResolvedConfig {
     },
     reactNative: {
       reactNativePath: '__tests__/react-native',
-      codegen: {
-        filter: {
-          code: /\bcodegenNativeComponent</,
-        },
-      },
       assetRegistryPath: DEFAULT_ASSET_REGISTRY_PATH,
       hmrClientPath: DEFAULT_HMR_CLIENT_PATH,
       globalIdentifiers: DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,

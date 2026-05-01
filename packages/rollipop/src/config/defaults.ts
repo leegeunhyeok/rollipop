@@ -52,12 +52,6 @@ export async function getDefaultConfig(projectRoot: string, mode?: Config['mode'
     },
     transformer: {
       svg: true,
-      flow: {
-        filter: {
-          id: /\.jsx?$/,
-          code: /@flow/,
-        },
-      },
     },
     serializer: {
       prelude: [getInitializeCorePath(projectRoot)],
@@ -83,14 +77,6 @@ export async function getDefaultConfig(projectRoot: string, mode?: Config['mode'
     },
     reactNative: {
       reactNativePath,
-      codegen: {
-        /**
-         * @see {@link https://github.com/facebook/react-native/blob/v0.83.1/packages/react-native-babel-preset/src/configs/main.js#L78}
-         */
-        filter: {
-          code: /\bcodegenNativeComponent</,
-        },
-      },
       assetRegistryPath: DEFAULT_ASSET_REGISTRY_PATH as NonNullable<
         NonNullable<ReactNativeConfig>['assetRegistryPath']
       >,

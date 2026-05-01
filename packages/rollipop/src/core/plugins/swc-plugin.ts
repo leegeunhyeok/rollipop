@@ -2,15 +2,12 @@ import type * as rolldown from '@rollipop/rolldown';
 import { id, include } from '@rollipop/rolldown-pluginutils';
 import * as swc from '@swc/core';
 
-import type { ResolvedConfig, TransformerConfig } from '../../config';
+import type { TransformerConfig } from '../../config';
 import { mergeSwcOptions } from '../../utils/swc';
 import { ROLLDOWN_RUNTIME_EXCLUDE_FILTER } from './shared/filters';
 import { getFlag, TransformFlag } from './utils/transform-utils';
 
-function swcPlugin(
-  runtimeTarget: ResolvedConfig['runtimeTarget'],
-  options?: TransformerConfig['swc'],
-): rolldown.Plugin[] {
+function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
   const { rules = [] } = options ?? {};
   const swcOptionsById: Map<string, swc.Options[]> = new Map();
 
@@ -41,7 +38,6 @@ function swcPlugin(
     } satisfies rolldown.Plugin;
   });
 
-  const getSwcPreset = presets[runtimeTarget];
   const swcPlugin: rolldown.Plugin = {
     name: 'rollipop:swc',
     buildStart() {
@@ -55,7 +51,10 @@ function swcPlugin(
         }
 
         const swcOptions = swcOptionsById.get(id) ?? [];
-        const baseOptions = getSwcPreset(id);
+        if (swcOptions.length === 0) {
+          return;
+        }
+
         const result = swc.transformSync(code, {
           filename: id,
           configFile: false,
@@ -64,7 +63,7 @@ function swcPlugin(
           // Disables the input source map to prevent error logs when
           // swc cannot find the source map file (e.g., in Yarn PnP environments).
           inputSourceMap: false,
-          ...mergeSwcOptions(baseOptions, ...swcOptions),
+          ...mergeSwcOptions({}, ...swcOptions),
         });
 
         return { code: result.code, map: result.map };
@@ -74,63 +73,5 @@ function swcPlugin(
 
   return [swcHelpersResolvePlugin, ...swcRules, swcPlugin];
 }
-
-const presets = {
-  'hermes-v1': (id: string): swc.Options => ({
-    env: {
-      targets: { node: 9999 },
-      // See:
-      // - Hermes's supported features: https://github.com/facebook/hermes/blob/main/doc/Features.md
-      // - Swc's transform preset: https://github.com/swc-project/swc/blob/v1.15.18/crates/swc_ecma_preset_env/src/transform_data.rs
-      include: [
-        'transform-block-scoping',
-        // `assumptions.setPublicClassFields`
-        'transform-class-properties',
-        // `assumptions.privateFieldsAsProperties`
-        'transform-private-methods',
-        'transform-private-property-in-object',
-      ],
-    },
-    jsc: {
-      parser: {
-        // Parse as TypeScript code because Flow modules can be `.js` files with type annotations
-        syntax: 'typescript',
-        // Always enable JSX parsing because Flow modules can be `.js` files with JSX syntax
-        tsx: true,
-      },
-      transform: {
-        react: {
-          runtime: 'preserve',
-        },
-      },
-      externalHelpers: true,
-    },
-    isModule: id.endsWith('.cjs') ? 'commonjs' : true,
-  }),
-  hermes: (id: string): swc.Options => ({
-    jsc: {
-      parser: {
-        // Parse as TypeScript code because Flow modules can be `.js` files with type annotations
-        syntax: 'typescript',
-        // Always enable JSX parsing because Flow modules can be `.js` files with JSX syntax
-        tsx: true,
-      },
-      transform: {
-        react: {
-          runtime: 'preserve',
-        },
-      },
-      externalHelpers: true,
-      keepClassNames: true,
-      loose: false,
-      assumptions: {
-        setPublicClassFields: true,
-        privateFieldsAsProperties: true,
-      },
-      target: 'es5',
-    },
-    isModule: id.endsWith('.cjs') ? 'commonjs' : true,
-  }),
-};
 
 export { swcPlugin as swc };

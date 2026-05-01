@@ -1,12 +1,11 @@
 import { analyze } from '@rollipop/plugin-analyze';
 import { rozenite } from '@rollipop/plugin-rozenite';
 import { defineConfig, type PluginOption } from 'rollipop';
-import { worklets } from 'rollipop/plugins';
 
 import { config, hot } from './plugins';
 
 function myPlugin(): PluginOption {
-  return [hot(), worklets(), config()];
+  return [hot(), config()];
 }
 
 export default defineConfig({
@@ -16,6 +15,10 @@ export default defineConfig({
     rozenite({ enabled: process.env.WITH_ROZENITE === 'true', logLevel: 'debug' }),
     analyze(),
   ],
+  transformer: {
+    // Enable worklets transformation
+    worklets: {},
+  },
   terminal: {
     extraCommands: [
       {

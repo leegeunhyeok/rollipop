@@ -12,8 +12,6 @@ export type TransformMeta = rolldown.CustomPluginOptions & {
 
 export enum TransformFlag {
   NONE = 0b00000000,
-  CODEGEN_REQUIRED = 0b00000001,
-  STRIP_FLOW_REQUIRED = 0b00000010,
   SKIP_ALL = 0b10000000,
 }
 
