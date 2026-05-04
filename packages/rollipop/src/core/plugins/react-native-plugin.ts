@@ -1,12 +1,11 @@
 import type * as rolldown from '@rollipop/rolldown';
-import { exactRegex, id, include } from '@rollipop/rolldown-pluginutils';
+import { id, include } from '@rollipop/rolldown-pluginutils';
 import {
   rollipopReactNativePlugin,
   type RollipopReactNativePluginConfig,
 } from '@rollipop/rolldown/experimental';
 
 import { ResolvedConfig } from '../../config';
-import { getDefaultRuntimeImplements, resolveHmrConfig } from '../../utils/config';
 import {
   AssetData,
   copyAssetsToDestination,
@@ -22,7 +21,6 @@ export interface ReactNativePluginOptions {
   assetsDir?: string;
   assetExtensions: string[];
   assetRegistryPath: string;
-  hmrClientPath: string;
   /**
    * @internal builtin plugin config
    */
@@ -33,14 +31,7 @@ function reactNativePlugin(
   config: ResolvedConfig,
   options: ReactNativePluginOptions,
 ): rolldown.Plugin[] {
-  const {
-    buildType,
-    assetsDir,
-    assetExtensions,
-    assetRegistryPath,
-    hmrClientPath,
-    builtinPluginConfig,
-  } = options;
+  const { buildType, assetsDir, assetExtensions, assetRegistryPath, builtinPluginConfig } = options;
 
   const assets: AssetData[] = [];
   const assetPlugin: rolldown.Plugin = {
@@ -86,25 +77,7 @@ function reactNativePlugin(
     },
   };
 
-  const defaultRuntimeImplements = getDefaultRuntimeImplements();
-  const hmrConfig = resolveHmrConfig(config);
-  const replaceHMRClientPlugin: rolldown.Plugin = {
-    name: 'rollipop:react-native-replace-hmr-client',
-    load: {
-      filter: [include(id(exactRegex(hmrClientPath)))],
-      handler(id) {
-        this.debug(`Replacing HMR client: ${id}`);
-        return {
-          code: hmrConfig?.clientImplement ?? defaultRuntimeImplements.clientImplement,
-          moduleType: 'ts',
-        };
-      },
-    },
-  };
-
-  const devServerPlugins = buildType === 'serve' ? [replaceHMRClientPlugin] : null;
-
-  return [rollipopReactNativePlugin(builtinPluginConfig), assetPlugin, ...(devServerPlugins ?? [])];
+  return [rollipopReactNativePlugin(builtinPluginConfig), assetPlugin];
 }
 
 export { reactNativePlugin as reactNative };
