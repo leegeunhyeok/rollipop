@@ -91,6 +91,13 @@ export default defineConfig({
       dts: true,
     },
     {
+      ...commonPackConfig,
+      entry: { plugins: 'src/plugins/index.ts' },
+      format: ['esm', 'cjs'],
+      platform: 'node',
+      dts: true,
+    },
+    {
       ...runtimePackConfig,
       entry: 'src/runtime.ts',
       format: ['esm', 'cjs'],
