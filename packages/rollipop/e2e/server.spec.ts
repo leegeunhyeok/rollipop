@@ -7,7 +7,7 @@ import { GLOBAL_IDENTIFIER } from '../src/constants';
 import type { DevServer } from '../src/server/types';
 import { runServer } from '../src/utils/run-server';
 
-const EXAMPLE_DIR = path.resolve(import.meta.dirname, '../../../example');
+const EXAMPLE_DIR = path.resolve(import.meta.dirname, '../../../examples/0.84');
 const PORT = 10321 + Math.floor(Math.random() * 1000);
 const HOST = 'localhost';
 const BASE_URL = `http://${HOST}:${PORT}`;

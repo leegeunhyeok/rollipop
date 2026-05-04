@@ -1,10 +1,5 @@
 import type * as rolldown from '@rollipop/rolldown';
-import {
-  exactRegex,
-  id,
-  include,
-  type TopLevelFilterExpression,
-} from '@rollipop/rolldown-pluginutils';
+import { id, include, type TopLevelFilterExpression } from '@rollipop/rolldown-pluginutils';
 import {
   rollipopReactNativePlugin,
   type RollipopReactNativePluginConfig,
@@ -12,7 +7,6 @@ import {
 
 import { stripFlowTypes } from '../../common/transformer';
 import { ResolvedConfig } from '../../config';
-import { getDefaultRuntimeImplements, resolveHmrConfig } from '../../utils/config';
 import {
   AssetData,
   copyAssetsToDestination,
@@ -28,7 +22,6 @@ export interface ReactNativePluginOptions {
   assetsDir?: string;
   assetExtensions: string[];
   assetRegistryPath: string;
-  hmrClientPath: string;
   /**
    * Native pipeline configuration. When `null`, the legacy JS plugins
    * (codegen marker + Flow strip) are installed instead.
@@ -57,10 +50,9 @@ function reactNativePlugin(
     assetsDir,
     assetExtensions,
     assetRegistryPath,
-    hmrClientPath,
-    builtinPluginConfig,
     flowFilter,
     codegenFilter,
+    builtinPluginConfig,
   } = options;
 
   const codegenPlugin: rolldown.Plugin = {
@@ -149,29 +141,11 @@ function reactNativePlugin(
     },
   };
 
-  const defaultRuntimeImplements = getDefaultRuntimeImplements();
-  const hmrConfig = resolveHmrConfig(config);
-  const replaceHMRClientPlugin: rolldown.Plugin = {
-    name: 'rollipop:react-native-replace-hmr-client',
-    load: {
-      filter: [include(id(exactRegex(hmrClientPath)))],
-      handler(id) {
-        this.debug(`Replacing HMR client: ${id}`);
-        return {
-          code: hmrConfig?.clientImplement ?? defaultRuntimeImplements.clientImplement,
-          moduleType: 'ts',
-        };
-      },
-    },
-  };
-
-  const devServerPlugins = buildType === 'serve' ? [replaceHMRClientPlugin] : null;
-
   const transformPlugins: rolldown.Plugin[] = builtinPluginConfig
     ? [rollipopReactNativePlugin(builtinPluginConfig)]
     : [codegenPlugin, stripFlowSyntaxPlugin];
 
-  return [...transformPlugins, assetPlugin, ...(devServerPlugins ?? [])];
+  return [...transformPlugins, assetPlugin];
 }
 
 export { reactNativePlugin as reactNative };

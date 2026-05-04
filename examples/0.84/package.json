@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "example-0.84",
   "private": true,
   "scripts": {
     "pod:install": "cd ios && bundle exec pod install",

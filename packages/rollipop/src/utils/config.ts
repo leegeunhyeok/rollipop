@@ -44,7 +44,7 @@ export function bindReporter(
   return config;
 }
 
-type ResolvedHmrConfig = Required<HmrConfig>;
+export type ResolvedHmrConfig = Required<HmrConfig>;
 
 export function resolveHmrConfig(config: ResolvedConfig): ResolvedHmrConfig | null {
   if (config.mode !== 'development') {

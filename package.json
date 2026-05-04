@@ -3,7 +3,7 @@
   "private": true,
   "workspaces": [
     "docs",
-    "example",
+    "examples/*",
     "packages/*"
   ],
   "type": "module",

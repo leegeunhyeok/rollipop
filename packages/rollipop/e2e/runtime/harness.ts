@@ -13,13 +13,13 @@ import type { HMRClientLogLevel, HMRClientMessage, HMRServerMessage } from '../.
 import { runServer } from '../../src/utils/run-server';
 
 const FIXTURES_DIR = path.resolve(import.meta.dirname, '__fixtures__');
-const EXAMPLE_DIR = path.resolve(import.meta.dirname, '../../../../example');
+const EXAMPLE_DIR = path.resolve(import.meta.dirname, '../../../../examples/0.84');
 
 /**
- * Copy a fixture into a unique directory under `example/` so the resulting
- * project can resolve `react-native` (and related deps) from the example
- * workspace's node_modules. Each call returns a fresh path → guarantees a
- * distinct BundlerPool cache key across tests.
+ * Copy a fixture into a unique directory under `examples/0.84/` so the
+ * resulting project can resolve `react-native` (and related deps) from the
+ * example workspace's node_modules. Each call returns a fresh path →
+ * guarantees a distinct BundlerPool cache key across tests.
  */
 export function cloneFixture(name: string): { dir: string; cleanup: () => void } {
   const src = path.join(FIXTURES_DIR, name);

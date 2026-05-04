@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 
 import type * as rolldown from '@rollipop/rolldown';
-import { rollipopReactRefreshWrapperPlugin as reactRefresh } from '@rollipop/rolldown/experimental';
 import type { TransformOptions } from '@rollipop/rolldown/utils';
 import { invariant, isNotNil, merge } from 'es-toolkit';
 
@@ -22,7 +21,7 @@ import { resolveRuntimeTarget } from '../utils/runtime-target';
 import { getBaseUrl } from '../utils/server';
 import { getBuildTotalModules } from '../utils/storage';
 import { loadEnv } from './env';
-import { prelude, reporter, reactNative, json, svg, babel, swc } from './plugins';
+import { prelude, reporter, reactNative, json, svg, babel, swc, devServer } from './plugins';
 import { printPluginLog } from './plugins/context';
 import { withTransformBoundary } from './plugins/utils/transform-utils';
 import type { BundlerContext, DevEngineOptions } from './types';
@@ -67,6 +66,9 @@ export async function resolveRolldownOptions(
         }
       : null),
   };
+
+  const hmrConfig = resolveHmrConfig(config);
+  const hmrEnabled = hmrConfig != null;
 
   // Resolver
   const {
@@ -151,6 +153,7 @@ export async function resolveRolldownOptions(
         __DEV__: asLiteral(dev),
         'process.env.NODE_ENV': asLiteral(nodeEnvironment(dev)),
         'process.env.DEBUG_ROLLIPOP': asLiteral(isDebugEnabled()),
+        ...(hmrEnabled ? null : { 'import.meta.hot': '{}' }),
         ...defineEnvFromObject(env),
         ...defineEnvFromObject(builtInEnv),
       },
@@ -160,16 +163,6 @@ export async function resolveRolldownOptions(
     } satisfies TransformOptions,
     rolldownTransform,
   );
-
-  const devServerPlugins = isDevServerMode
-    ? [
-        reactRefresh({
-          cwd: config.root,
-          include: [/\.[tj]sx?(?:$|\?)/],
-          exclude: [/\/node_modules\//],
-        }),
-      ]
-    : null;
 
   const statusReporter = (() => {
     switch (config.terminal.status) {
@@ -207,6 +200,9 @@ export async function resolveRolldownOptions(
     },
     experimental: {
       lazyBarrel: rolldownLazyBarrel,
+      ...(isDevServerMode
+        ? { devMode: hmrConfig ? { implement: hmrConfig.runtimeImplement } : false }
+        : null),
     },
     plugins: withTransformBoundary(context, [
       prelude({ modulePaths: preludePaths }),
@@ -221,10 +217,8 @@ export async function resolveRolldownOptions(
             ? await assetRegistryPath(config.root)
             : assetRegistryPath,
         ),
-        hmrClientPath: resolveFrom(
-          config.root,
-          typeof hmrClientPath === 'function' ? await hmrClientPath(config.root) : hmrClientPath,
-        ),
+        flowFilter: flow?.filter ?? [],
+        codegenFilter: codegen?.filter ?? [],
         builtinPluginConfig: nativeTransformPipeline
           ? {
               envName: config.mode,
@@ -241,8 +235,6 @@ export async function resolveRolldownOptions(
               plugins: [], // TODO
             }
           : null,
-        flowFilter: flow?.filter ?? [],
-        codegenFilter: codegen?.filter ?? [],
       }),
       json(),
       svg({ enabled: transformSvg }),
@@ -252,8 +244,12 @@ export async function resolveRolldownOptions(
         runtimeTarget: config.runtimeTarget,
         rules: swcConfig,
       }),
+      devServer({
+        cwd: config.root,
+        hmrClientPath,
+        hmrConfig,
+      }),
       reporter(reporterOptions),
-      devServerPlugins,
       config.plugins,
     ]),
     checks: {
@@ -385,12 +381,7 @@ function resolveReactNativeWorkletsVersion(projectRoot: string) {
   }
 }
 
-export function getOverrideOptionsForDevServer(
-  config: ResolvedConfig,
-  buildOptions: ResolvedBuildOptions,
-) {
-  const hmrConfig = resolveHmrConfig(config);
-
+export function getOverrideOptionsForDevServer(buildOptions: ResolvedBuildOptions) {
   const input: rolldown.InputOptions = {
     transform: {
       jsx: {
@@ -398,7 +389,6 @@ export function getOverrideOptionsForDevServer(
       },
     },
     experimental: {
-      devMode: hmrConfig ? { implement: hmrConfig.runtimeImplement } : false,
       incrementalBuild: true,
       nativeMagicString: true,
     },

@@ -1,0 +1,35 @@
+{
+  "name": "example-0.72",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "pod:install": "cd ios && bundle exec pod install",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "rollipop start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-native": "0.72.17"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@react-native/metro-config": "^0.72.12",
+    "@react-native/typescript-config": "0.84.1",
+    "@tsconfig/react-native": "^3.0.0",
+    "@types/react": "^18.0.24",
+    "@types/react-test-renderer": "^18.0.0",
+    "babel-jest": "^29.2.1",
+    "jest": "^29.2.1",
+    "metro-react-native-babel-preset": "^0.76.9",
+    "react-test-renderer": "18.2.0",
+    "rollipop": "workspace:*",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22.11.0"
+  }
+}

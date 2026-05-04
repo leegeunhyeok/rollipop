@@ -15,13 +15,6 @@ export default defineConfig({
     rozenite({ enabled: process.env.WITH_ROZENITE === 'true', logLevel: 'debug' }),
     analyze(),
   ],
-  experimental: {
-    // Opt into the rust-side native transform pipeline. Required for the
-    // `experimental.worklets` option below.
-    nativeTransformPipeline: true,
-    // Enable react-native-worklets transformation (native pipeline only).
-    worklets: {},
-  },
   terminal: {
     extraCommands: [
       {
@@ -40,5 +33,9 @@ export default defineConfig({
         },
       },
     ],
+  },
+  experimental: {
+    nativeTransformPipeline: true,
+    worklets: {},
   },
 });
