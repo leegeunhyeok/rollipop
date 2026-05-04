@@ -5,4 +5,8 @@ export default defineConfig({
   devMode: {
     hmr: false,
   },
+  experimental: {
+    nativeTransformPipeline: true,
+    worklets: {},
+  },
 });

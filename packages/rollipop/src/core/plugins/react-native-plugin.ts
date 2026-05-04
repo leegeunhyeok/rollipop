@@ -1,10 +1,16 @@
 import type * as rolldown from '@rollipop/rolldown';
-import { id, include } from '@rollipop/rolldown-pluginutils';
+import {
+  exactRegex,
+  id,
+  include,
+  type TopLevelFilterExpression,
+} from '@rollipop/rolldown-pluginutils';
 import {
   rollipopReactNativePlugin,
   type RollipopReactNativePluginConfig,
 } from '@rollipop/rolldown/experimental';
 
+import { stripFlowTypes } from '../../common/transformer';
 import { ResolvedConfig } from '../../config';
 import {
   AssetData,
@@ -13,7 +19,7 @@ import {
   resolveScaledAssets,
 } from '../assets';
 import type { BuildType } from '../types';
-import { TransformFlag, setFlag } from './utils/transform-utils';
+import { TransformFlag, getFlag, setFlag } from './utils/transform-utils';
 
 export interface ReactNativePluginOptions {
   platform: string;
@@ -22,16 +28,79 @@ export interface ReactNativePluginOptions {
   assetExtensions: string[];
   assetRegistryPath: string;
   /**
+   * Native pipeline configuration. When `null`, the legacy JS plugins
+   * (codegen marker + Flow strip) are installed instead.
+   *
    * @internal builtin plugin config
    */
-  builtinPluginConfig: RollipopReactNativePluginConfig;
+  builtinPluginConfig: RollipopReactNativePluginConfig | null;
+  /**
+   * Filter for the legacy Flow-strip transform pipeline. Used when the
+   * native pipeline is disabled.
+   */
+  flowFilter: rolldown.HookFilter | TopLevelFilterExpression[];
+  /**
+   * Filter for the legacy codegen marker pipeline. Used when the native
+   * pipeline is disabled.
+   */
+  codegenFilter: rolldown.HookFilter | TopLevelFilterExpression[];
 }
 
 function reactNativePlugin(
   config: ResolvedConfig,
   options: ReactNativePluginOptions,
 ): rolldown.Plugin[] {
-  const { buildType, assetsDir, assetExtensions, assetRegistryPath, builtinPluginConfig } = options;
+  const {
+    buildType,
+    assetsDir,
+    assetExtensions,
+    assetRegistryPath,
+    flowFilter,
+    codegenFilter,
+    builtinPluginConfig,
+  } = options;
+
+  const codegenPlugin: rolldown.Plugin = {
+    name: 'rollipop:react-native-codegen-marker',
+    transform: {
+      order: 'pre',
+      filter: codegenFilter,
+      handler(_code, id) {
+        return { meta: setFlag(this, id, TransformFlag.CODEGEN_REQUIRED) };
+      },
+    },
+  };
+
+  const stripFlowSyntaxPlugin: rolldown.Plugin = {
+    name: 'rollipop:react-native-strip-flow-syntax',
+    transform: {
+      order: 'pre',
+      filter: flowFilter,
+      async handler(code, id) {
+        const flags = getFlag(this, id);
+
+        if (flags & TransformFlag.SKIP_ALL) {
+          return;
+        }
+
+        if (flags & TransformFlag.CODEGEN_REQUIRED) {
+          return { meta: setFlag(this, id, TransformFlag.STRIP_FLOW_REQUIRED) };
+        }
+
+        const result = await stripFlowTypes(id, code);
+
+        return {
+          code: result.code,
+          map: result.map,
+          /**
+           * Treat the transformed code as TSX code
+           * because Flow modules can be `.js` files with type annotations and JSX syntax.
+           */
+          moduleType: 'tsx',
+        };
+      },
+    },
+  };
 
   const assets: AssetData[] = [];
   const assetPlugin: rolldown.Plugin = {
@@ -77,7 +146,11 @@ function reactNativePlugin(
     },
   };
 
-  return [rollipopReactNativePlugin(builtinPluginConfig), assetPlugin];
+  const transformPlugins: rolldown.Plugin[] = builtinPluginConfig
+    ? [rollipopReactNativePlugin(builtinPluginConfig)]
+    : [codegenPlugin, stripFlowSyntaxPlugin];
+
+  return [...transformPlugins, assetPlugin];
 }
 
 export { reactNativePlugin as reactNative };

@@ -15,10 +15,6 @@ export default defineConfig({
     rozenite({ enabled: process.env.WITH_ROZENITE === 'true', logLevel: 'debug' }),
     analyze(),
   ],
-  transformer: {
-    // Enable worklets transformation
-    worklets: {},
-  },
   terminal: {
     extraCommands: [
       {
@@ -37,5 +33,9 @@ export default defineConfig({
         },
       },
     ],
+  },
+  experimental: {
+    nativeTransformPipeline: true,
+    worklets: {},
   },
 });

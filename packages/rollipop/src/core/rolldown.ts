@@ -93,7 +93,7 @@ export async function resolveRolldownOptions(
   } = config.serializer;
 
   // Transformer
-  const { babel: babelConfig, swc: swcConfig, worklets, ...rolldownTransform } = config.transformer;
+  const { flow, babel: babelConfig, swc: swcConfig, ...rolldownTransform } = config.transformer;
 
   // Optimization
   const {
@@ -105,10 +105,14 @@ export async function resolveRolldownOptions(
 
   // React Native specific options
   const {
+    codegen,
     assetRegistryPath,
     hmrClientPath,
     globalIdentifiers: rolldownGlobalIdentifiers,
   } = config.reactNative;
+
+  // Experimental options
+  const { nativeTransformPipeline = false, worklets } = config.experimental ?? {};
 
   // Sourcemap specific options
   const {
@@ -213,31 +217,39 @@ export async function resolveRolldownOptions(
             ? await assetRegistryPath(config.root)
             : assetRegistryPath,
         ),
-        builtinPluginConfig: {
-          envName: config.mode,
-          runtimeTarget: resolveRuntimeTarget(config.runtimeTarget),
-          worklets: worklets
-            ? merge(
-                {
-                  isRelease: config.mode === 'production',
-                  pluginVersion: resolveReactNativeWorkletsVersion(config.root),
-                },
-                worklets,
-              )
-            : undefined,
-          plugins: [], // TODO
-        },
+        flowFilter: flow?.filter ?? [],
+        codegenFilter: codegen?.filter ?? [],
+        builtinPluginConfig: nativeTransformPipeline
+          ? {
+              envName: config.mode,
+              runtimeTarget: resolveRuntimeTarget(config.runtimeTarget),
+              worklets: worklets
+                ? merge(
+                    {
+                      isRelease: config.mode === 'production',
+                      pluginVersion: resolveReactNativeWorkletsVersion(config.root),
+                    },
+                    worklets,
+                  )
+                : undefined,
+              plugins: [], // TODO
+            }
+          : null,
       }),
       json(),
       svg({ enabled: transformSvg }),
-      babel(babelConfig),
-      swc(swcConfig),
-      reporter(reporterOptions),
+      babel({ useNativeTransformPipeline: nativeTransformPipeline, rules: babelConfig }),
+      swc({
+        useNativeTransformPipeline: nativeTransformPipeline,
+        runtimeTarget: config.runtimeTarget,
+        rules: swcConfig,
+      }),
       devServer({
         cwd: config.root,
         hmrClientPath,
         hmrConfig,
       }),
+      reporter(reporterOptions),
       config.plugins,
     ]),
     checks: {

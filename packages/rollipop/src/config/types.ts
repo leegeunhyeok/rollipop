@@ -8,11 +8,13 @@ import type {
 import type { TransformOptions } from '@rollipop/rolldown/utils';
 import type * as swc from '@swc/core';
 
+export type { RollipopReactNativeWorkletsConfig };
+
 import type { Plugin } from '../core/plugins/types';
 import type { InteractiveCommand } from '../node/cli-utils';
 import type { MaybePromise, NullValue, Reporter } from '../types';
 
-type ExperimentalConfig = NonNullable<rolldown.InputOptions['experimental']>;
+type RolldownExperimentalOptions = NonNullable<rolldown.InputOptions['experimental']>;
 
 export interface Config {
   /**
@@ -170,6 +172,11 @@ export interface Config {
    */
   runtimeTarget?: 'hermes' | 'hermes-v1';
   /**
+   * Experimental options. Behaviour and shape may change between releases
+   * without a major version bump.
+   */
+  experimental?: ExperimentalConfig;
+  /**
    * Rollipop provides default options for Rolldown, but you can override them by this option.
    *
    * **DANGEROUS**: This option is dangerous because it can break the build.
@@ -221,6 +228,20 @@ export type TransformerConfig = Omit<
   'cwd' | 'lang' | 'sourceType' | 'plugins'
 > & {
   /**
+   * Transform SVG assets files to React components using `@svgr/core`.
+   *
+   * Defaults to: `true`
+   */
+  svg?: boolean;
+  /**
+   * Flow specific configuration.
+   *
+   * Only applied when `experimental.nativeTransformPipeline` is **disabled** (the
+   * default). With the native pipeline enabled, the rust-side plugin
+   * handles Flow stripping internally.
+   */
+  flow?: FlowConfig;
+  /**
    * Babel transformation configuration.
    */
   babel?: BabelTransformConfig;
@@ -228,18 +249,6 @@ export type TransformerConfig = Omit<
    * SWC transformation configuration.
    */
   swc?: SwcTransformConfig;
-  /**
-   * **Rolldown Built-in plugin**
-   *
-   * React Native Worklets transformation configuration.
-   */
-  worklets?: RollipopReactNativeWorkletsConfig;
-  /**
-   * Transform SVG assets files to React components using `@svgr/core`.
-   *
-   * Defaults to: `true`
-   */
-  svg?: boolean;
 };
 
 export type BabelTransformConfig = { rules?: TransformRule<babel.TransformOptions>[] };
@@ -248,6 +257,37 @@ export type SwcTransformConfig = { rules?: TransformRule<swc.Options>[] };
 export interface TransformRule<T = unknown> {
   filter?: rolldown.HookFilter | TopLevelFilterExpression[];
   options: T | ((code: string, id: string) => T);
+}
+
+export interface FlowConfig {
+  /**
+   * Filter for Flow transformation pipeline.
+   */
+  filter?: rolldown.HookFilter | TopLevelFilterExpression[];
+}
+
+export interface ExperimentalConfig {
+  /**
+   * Enables the native (rust) transform pipeline, which replaces the
+   * legacy JS-side codegen marker, Flow strip, and SWC/babel preset
+   * machinery with a single built-in `rollipopReactNativePlugin`.
+   *
+   * This is a breaking change for projects that customised the legacy
+   * pipeline via `transformer.flow.filter`, `reactNative.codegen.filter`,
+   * or `runtimeTarget`. Opt in once you have validated builds locally.
+   *
+   * Defaults to `false`.
+   */
+  nativeTransformPipeline?: boolean;
+  /**
+   * `react-native-worklets` transformation configuration.
+   *
+   * Only applied when `experimental.nativeTransformPipeline` is enabled — the
+   * legacy pipeline ships no equivalent transform; consume the
+   * `worklets()` plugin from `rollipop/plugins` if you need it on the
+   * legacy pipeline.
+   */
+  worklets?: RollipopReactNativeWorkletsConfig;
 }
 
 export interface SerializerConfig {
@@ -330,7 +370,7 @@ export type OptimizationConfig = rolldown.OptimizationOptions & {
    *
    * @see {@link https://rolldown.rs/in-depth/lazy-barrel-optimization | Lazy Barrel Documentation}
    */
-  lazyBarrel?: ExperimentalConfig['lazyBarrel'];
+  lazyBarrel?: RolldownExperimentalOptions['lazyBarrel'];
 };
 
 export type WatcherConfig = DevWatchOptions;
@@ -368,6 +408,14 @@ export interface ReactNativeConfig {
    */
   reactNativePath?: string;
   /**
+   * Codegen specific configuration.
+   *
+   * Only applied when `experimental.nativeTransformPipeline` is **disabled** (the
+   * default). With the native pipeline enabled, the rust-side plugin
+   * handles codegen marking internally.
+   */
+  codegen?: CodegenConfig;
+  /**
    * Path to asset registry file.
    *
    * Defaults to: `react-native/Libraries/Image/AssetRegistry.js`
@@ -385,6 +433,13 @@ export interface ReactNativeConfig {
    * Defaults to: Global identifier list of React Native 0.83
    */
   globalIdentifiers?: string[];
+}
+
+export interface CodegenConfig {
+  /**
+   * Filter for codegen transformation pipeline.
+   */
+  filter?: rolldown.HookFilter | TopLevelFilterExpression[];
 }
 
 export interface TerminalConfig {
