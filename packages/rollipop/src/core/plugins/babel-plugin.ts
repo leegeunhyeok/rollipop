@@ -4,10 +4,24 @@ import { invariant } from 'es-toolkit';
 
 import type { TransformerConfig } from '../../config';
 import { mergeBabelOptions } from '../../utils/babel';
+import { isJSX, isTS } from './utils';
 import { getFlag, TransformFlag } from './utils/transform-utils';
 
-function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
-  const { rules = [] } = options ?? {};
+export interface BabelPluginOptions {
+  /**
+   * When `false`, the legacy JS preset (TS strip / Flow strip / RN
+   * codegen) is applied. When `true`, the preset is skipped and only
+   * user-provided rules run — the rust-side pipeline handles the rest.
+   */
+  useNativeTransformPipeline: boolean;
+  rules?: TransformerConfig['babel'];
+}
+
+function babelPlugin({
+  useNativeTransformPipeline,
+  rules: userRules,
+}: BabelPluginOptions): rolldown.Plugin[] {
+  const { rules = [] } = userRules ?? {};
   const babelOptionsById: Map<string, babel.TransformOptions[]> = new Map();
 
   const babelRules = rules.map(({ filter, options }, index) => {
@@ -39,16 +53,20 @@ function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
         }
 
         const babelOptions = babelOptionsById.get(id) ?? [];
-        if (babelOptions.length === 0) {
+        const shouldTransform = useNativeTransformPipeline
+          ? babelOptions.length > 0
+          : flags & TransformFlag.CODEGEN_REQUIRED || babelOptions.length > 0;
+        if (!shouldTransform) {
           return;
         }
 
+        const baseOptions = useNativeTransformPipeline ? [] : [getPreset(flags, id)];
         const result = babel.transformSync(code, {
           filename: id,
           babelrc: false,
           configFile: false,
           sourceMaps: true,
-          ...mergeBabelOptions(babelOptions),
+          ...mergeBabelOptions([...baseOptions, ...babelOptions]),
         });
         invariant(result?.code, `Failed to transform with babel: ${id}`);
 
@@ -58,6 +76,49 @@ function babelPlugin(options?: TransformerConfig['babel']): rolldown.Plugin[] {
   };
 
   return [...babelRules, babelPlugin];
+}
+
+function getPreset(flags: TransformFlag, id: string): babel.TransformOptions {
+  const presets: babel.PluginItem[] = [];
+  const plugins: babel.PluginItem[] = [];
+  let parserOpts: babel.ParserOptions | null = null;
+
+  if (flags & TransformFlag.STRIP_FLOW_REQUIRED) {
+    parserOpts = { flow: 'all' } as any;
+    plugins.push(
+      [
+        require.resolve('babel-plugin-syntax-hermes-parser'),
+        {
+          parseLangTypes: 'flow',
+          reactRuntimeTarget: '19',
+        },
+      ],
+      require.resolve('@babel/plugin-transform-flow-strip-types'),
+    );
+  } else if (isTS(id)) {
+    plugins.push([
+      require.resolve('@babel/plugin-transform-typescript'),
+      {
+        isTSX: isJSX(id),
+        allowNamespaces: true,
+      },
+    ]);
+  }
+
+  if (flags & TransformFlag.CODEGEN_REQUIRED) {
+    plugins.push([require.resolve('@react-native/babel-plugin-codegen')]);
+  }
+
+  const options: babel.TransformOptions = {
+    presets,
+    plugins,
+  };
+
+  if (parserOpts) {
+    options.parserOpts = parserOpts;
+  }
+
+  return options;
 }
 
 export { babelPlugin as babel };

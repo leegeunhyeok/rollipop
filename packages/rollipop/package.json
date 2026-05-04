@@ -41,6 +41,16 @@
       "types": "./dist/pluginutils.d.ts",
       "default": "./dist/pluginutils.js"
     },
+    "./plugins": {
+      "import": {
+        "types": "./dist/plugins.d.ts",
+        "default": "./dist/plugins.js"
+      },
+      "require": {
+        "types": "./dist/plugins.d.cts",
+        "default": "./dist/plugins.cjs"
+      }
+    },
     "./runtime": {
       "import": {
         "types": "./dist/runtime.d.ts",

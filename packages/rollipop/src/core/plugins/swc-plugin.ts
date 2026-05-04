@@ -2,13 +2,29 @@ import type * as rolldown from '@rollipop/rolldown';
 import { id, include } from '@rollipop/rolldown-pluginutils';
 import * as swc from '@swc/core';
 
-import type { TransformerConfig } from '../../config';
+import type { ResolvedConfig, TransformerConfig } from '../../config';
 import { mergeSwcOptions } from '../../utils/swc';
 import { ROLLDOWN_RUNTIME_EXCLUDE_FILTER } from './shared/filters';
 import { getFlag, TransformFlag } from './utils/transform-utils';
 
-function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
-  const { rules = [] } = options ?? {};
+export interface SwcPluginOptions {
+  /**
+   * When `false`, the legacy JS preset for the resolved `runtimeTarget`
+   * is applied to every module (TS/JSX strip, hermes target). When
+   * `true`, the preset is skipped and only user-provided rules run — the
+   * rust-side pipeline handles the rest.
+   */
+  useNativeTransformPipeline: boolean;
+  runtimeTarget: ResolvedConfig['runtimeTarget'];
+  rules?: TransformerConfig['swc'];
+}
+
+function swcPlugin({
+  useNativeTransformPipeline,
+  runtimeTarget,
+  rules: userRules,
+}: SwcPluginOptions): rolldown.Plugin[] {
+  const { rules = [] } = userRules ?? {};
   const swcOptionsById: Map<string, swc.Options[]> = new Map();
 
   const swcHelpersResolvePlugin: rolldown.Plugin = {
@@ -38,6 +54,7 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
     } satisfies rolldown.Plugin;
   });
 
+  const getSwcPreset = useNativeTransformPipeline ? null : presets[runtimeTarget];
   const swcPlugin: rolldown.Plugin = {
     name: 'rollipop:swc',
     buildStart() {
@@ -51,10 +68,11 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
         }
 
         const swcOptions = swcOptionsById.get(id) ?? [];
-        if (swcOptions.length === 0) {
+        if (getSwcPreset == null && swcOptions.length === 0) {
           return;
         }
 
+        const baseOptions = getSwcPreset != null ? [getSwcPreset(id)] : [];
         const result = swc.transformSync(code, {
           filename: id,
           configFile: false,
@@ -63,7 +81,7 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
           // Disables the input source map to prevent error logs when
           // swc cannot find the source map file (e.g., in Yarn PnP environments).
           inputSourceMap: false,
-          ...mergeSwcOptions(swcOptions),
+          ...mergeSwcOptions([...baseOptions, ...swcOptions]),
         });
 
         return { code: result.code, map: result.map };
@@ -73,5 +91,63 @@ function swcPlugin(options?: TransformerConfig['swc']): rolldown.Plugin[] {
 
   return [swcHelpersResolvePlugin, ...swcRules, swcPlugin];
 }
+
+const presets = {
+  'hermes-v1': (id: string): swc.Options => ({
+    env: {
+      targets: { node: 9999 },
+      // See:
+      // - Hermes's supported features: https://github.com/facebook/hermes/blob/main/doc/Features.md
+      // - Swc's transform preset: https://github.com/swc-project/swc/blob/v1.15.18/crates/swc_ecma_preset_env/src/transform_data.rs
+      include: [
+        'transform-block-scoping',
+        // `assumptions.setPublicClassFields`
+        'transform-class-properties',
+        // `assumptions.privateFieldsAsProperties`
+        'transform-private-methods',
+        'transform-private-property-in-object',
+      ],
+    },
+    jsc: {
+      parser: {
+        // Parse as TypeScript code because Flow modules can be `.js` files with type annotations
+        syntax: 'typescript',
+        // Always enable JSX parsing because Flow modules can be `.js` files with JSX syntax
+        tsx: true,
+      },
+      transform: {
+        react: {
+          runtime: 'preserve',
+        },
+      },
+      externalHelpers: true,
+    },
+    isModule: id.endsWith('.cjs') ? 'commonjs' : true,
+  }),
+  hermes: (id: string): swc.Options => ({
+    jsc: {
+      parser: {
+        // Parse as TypeScript code because Flow modules can be `.js` files with type annotations
+        syntax: 'typescript',
+        // Always enable JSX parsing because Flow modules can be `.js` files with JSX syntax
+        tsx: true,
+      },
+      transform: {
+        react: {
+          runtime: 'preserve',
+        },
+      },
+      externalHelpers: true,
+      keepClassNames: true,
+      loose: false,
+      assumptions: {
+        setPublicClassFields: true,
+        privateFieldsAsProperties: true,
+      },
+      target: 'es5',
+    },
+    isModule: id.endsWith('.cjs') ? 'commonjs' : true,
+  }),
+};
 
 export { swcPlugin as swc };
