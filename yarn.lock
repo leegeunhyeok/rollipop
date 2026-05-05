@@ -6689,6 +6689,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rollipop/plugin-svg@workspace:*, @rollipop/plugin-svg@workspace:packages/plugin-svg":
+  version: 0.0.0-use.local
+  resolution: "@rollipop/plugin-svg@workspace:packages/plugin-svg"
+  dependencies:
+    "@svgr/core": "npm:^8.1.0"
+    "@svgr/plugin-jsx": "npm:^8.1.0"
+    rollipop: "workspace:*"
+    typescript: "catalog:"
+    vite-plus: "catalog:"
+  peerDependencies:
+    rollipop: "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@rollipop/rolldown-binding-darwin-arm64@npm:1.0.0-rc.11":
   version: 1.0.0-rc.11
   resolution: "@rollipop/rolldown-binding-darwin-arm64@npm:1.0.0-rc.11"
@@ -11318,6 +11332,7 @@ __metadata:
     "@react-navigation/native-stack": "npm:^7.14.4"
     "@rollipop/plugin-analyze": "workspace:*"
     "@rollipop/plugin-rozenite": "workspace:*"
+    "@rollipop/plugin-svg": "workspace:*"
     "@rozenite/react-navigation-plugin": "npm:^1.3.0"
     "@types/jest": "npm:^29.5.13"
     "@types/node": "npm:^24"
@@ -18271,8 +18286,6 @@ __metadata:
     "@react-native/dev-middleware": "npm:^0.84.1"
     "@rollipop/rolldown": "catalog:rolldown"
     "@rollipop/rolldown-pluginutils": "catalog:rolldown"
-    "@svgr/core": "npm:^8.1.0"
-    "@svgr/plugin-jsx": "npm:^8.1.0"
     "@swc/core": "npm:^1.15.18"
     "@swc/helpers": "npm:^0.5.19"
     "@types/babel__code-frame": "npm:^7"

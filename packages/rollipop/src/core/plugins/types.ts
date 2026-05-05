@@ -6,6 +6,10 @@ import type { AsyncResult } from '../types';
 import type { PluginContext } from './context';
 
 export type PluginConfig = Omit<Config, 'plugins' | 'dangerously_overrideRolldownOptions'>;
+export type ResolvedPluginConfig = Omit<
+  ResolvedConfig,
+  'plugins' | 'dangerously_overrideRolldownOptions'
+>;
 
 export type Plugin = rolldown.Plugin & {
   config?:

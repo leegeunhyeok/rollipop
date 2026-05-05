@@ -1,0 +1,45 @@
+{
+  "name": "@rollipop/plugin-svg",
+  "version": "0.1.0-alpha.17",
+  "homepage": "https://github.com/leegeunhyeok/rollipop#readme",
+  "bugs": {
+    "url": "https://github.com/leegeunhyeok/rollipop/issues"
+  },
+  "license": "MIT",
+  "author": "leegeunhyeok <dev.ghlee@gmail.com> (https://github.com/leegeunhyeok)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leegeunhyeok/rollipop.git",
+    "directory": "packages/plugin-svg"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "prepack": "yarn build",
+    "typecheck": "tsc --noEmit",
+    "build": "vp pack"
+  },
+  "dependencies": {
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0"
+  },
+  "devDependencies": {
+    "rollipop": "workspace:*",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "rollipop": "workspace:*"
+  }
+}

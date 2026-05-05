@@ -1,19 +1,24 @@
 import fs from 'node:fs';
 
-import type * as rolldown from '@rollipop/rolldown';
 import { Config, transform } from '@svgr/core';
+import type { Plugin } from 'rollipop';
 
-export interface SvgPluginOptions {
-  enabled: boolean;
-}
+const SVG_EXTENSION = 'svg';
 
-function svgPlugin(options: SvgPluginOptions): rolldown.Plugin | null {
-  if (!options.enabled) {
-    return null;
-  }
-
+export function svgPlugin(): Plugin {
   return {
     name: 'rollipop:svg',
+    config(config) {
+      const resolver = (config.resolver ??= {});
+      const sourceExtensions = (resolver.sourceExtensions ??= []);
+      const assetExtensions = (resolver.assetExtensions ??= []);
+
+      if (!sourceExtensions.includes(SVG_EXTENSION)) {
+        sourceExtensions.push(SVG_EXTENSION);
+      }
+
+      resolver.assetExtensions = assetExtensions.filter((extension) => extension !== SVG_EXTENSION);
+    },
     load: {
       filter: {
         id: /\.svg$/,
@@ -47,5 +52,3 @@ const ${SVG_COMPONENT_NAME} = (${variables.props}) => (
 
 export default ${SVG_COMPONENT_NAME};`;
 };
-
-export { svgPlugin as svg };

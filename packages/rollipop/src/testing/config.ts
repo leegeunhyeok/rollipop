@@ -28,7 +28,6 @@ export function createTestConfig(basePath: string): ResolvedConfig {
       symlinks: true,
     },
     transformer: {
-      svg: true,
       flow: {
         filter: {
           id: /\.jsx?$/,
