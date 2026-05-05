@@ -62,7 +62,6 @@ export function createConfig(fixture: string, options: TestConfigOptions = {}): 
       ...options.resolver,
     },
     transformer: {
-      svg: false,
       flow: { filter: { id: /\.jsx?$/, code: /@flow/ } },
       ...options.transformer,
     },

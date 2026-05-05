@@ -51,7 +51,6 @@ export async function getDefaultConfig(projectRoot: string, mode?: Config['mode'
       symlinks: true,
     },
     transformer: {
-      svg: true,
       flow: {
         filter: {
           id: /\.jsx?$/,

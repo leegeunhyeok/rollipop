@@ -35,11 +35,11 @@ describe('createId', () => {
     expect(idA === idB).toBe(false);
     expect(idA === idC).toBe(false);
     expect([idA, idB, idC]).toMatchInlineSnapshot(`
-      [
-        "d4ee99c71b371dc9609da5a024f2b59c",
-        "49549a8b5210759a070f87f274792d93",
-        "125d6bc285cfc2596ea24f39a2220c64",
-      ]
+    	[
+    	  "33a9173f62c79afd88613b895169a89f",
+    	  "25e7b17175624603fe2dbffb4a262b1c",
+    	  "98532aae415ecbfdaf20fd3d5f0bae86",
+    	]
     `);
   });
 });

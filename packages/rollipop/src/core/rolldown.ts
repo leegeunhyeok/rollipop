@@ -27,7 +27,6 @@ import {
   type PreludePluginOptions,
   type ReactNativePluginOptions,
   type ReporterPluginOptions,
-  type SvgPluginOptions,
   type SwcPluginOptions,
   babel,
   devServer,
@@ -35,7 +34,6 @@ import {
   prelude,
   reactNative,
   reporter,
-  svg,
   swc,
 } from './plugins';
 import { printPluginLog } from './plugins/context';
@@ -89,6 +87,7 @@ export async function resolveRolldownOptions(
   // Resolver
   const {
     sourceExtensions,
+    assetExtensions,
     preferNativePlatform,
     external: rolldownExternal,
     ...rolldownResolve
@@ -132,15 +131,11 @@ export async function resolveRolldownOptions(
   // User Plugins
   const userPlugins = config.plugins;
 
-  const resolvedSourceExtensions = config.transformer.svg
-    ? [...sourceExtensions, 'svg']
-    : sourceExtensions;
-
   const mergedResolveOptions = merge(
     {
       extensions: getResolveExtensions({
-        sourceExtensions: resolvedSourceExtensions,
-        assetExtensions: resolveAssetExtensions(config),
+        sourceExtensions,
+        assetExtensions,
         platform,
         preferNativePlatform,
       }),
@@ -177,7 +172,6 @@ export async function resolveRolldownOptions(
     context,
     buildOptions,
   );
-  const svgPluginOptions = resolveSvgPluginOptions(config);
   const babelPluginOptions = resolveBabelPluginOptions(config);
   const swcPluginOptions = resolveSwcPluginOptions(config);
   const devServerPluginOptions = resolveDevServerPluginOptions(config, hmrConfig);
@@ -207,7 +201,6 @@ export async function resolveRolldownOptions(
       prelude(preludePluginOptions),
       reactNative(reactNativePluginOptions),
       json(),
-      svg(svgPluginOptions),
       babel(babelPluginOptions),
       swc(swcPluginOptions),
       devServer(devServerPluginOptions),
@@ -291,7 +284,7 @@ async function resolveReactNativePluginOptions(
     preferNativePlatform: config.resolver.preferNativePlatform,
     buildType: context.buildType,
     assetsDir: buildOptions.assetsDir,
-    assetExtensions: resolveAssetExtensions(config),
+    assetExtensions: config.resolver.assetExtensions,
     assetRegistryPath: await resolveAssetRegistryPath(config),
     flowFilter: config.transformer.flow?.filter ?? [],
     codegenFilter: config.reactNative.codegen?.filter ?? [],
@@ -342,12 +335,6 @@ function resolveWorkletsConfig(
   );
 }
 
-function resolveSvgPluginOptions(config: ResolvedConfig): SvgPluginOptions {
-  return {
-    enabled: config.transformer.svg,
-  };
-}
-
 function resolveBabelPluginOptions(config: ResolvedConfig): BabelPluginOptions {
   return {
     useNativeTransformPipeline: config.experimental?.nativeTransformPipeline,
@@ -385,18 +372,6 @@ function resolveReporterPluginOptions(
     initialTotalModules: getBuildTotalModules(context.storage, context.id),
     reporter: mergeReporters([statusReporter, config.reporter].filter(isNotNil)),
   };
-}
-
-function resolveAssetExtensions(config: ResolvedConfig): string[] {
-  const { assetExtensions } = config.resolver;
-
-  // When SVG transformation is enabled, `.svg` files are routed through
-  // the SVG plugin instead of being bundled as assets.
-  if (config.transformer.svg) {
-    return assetExtensions.filter((extension) => extension !== 'svg');
-  }
-
-  return assetExtensions;
 }
 
 function createStatusReporter(

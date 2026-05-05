@@ -4,10 +4,10 @@ import * as c12 from 'c12';
 import { omit } from 'es-toolkit';
 
 import { createPluginContext } from '../core/plugins/context';
-import type { Plugin, PluginConfig } from '../core/plugins/types';
+import type { Plugin, PluginConfig, ResolvedPluginConfig } from '../core/plugins/types';
 import { getDefaultConfig, type ResolvedConfig } from './defaults';
 import { DefineConfigContext } from './define-config';
-import { mergeConfig, type PluginFlattenConfig } from './merge-config';
+import { mergeConfig } from './merge-config';
 import type { Config, PluginOption } from './types';
 
 const CONFIG_FILE_NAME = 'rollipop';
@@ -40,9 +40,16 @@ export async function loadConfig(options: LoadConfigOptions = {}) {
   );
 
   const plugins = await flattenPluginOption(userConfig.plugins);
-  const pluginConfig = await resolvePluginConfig(userConfig, plugins);
-  const overrideConfigs: PluginFlattenConfig[] = [{ ...userConfig, plugins }, pluginConfig];
-  const resolvedConfig = mergeConfig(defaultConfig, ...overrideConfigs);
+  // Pre-merge defaults so the `config` hook sees the fully-resolved config and
+  // mutations (including removing entries from default arrays like
+  // `resolver.assetExtensions`) are preserved as the final result.
+  const baseConfig = mergeConfig(defaultConfig, { ...userConfig, plugins });
+  const pluginConfig = await resolvePluginConfig(baseConfig, plugins);
+  const resolvedConfig: ResolvedConfig = {
+    ...pluginConfig,
+    plugins,
+    dangerously_overrideRolldownOptions: userConfig.dangerously_overrideRolldownOptions,
+  };
 
   await invokeConfigResolved(resolvedConfig, plugins);
 
@@ -64,7 +71,15 @@ export async function flattenPluginOption(pluginOption: PluginOption): Promise<P
   return [awaitedPluginOption];
 }
 
-export async function resolvePluginConfig(baseConfig: Config, plugins: Plugin[]) {
+export function resolvePluginConfig(
+  baseConfig: ResolvedConfig,
+  plugins: Plugin[],
+): Promise<ResolvedPluginConfig>;
+export function resolvePluginConfig(baseConfig: Config, plugins: Plugin[]): Promise<PluginConfig>;
+export async function resolvePluginConfig(
+  baseConfig: Config,
+  plugins: Plugin[],
+): Promise<PluginConfig> {
   let mergedConfig: PluginConfig = omit(baseConfig, [
     'plugins',
     'dangerously_overrideRolldownOptions',

@@ -2,20 +2,29 @@
 title: SVG Support
 ---
 
-By default, Rollipop automatically transforms SVG assets into SVG components.
+SVG support is provided by the [`@rollipop/plugin-svg`](https://github.com/leegeunhyeok/rollipop/tree/main/packages/plugin-svg) plugin, which transforms `.svg` files into React components using `@svgr/core`.
 
 ## Pre-requisites
 
 To render SVGs in your application, you first need to add [react-native-svg]() native module to your application.
 
-## Configuration
+## Installation
+
+```sh
+yarn add -D @rollipop/plugin-svg
+```
+
+## Usage
 
 ```ts title="rollipop.config.ts"
+import { svg } from '@rollipop/plugin-svg';
 import { defineConfig } from 'rollipop';
 
 export default defineConfig({
-  transformer: {
-    svg: true, // Defaults to `true`.
-  },
+  plugins: [svg()],
 });
 ```
+
+The plugin's `config` hook adds `svg` to `resolver.sourceExtensions` and removes it from `resolver.assetExtensions`, so `.svg` imports are routed through the plugin's `load` hook instead of being bundled as static assets.
+
+When the plugin is **not** added, `.svg` files are treated as regular assets (the default `resolver.assetExtensions` includes `svg`).

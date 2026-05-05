@@ -228,12 +228,6 @@ export type TransformerConfig = Omit<
   'cwd' | 'lang' | 'sourceType' | 'plugins'
 > & {
   /**
-   * Transform SVG assets files to React components using `@svgr/core`.
-   *
-   * Defaults to: `true`
-   */
-  svg?: boolean;
-  /**
    * Flow specific configuration.
    *
    * Only applied when `experimental.nativeTransformPipeline` is **disabled** (the
