@@ -2,16 +2,17 @@
   "title": "Features",
   "pages": [
     "dev-server",
+    "devtools",
     "env",
     "flow",
     "svg",
-    "devtools",
     "analyze",
     "reanimated-worklets",
     "reporter",
     "sse",
     "mcp",
-    "custom-command"
+    "custom-command",
+    "experimental"
   ],
   "defaultOpen": true
 }

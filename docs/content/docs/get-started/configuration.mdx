@@ -107,7 +107,7 @@ File extensions to resolve as source files.
 ### resolver.assetExtensions
 
 - **Type:** `string[]`
-- **Default:** `['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp', 'avif', 'ico', 'icns', 'icxl']`
+- **Default:** images (`bmp`, `gif`, `jpg`, `jpeg`, `png`, `psd`, `svg`, `webp`, `xml`), video (`m4v`, `mov`, `mp4`, `mpeg`, `mpg`, `webm`), audio (`aac`, `aiff`, `caf`, `m4a`, `mp3`, `wav`), documents (`html`, `pdf`, `yaml`, `yml`), fonts (`otf`, `ttf`), and archives (`zip`).
 
 File extensions to resolve as asset files.
 
@@ -152,15 +152,6 @@ Source code transformation configuration.
   `transformer` option is extends Rolldown's
   [`TransformOptions`](https://github.com/rolldown/rolldown/blob/v1.0.0-beta.57/packages/rolldown/src/binding.d.cts#L1171).
 </Callout>
-
-### transformer.svg
-
-- **Type:** `boolean`
-- **Default:** `true`
-
-Transform SVG asset files to React components using `@svgr/core`.
-
-See [SVG Support](/docs/features/svg) for more details.
 
 ### transformer.flow
 
@@ -425,6 +416,27 @@ interface HmrConfig {
 
 React Native specific configuration.
 
+### reactNative.reactNativePath
+
+- **Type:** `string`
+- **Default:** value of the `ROLLIPOP_REACT_NATIVE_PATH` environment variable if set, otherwise the resolved `react-native` package path from the project root
+
+Path to the React Native package. Override this if your project resolves `react-native` from a non-standard location.
+
+Resolution order (highest priority first):
+
+1. `reactNative.reactNativePath` set in the config
+2. `ROLLIPOP_REACT_NATIVE_PATH` environment variable (used only to compute the default value)
+3. The `react-native` package resolved from the project root
+
+```ts
+export default defineConfig({
+  reactNative: {
+    reactNativePath: '/path/to/custom/react-native',
+  },
+});
+```
+
 ### reactNative.codegen
 
 React Native Codegen configuration.
@@ -466,10 +478,42 @@ export default defineConfig({
 
 ### reactNative.assetRegistryPath
 
-- **Type:** `string`
+- **Type:** `string | ((root: string) => string | Promise<string>)`
 - **Default:** `'react-native/Libraries/Image/AssetRegistry.js'`
 
-Path to the asset registry module.
+Path to the asset registry module. Resolved relative to the project root. May also be a (possibly async) function that receives the project root and returns the path.
+
+```ts
+export default defineConfig({
+  reactNative: {
+    assetRegistryPath: (root) => path.resolve(root, 'src/asset-registry.js'),
+  },
+});
+```
+
+### reactNative.hmrClientPath
+
+- **Type:** `string | ((root: string) => string | Promise<string>)`
+- **Default:** `'react-native/Libraries/Utilities/HMRClient.js'`
+
+Path to the HMR client module used at runtime. Resolved the same way as `assetRegistryPath`. Override this when shipping a custom HMR client (e.g. for older React Native versions — see the `examples/0.72` setup for a real-world case).
+
+### reactNative.globalIdentifiers
+
+- **Type:** `string[]`
+- **Default:** Global identifier list for React Native 0.83 (e.g. `global`, `Promise`, `XMLHttpRequest`, `setTimeout`, `Performance`, …)
+
+Reserved global identifiers. These names are treated as host-provided globals during bundling and are not captured as module-local references.
+
+Use this when targeting a React Native version whose runtime exposes a different set of globals.
+
+```ts
+export default defineConfig({
+  reactNative: {
+    globalIdentifiers: ['global', 'Promise', 'XMLHttpRequest' /* ... */],
+  },
+});
+```
 
 ## plugins
 
@@ -676,6 +720,10 @@ export default defineConfig({
 - **Default:** `true`
 
 Configures TypeScript configuration file resolution and usage. When set to a string, it specifies the path to the `tsconfig.json` file.
+
+## experimental
+
+Experimental options. See [Experimental Features](/docs/features/experimental) for the full reference and stability notes.
 
 ## dangerously_overrideRolldownOptions
 

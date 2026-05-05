@@ -1,0 +1,53 @@
+---
+title: Experimental Features
+---
+
+<Callout type="warn">
+  Options on this page are **experimental**. Behavior, defaults, and shape may change between
+  releases without a major version bump, and there may be unresolved issues. Opt in only after
+  validating builds locally, and pin to an exact Rollipop version for reproducible results.
+</Callout>
+
+Experimental features are configured under the top-level `experimental` field in `rollipop.config.ts`.
+
+## Native Transform Pipeline
+
+The native transform pipeline replaces Rollipop's legacy JS-side transformation chain — TypeScript / Flow stripping, React Native codegen marking, and worklets transformation — with a single built-in rolldown plugin (`rollipopReactNativePlugin`) implemented natively in **rolldown's Rust core**.
+
+Inside the plugin, all transforms are unified into a single **SWC-based** pass over the module AST, eliminating the Rust ↔ JS round-trip overhead and preset orchestration cost of the legacy pipeline.
+
+### `experimental.nativeTransformPipeline`
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+Toggles the native transform pipeline.
+
+```ts title="rollipop.config.ts"
+import { defineConfig } from 'rollipop';
+
+export default defineConfig({
+  experimental: {
+    nativeTransformPipeline: true,
+  },
+});
+```
+
+### `experimental.worklets`
+
+- **Type:** `RollipopReactNativeWorkletsConfig`
+
+`react-native-worklets` transformation configuration, executed as part of the native SWC-based pass. Pass `worklets: {}` to opt in with defaults; omit the field entirely to skip the transform.
+
+Only applied when `experimental.nativeTransformPipeline` is enabled.
+
+See [Reanimated & Worklets](/docs/features/reanimated-worklets) for the full option reference.
+
+### Ignored config options
+
+When the native pipeline is enabled, the following options are ignored — the equivalent logic is owned by the Rust plugin:
+
+- `transformer.flow.filter` — Flow stripping is handled internally
+- `reactNative.codegen.filter` — Codegen marking is handled internally
+
+User-defined `transformer.babel.rules` and `transformer.swc.rules` continue to apply on top of the native pass.

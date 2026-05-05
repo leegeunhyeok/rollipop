@@ -202,7 +202,10 @@ export type ResolverConfig = Omit<NonNullable<rolldown.InputOptions['resolve']>,
    */
   sourceExtensions?: string[];
   /**
-   * Defaults to: `['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp', 'avif', 'ico', 'icns', 'icxl']`
+   * Defaults to images (`bmp`, `gif`, `jpg`, `jpeg`, `png`, `psd`, `svg`, `webp`, `xml`),
+   * video (`m4v`, `mov`, `mp4`, `mpeg`, `mpg`, `webm`), audio (`aac`, `aiff`, `caf`, `m4a`,
+   * `mp3`, `wav`), documents (`html`, `pdf`, `yaml`, `yml`), fonts (`otf`, `ttf`), and
+   * archives (`zip`).
    */
   assetExtensions?: string[];
   /**
