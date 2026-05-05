@@ -5,7 +5,9 @@
     "rollipop": "0.0.0",
     "@rollipop/init": "0.1.0-alpha.4",
     "@rollipop/plugin-analyze": "0.1.0-alpha.12",
-    "@rollipop/plugin-rozenite": "0.1.0-alpha.12"
+    "@rollipop/plugin-rozenite": "0.1.0-alpha.12",
+    "example-0.72": "0.0.1",
+    "@rollipop/plugin-svg": "0.1.0-alpha.17"
   },
   "changesets": [
     "blue-buses-attack",
@@ -30,6 +32,7 @@
     "lovely-zoos-build",
     "lucky-jeans-feel",
     "modern-flowers-invite",
+    "modern-geckos-punch",
     "modern-poems-attack",
     "moody-rice-work",
     "nice-owls-accept",

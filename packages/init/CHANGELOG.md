@@ -1,5 +1,11 @@
 # @rollipop/init
 
+## 0.1.0-alpha.18
+
+### Patch Changes
+
+- fa83644: trigger publish
+
 ## 0.1.0-alpha.17
 
 ## 0.1.0-alpha.16

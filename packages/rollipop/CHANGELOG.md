@@ -1,5 +1,11 @@
 # rollipop
 
+## 0.1.0-alpha.18
+
+### Patch Changes
+
+- fa83644: trigger publish
+
 ## 0.1.0-alpha.17
 
 ### Patch Changes
@@ -16,11 +22,11 @@
 
   ```ts
   // Before
-  import { BuiltinPlugins } from 'rollipop';
+  import { BuiltinPlugins } from "rollipop";
   plugins: [BuiltinPlugins.worklets()];
 
   // After
-  import { worklets } from 'rollipop/plugins';
+  import { worklets } from "rollipop/plugins";
   plugins: [worklets()];
   ```
 
