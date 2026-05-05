@@ -118,7 +118,7 @@ export async function getDefaultConfig(projectRoot: string, mode?: Config['mode'
     envPrefix: DEFAULT_ENV_PREFIX,
     runtimeTarget: DEFAULT_RUNTIME_TARGET,
     experimental: {
-      nativeTransformPipeline: false,
+      nativeTransformPipeline: false as boolean,
     },
   } satisfies Config;
 

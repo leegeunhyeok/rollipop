@@ -6,12 +6,12 @@ import { invariant, isNotNil, merge } from 'es-toolkit';
 
 import { asLiteral, iife, nodeEnvironment } from '../common/code';
 import { isDebugEnabled } from '../common/env';
-import { Polyfill, type ResolvedConfig } from '../config';
+import { Polyfill, type ResolvedConfig, type RollipopReactNativeWorkletsConfig } from '../config';
 import { getGlobalVariables } from '../internal/react-native';
 import { ResolvedBuildOptions } from '../utils/build-options';
 import { resolveHmrConfig } from '../utils/config';
 import { defineEnvFromObject } from '../utils/env';
-import { resolveFrom } from '../utils/node-resolve';
+import { resolveFrom, resolvePackageJson } from '../utils/node-resolve';
 import {
   CompatStatusReporter,
   mergeReporters,
@@ -21,7 +21,23 @@ import { resolveRuntimeTarget } from '../utils/runtime-target';
 import { getBaseUrl } from '../utils/server';
 import { getBuildTotalModules } from '../utils/storage';
 import { loadEnv } from './env';
-import { prelude, reporter, reactNative, json, svg, babel, swc, devServer } from './plugins';
+import {
+  type BabelPluginOptions,
+  type DevServerPluginOptions,
+  type PreludePluginOptions,
+  type ReactNativePluginOptions,
+  type ReporterPluginOptions,
+  type SvgPluginOptions,
+  type SwcPluginOptions,
+  babel,
+  devServer,
+  json,
+  prelude,
+  reactNative,
+  reporter,
+  svg,
+  swc,
+} from './plugins';
 import { printPluginLog } from './plugins/context';
 import { withTransformBoundary } from './plugins/utils/transform-utils';
 import type { BundlerContext, DevEngineOptions } from './types';
@@ -73,7 +89,6 @@ export async function resolveRolldownOptions(
   // Resolver
   const {
     sourceExtensions,
-    assetExtensions,
     preferNativePlatform,
     external: rolldownExternal,
     ...rolldownResolve
@@ -82,7 +97,6 @@ export async function resolveRolldownOptions(
   // Serializer
   const {
     polyfills,
-    prelude: preludePaths,
     banner: rolldownBanner,
     footer: rolldownFooter,
     postBanner: rolldownPostBanner,
@@ -93,7 +107,7 @@ export async function resolveRolldownOptions(
   } = config.serializer;
 
   // Transformer
-  const { flow, babel: babelConfig, swc: swcConfig, ...rolldownTransform } = config.transformer;
+  const { flow: _flow, babel: _babel, swc: _swc, ...rolldownTransform } = config.transformer;
 
   // Optimization
   const {
@@ -104,15 +118,7 @@ export async function resolveRolldownOptions(
   } = config.optimization;
 
   // React Native specific options
-  const {
-    codegen,
-    assetRegistryPath,
-    hmrClientPath,
-    globalIdentifiers: rolldownGlobalIdentifiers,
-  } = config.reactNative;
-
-  // Experimental options
-  const { nativeTransformPipeline = false, worklets } = config.experimental ?? {};
+  const { globalIdentifiers: rolldownGlobalIdentifiers } = config.reactNative;
 
   // Sourcemap specific options
   const {
@@ -123,17 +129,18 @@ export async function resolveRolldownOptions(
     sourcemapPathTransform: rolldownSourcemapPathTransform,
   } = config;
 
-  const transformSvg = config.transformer.svg;
-  const resolvedSourceExtensions = transformSvg ? [...sourceExtensions, 'svg'] : sourceExtensions;
-  const resolvedAssetExtensions = transformSvg
-    ? assetExtensions.filter((extension) => extension !== 'svg')
-    : assetExtensions;
+  // User Plugins
+  const userPlugins = config.plugins;
+
+  const resolvedSourceExtensions = config.transformer.svg
+    ? [...sourceExtensions, 'svg']
+    : sourceExtensions;
 
   const mergedResolveOptions = merge(
     {
       extensions: getResolveExtensions({
         sourceExtensions: resolvedSourceExtensions,
-        assetExtensions: resolvedAssetExtensions,
+        assetExtensions: resolveAssetExtensions(config),
         platform,
         preferNativePlatform,
       }),
@@ -164,25 +171,17 @@ export async function resolveRolldownOptions(
     rolldownTransform,
   );
 
-  const statusReporter = (() => {
-    switch (config.terminal.status) {
-      case 'compat':
-        return new CompatStatusReporter();
-
-      case 'progress':
-        return new ProgressBarStatusReporter(
-          context.id,
-          `[${platform}, ${buildOptions.dev ? 'dev' : 'prod'}]`,
-          getBuildTotalModules(context.storage, context.id),
-        );
-    }
-  })();
-
-  const defaultReporters = [statusReporter];
-  const reporterOptions = {
-    initialTotalModules: getBuildTotalModules(context.storage, context.id),
-    reporter: mergeReporters([...defaultReporters, config.reporter].filter(isNotNil)),
-  };
+  const preludePluginOptions = resolvePreludePluginOptions(config);
+  const reactNativePluginOptions = await resolveReactNativePluginOptions(
+    config,
+    context,
+    buildOptions,
+  );
+  const svgPluginOptions = resolveSvgPluginOptions(config);
+  const babelPluginOptions = resolveBabelPluginOptions(config);
+  const swcPluginOptions = resolveSwcPluginOptions(config);
+  const devServerPluginOptions = resolveDevServerPluginOptions(config, hmrConfig);
+  const reporterPluginOptions = resolveReporterPluginOptions(config, context, buildOptions);
 
   const inputOptions: rolldown.InputOptions = {
     platform: 'neutral',
@@ -205,52 +204,15 @@ export async function resolveRolldownOptions(
         : null),
     },
     plugins: withTransformBoundary(context, [
-      prelude({ modulePaths: preludePaths }),
-      reactNative(config, {
-        platform,
-        buildType: context.buildType,
-        assetsDir: buildOptions.assetsDir,
-        assetExtensions: resolvedAssetExtensions,
-        assetRegistryPath: resolveFrom(
-          config.root,
-          typeof assetRegistryPath === 'function'
-            ? await assetRegistryPath(config.root)
-            : assetRegistryPath,
-        ),
-        flowFilter: flow?.filter ?? [],
-        codegenFilter: codegen?.filter ?? [],
-        builtinPluginConfig: nativeTransformPipeline
-          ? {
-              envName: config.mode,
-              runtimeTarget: resolveRuntimeTarget(config.runtimeTarget),
-              worklets: worklets
-                ? merge(
-                    {
-                      isRelease: config.mode === 'production',
-                      pluginVersion: resolveReactNativeWorkletsVersion(config.root),
-                    },
-                    worklets,
-                  )
-                : undefined,
-              plugins: [], // TODO
-            }
-          : null,
-      }),
+      prelude(preludePluginOptions),
+      reactNative(reactNativePluginOptions),
       json(),
-      svg({ enabled: transformSvg }),
-      babel({ useNativeTransformPipeline: nativeTransformPipeline, rules: babelConfig }),
-      swc({
-        useNativeTransformPipeline: nativeTransformPipeline,
-        runtimeTarget: config.runtimeTarget,
-        rules: swcConfig,
-      }),
-      devServer({
-        cwd: config.root,
-        hmrClientPath,
-        hmrConfig,
-      }),
-      reporter(reporterOptions),
-      config.plugins,
+      svg(svgPluginOptions),
+      babel(babelPluginOptions),
+      swc(swcPluginOptions),
+      devServer(devServerPluginOptions),
+      reporter(reporterPluginOptions),
+      userPlugins,
     ]),
     checks: {
       /**
@@ -312,6 +274,149 @@ export async function resolveRolldownOptions(
   return finalOptions;
 }
 
+function resolvePreludePluginOptions(config: ResolvedConfig): PreludePluginOptions {
+  return {
+    modulePaths: config.serializer.prelude,
+  };
+}
+
+async function resolveReactNativePluginOptions(
+  config: ResolvedConfig,
+  context: BundlerContext,
+  buildOptions: ResolvedBuildOptions,
+): Promise<ReactNativePluginOptions> {
+  return {
+    projectRoot: config.root,
+    platform: buildOptions.platform,
+    preferNativePlatform: config.resolver.preferNativePlatform,
+    buildType: context.buildType,
+    assetsDir: buildOptions.assetsDir,
+    assetExtensions: resolveAssetExtensions(config),
+    assetRegistryPath: await resolveAssetRegistryPath(config),
+    flowFilter: config.transformer.flow?.filter ?? [],
+    codegenFilter: config.reactNative.codegen?.filter ?? [],
+    builtinPluginConfig: resolveReactNativeBuiltinPluginConfig(config),
+  };
+}
+
+async function resolveAssetRegistryPath(config: ResolvedConfig): Promise<string> {
+  const { assetRegistryPath } = config.reactNative;
+  const path =
+    typeof assetRegistryPath === 'function'
+      ? await assetRegistryPath(config.root)
+      : assetRegistryPath;
+
+  return resolveFrom(config.root, path);
+}
+
+function resolveReactNativeBuiltinPluginConfig(
+  config: ResolvedConfig,
+): ReactNativePluginOptions['builtinPluginConfig'] {
+  if (!config.experimental?.nativeTransformPipeline) {
+    return null;
+  }
+
+  return {
+    envName: config.mode,
+    runtimeTarget: resolveRuntimeTarget(config.runtimeTarget),
+    worklets: resolveWorkletsConfig(config),
+    plugins: [], // TODO
+  };
+}
+
+function resolveWorkletsConfig(
+  config: ResolvedConfig,
+): RollipopReactNativeWorkletsConfig | undefined {
+  const { worklets } = config.experimental ?? {};
+
+  if (worklets == null) {
+    return undefined;
+  }
+
+  return merge(
+    {
+      isRelease: config.mode === 'production',
+      pluginVersion: resolvePackageJson(config.root, 'react-native-worklets')?.version,
+    },
+    worklets,
+  );
+}
+
+function resolveSvgPluginOptions(config: ResolvedConfig): SvgPluginOptions {
+  return {
+    enabled: config.transformer.svg,
+  };
+}
+
+function resolveBabelPluginOptions(config: ResolvedConfig): BabelPluginOptions {
+  return {
+    useNativeTransformPipeline: config.experimental?.nativeTransformPipeline,
+    transformConfig: config.transformer.babel,
+  };
+}
+
+function resolveSwcPluginOptions(config: ResolvedConfig): SwcPluginOptions {
+  return {
+    useNativeTransformPipeline: config.experimental?.nativeTransformPipeline,
+    runtimeTarget: config.runtimeTarget,
+    transformConfig: config.transformer.swc,
+  };
+}
+
+function resolveDevServerPluginOptions(
+  config: ResolvedConfig,
+  hmrConfig: ReturnType<typeof resolveHmrConfig>,
+): DevServerPluginOptions {
+  return {
+    cwd: config.root,
+    hmrClientPath: config.reactNative.hmrClientPath,
+    hmrConfig,
+  };
+}
+
+function resolveReporterPluginOptions(
+  config: ResolvedConfig,
+  context: BundlerContext,
+  buildOptions: ResolvedBuildOptions,
+): ReporterPluginOptions {
+  const statusReporter = createStatusReporter(config, context, buildOptions);
+
+  return {
+    initialTotalModules: getBuildTotalModules(context.storage, context.id),
+    reporter: mergeReporters([statusReporter, config.reporter].filter(isNotNil)),
+  };
+}
+
+function resolveAssetExtensions(config: ResolvedConfig): string[] {
+  const { assetExtensions } = config.resolver;
+
+  // When SVG transformation is enabled, `.svg` files are routed through
+  // the SVG plugin instead of being bundled as assets.
+  if (config.transformer.svg) {
+    return assetExtensions.filter((extension) => extension !== 'svg');
+  }
+
+  return assetExtensions;
+}
+
+function createStatusReporter(
+  config: ResolvedConfig,
+  context: BundlerContext,
+  buildOptions: ResolvedBuildOptions,
+) {
+  switch (config.terminal.status) {
+    case 'compat':
+      return new CompatStatusReporter();
+
+    case 'progress':
+      return new ProgressBarStatusReporter(
+        context.id,
+        `[${buildOptions.platform}, ${buildOptions.dev ? 'dev' : 'prod'}]`,
+        getBuildTotalModules(context.storage, context.id),
+      );
+  }
+}
+
 export interface GetResolveExtensionsOptions {
   platform: string;
   sourceExtensions: string[];
@@ -367,18 +472,6 @@ async function applyDangerouslyOverrideOptionsFinalizer(
     input: merge(inputOptions, config.dangerously_overrideRolldownOptions?.input ?? {}),
     output: merge(outputOptions, config.dangerously_overrideRolldownOptions?.output ?? {}),
   };
-}
-
-function resolveReactNativeWorkletsVersion(projectRoot: string) {
-  try {
-    const packageJsonPath = require.resolve('react-native-worklets/package.json', {
-      paths: [projectRoot],
-    });
-    const { version } = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-    return version as string;
-  } catch {
-    return undefined;
-  }
 }
 
 export function getOverrideOptionsForDevServer(buildOptions: ResolvedBuildOptions) {

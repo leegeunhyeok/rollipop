@@ -6,7 +6,6 @@ import {
 } from '@rollipop/rolldown/experimental';
 
 import { stripFlowTypes } from '../../common/transformer';
-import { ResolvedConfig } from '../../config';
 import {
   AssetData,
   copyAssetsToDestination,
@@ -17,7 +16,9 @@ import type { BuildType } from '../types';
 import { TransformFlag, getFlag, setFlag } from './utils/transform-utils';
 
 export interface ReactNativePluginOptions {
+  projectRoot: string;
   platform: string;
+  preferNativePlatform: boolean;
   buildType: BuildType;
   assetsDir?: string;
   assetExtensions: string[];
@@ -41,11 +42,11 @@ export interface ReactNativePluginOptions {
   codegenFilter: rolldown.HookFilter | TopLevelFilterExpression[];
 }
 
-function reactNativePlugin(
-  config: ResolvedConfig,
-  options: ReactNativePluginOptions,
-): rolldown.Plugin[] {
+function reactNativePlugin(options: ReactNativePluginOptions): rolldown.Plugin[] {
   const {
+    projectRoot,
+    platform,
+    preferNativePlatform,
     buildType,
     assetsDir,
     assetExtensions,
@@ -106,10 +107,10 @@ function reactNativePlugin(
         this.debug(`Asset ${id} found`);
 
         const assetData = await resolveScaledAssets({
-          projectRoot: config.root,
+          projectRoot,
           assetPath: id,
-          platform: options.platform,
-          preferNativePlatform: config.resolver.preferNativePlatform,
+          platform,
+          preferNativePlatform,
         });
 
         assets.push(assetData);
@@ -134,8 +135,8 @@ function reactNativePlugin(
         await copyAssetsToDestination({
           assets,
           assetsDir,
-          platform: options.platform,
-          preferNativePlatform: config.resolver.preferNativePlatform,
+          platform,
+          preferNativePlatform,
         });
       }
     },

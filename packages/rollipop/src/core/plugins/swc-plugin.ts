@@ -16,15 +16,15 @@ export interface SwcPluginOptions {
    */
   useNativeTransformPipeline: boolean;
   runtimeTarget: ResolvedConfig['runtimeTarget'];
-  rules?: TransformerConfig['swc'];
+  transformConfig?: TransformerConfig['swc'];
 }
 
 function swcPlugin({
   useNativeTransformPipeline,
   runtimeTarget,
-  rules: userRules,
+  transformConfig,
 }: SwcPluginOptions): rolldown.Plugin[] {
-  const { rules = [] } = userRules ?? {};
+  const { rules = [] } = transformConfig ?? {};
   const swcOptionsById: Map<string, swc.Options[]> = new Map();
 
   const swcHelpersResolvePlugin: rolldown.Plugin = {

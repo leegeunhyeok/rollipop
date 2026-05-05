@@ -14,14 +14,14 @@ export interface BabelPluginOptions {
    * user-provided rules run — the rust-side pipeline handles the rest.
    */
   useNativeTransformPipeline: boolean;
-  rules?: TransformerConfig['babel'];
+  transformConfig?: TransformerConfig['babel'];
 }
 
 function babelPlugin({
   useNativeTransformPipeline,
-  rules: userRules,
+  transformConfig,
 }: BabelPluginOptions): rolldown.Plugin[] {
-  const { rules = [] } = userRules ?? {};
+  const { rules = [] } = transformConfig ?? {};
   const babelOptionsById: Map<string, babel.TransformOptions[]> = new Map();
 
   const babelRules = rules.map(({ filter, options }, index) => {

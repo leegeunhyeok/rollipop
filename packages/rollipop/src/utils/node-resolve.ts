@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { PackageJson } from '../types';
+
 export function resolveFrom(basePath: string, lookupPath: string) {
   if (path.isAbsolute(lookupPath)) {
     return lookupPath;
@@ -31,6 +33,17 @@ export function resolvePackagePath(basePath: string, packageName: string) {
   } catch {}
 
   throw new Error(`Failed to resolve package path for '${packageName}'`);
+}
+
+export function resolvePackageJson(basePath: string, packageName: string) {
+  try {
+    const packagePath = resolvePackagePath(basePath, packageName);
+    const packageJsonPath = path.join(packagePath, 'package.json');
+    const rawPackageJson = fs.readFileSync(packageJsonPath, 'utf-8');
+    return JSON.parse(rawPackageJson) as PackageJson;
+  } catch {
+    return null;
+  }
 }
 
 function resolvePackagePathWithNodeRequire(

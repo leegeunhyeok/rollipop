@@ -1,6 +1,3 @@
-// This type declarations are for React Native 0.83.x.
-// If you are using other versions of React Native, please type declare yourself for compatibility.
-
 declare module '*/LogBox' {
   const LogBox: { clearAllLogs: () => void };
 
