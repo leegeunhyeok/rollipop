@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 8
+  version: 9
   cacheKey: 10c0
 
 "@alloc/quick-lru@npm:^5.2.0":
@@ -18262,7 +18262,7 @@ __metadata:
   dependencies:
     "@changesets/cli": "npm:^2.30.0"
     "@types/node": "npm:^24"
-    typescript: "npm:^6.0.3"
+    typescript: "catalog:"
     vite-plus: "catalog:"
   languageName: unknown
   linkType: soft
