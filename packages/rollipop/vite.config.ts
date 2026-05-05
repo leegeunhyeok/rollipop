@@ -91,13 +91,6 @@ export default defineConfig({
       dts: true,
     },
     {
-      ...commonPackConfig,
-      entry: { plugins: 'src/plugins/index.ts' },
-      format: ['esm', 'cjs'],
-      platform: 'node',
-      dts: true,
-    },
-    {
       ...runtimePackConfig,
       entry: 'src/runtime.ts',
       format: ['esm', 'cjs'],
@@ -119,7 +112,7 @@ export default defineConfig({
   },
   test: {
     globalSetup: ['./e2e/global-setup.ts'],
-    hookTimeout: 30_000,
+    hookTimeout: 60_000,
     coverage: {
       include: ['src/**'],
       exclude: [

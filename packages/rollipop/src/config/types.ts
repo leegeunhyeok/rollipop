@@ -276,10 +276,7 @@ export interface ExperimentalConfig {
   /**
    * `react-native-worklets` transformation configuration.
    *
-   * Only applied when `experimental.nativeTransformPipeline` is enabled — the
-   * legacy pipeline ships no equivalent transform; consume the
-   * `worklets()` plugin from `rollipop/plugins` if you need it on the
-   * legacy pipeline.
+   * Only applied when `experimental.nativeTransformPipeline` is enabled.
    */
   worklets?: RollipopReactNativeWorkletsConfig;
 }

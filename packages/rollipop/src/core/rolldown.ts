@@ -187,10 +187,7 @@ export async function resolveRolldownOptions(
     treeshake: rolldownTreeshake,
     external: rolldownExternal,
     shimMissingExports: rolldownShimMissingExports,
-    optimization: {
-      ...rolldownOptimization,
-      inlineConst: false,
-    },
+    optimization: rolldownOptimization,
     experimental: {
       lazyBarrel: rolldownLazyBarrel,
       ...(isDevServerMode
