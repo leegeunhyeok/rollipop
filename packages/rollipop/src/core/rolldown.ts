@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 
 import type * as rolldown from '@rollipop/rolldown';
 import type { TransformOptions } from '@rollipop/rolldown/utils';
@@ -245,7 +246,8 @@ export async function resolveRolldownOptions(
     sourcemapBaseUrl: rolldownSourcemapBaseUrl,
     sourcemapDebugIds: rolldownSourcemapDebugIds,
     sourcemapIgnoreList: rolldownSourcemapIgnoreList,
-    sourcemapPathTransform: rolldownSourcemapPathTransform,
+    sourcemapPathTransform:
+      rolldownSourcemapPathTransform ?? createProjectRootSourcemapPathTransform(config.root),
     codeSplitting: false,
     strictExecutionOrder: true,
     // `@rollipop/rolldown` specific options
@@ -412,6 +414,23 @@ export function getResolveExtensions({
   ].flat();
 
   return resolveExtensions;
+}
+
+/**
+ * Default sourcemap path transform.
+ *
+ * Rolldown emits `sources` relative to the bundle output's directory, which
+ * yields paths like `../App.tsx` when the bundle lives under e.g. `dist/`.
+ * RN tooling (symbolication, devtools) expects project-root-relative paths,
+ * so this rewrites each entry to be relative to `projectRoot`.
+ */
+function createProjectRootSourcemapPathTransform(
+  projectRoot: string,
+): NonNullable<rolldown.OutputOptions['sourcemapPathTransform']> {
+  return (source, sourcemapPath) => {
+    const absolute = path.resolve(path.dirname(sourcemapPath), source);
+    return path.relative(projectRoot, absolute);
+  };
 }
 
 function loadPolyfills(polyfills: Polyfill[]) {
