@@ -1,5 +1,14 @@
 # @rollipop/plugin-rozenite
 
+## 0.1.0-alpha.20
+
+### Patch Changes
+
+- d6e10db: bump @rollipop/rolldown to 1.0.2
+- Updated dependencies [d6e10db]
+- Updated dependencies [140902b]
+  - rollipop@0.1.0-alpha.20
+
 ## 0.1.0-alpha.19
 
 ### Patch Changes

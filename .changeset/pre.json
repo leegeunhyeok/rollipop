@@ -7,13 +7,16 @@
     "@rollipop/plugin-analyze": "0.1.0-alpha.12",
     "@rollipop/plugin-rozenite": "0.1.0-alpha.12",
     "example-0.72": "0.0.1",
-    "@rollipop/plugin-svg": "0.1.0-alpha.17"
+    "@rollipop/plugin-svg": "0.1.0-alpha.17",
+    "@rollipop/plugin-module-federation": "0.1.0-alpha.0"
   },
   "changesets": [
     "blue-buses-attack",
+    "brave-mirrors-shine",
     "bundlers-status",
     "cache-cleanup",
     "chilly-carrots-attack",
+    "clear-groups-think",
     "clever-lions-taste",
     "crisp-groups-move",
     "eager-camels-roll",

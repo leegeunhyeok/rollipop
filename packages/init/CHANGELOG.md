@@ -1,5 +1,11 @@
 # @rollipop/init
 
+## 0.1.0-alpha.20
+
+### Patch Changes
+
+- d6e10db: bump @rollipop/rolldown to 1.0.2
+
 ## 0.1.0-alpha.19
 
 ### Patch Changes

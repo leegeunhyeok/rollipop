@@ -1,5 +1,12 @@
 # rollipop
 
+## 0.1.0-alpha.20
+
+### Patch Changes
+
+- d6e10db: bump @rollipop/rolldown to 1.0.2
+- 140902b: impl @rollipop/plugin-module-federation
+
 ## 0.1.0-alpha.19
 
 ### Patch Changes
