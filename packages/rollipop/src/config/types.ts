@@ -74,6 +74,19 @@ export interface Config {
    */
   envDir?: string;
   /**
+   * Base name for environment files.
+   *
+   * Acts as the basename of the standard four-file resolution: the loader looks
+   * for `${envFile}`, `${envFile}.local`, `${envFile}.[mode]`, and
+   * `${envFile}.[mode].local`. Override this to use a custom name such as
+   * `.rollipop-env` instead of the default `.env`.
+   *
+   * Expects a file name (not a path).
+   *
+   * Defaults to: `'.env'`
+   */
+  envFile?: string;
+  /**
    * Environment variable prefix.
    *
    * Defaults to: `'ROLLIPOP_'`

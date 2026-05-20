@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { describe, it, expect, vitest, beforeEach } from 'vite-plus/test';
 
-import { DEFAULT_ENV_PREFIX } from '../../constants';
+import { DEFAULT_ENV_FILE, DEFAULT_ENV_PREFIX } from '../../constants';
 import { loadEnv } from '../env';
 
 describe('loadEnv', () => {
@@ -26,7 +26,11 @@ describe('loadEnv', () => {
       '.env': ['ROLLIPOP_FOO=1', 'ROLLIPOP_BAR=2', 'ROLLIPOP_BAZ=3'].join('\n'),
     });
 
-    const env = loadEnv({ envDir: '.', envPrefix: DEFAULT_ENV_PREFIX });
+    const env = loadEnv({
+      envDir: '.',
+      envFile: DEFAULT_ENV_FILE,
+      envPrefix: DEFAULT_ENV_PREFIX,
+    });
     expect(env).toEqual({ ROLLIPOP_FOO: '1', ROLLIPOP_BAR: '2', ROLLIPOP_BAZ: '3' });
   });
 
@@ -35,7 +39,11 @@ describe('loadEnv', () => {
       '.env.local': ['ROLLIPOP_FOO=1', 'ROLLIPOP_BAR=2', 'ROLLIPOP_BAZ=3'].join('\n'),
     });
 
-    const env = loadEnv({ envDir: '.', envPrefix: DEFAULT_ENV_PREFIX });
+    const env = loadEnv({
+      envDir: '.',
+      envFile: DEFAULT_ENV_FILE,
+      envPrefix: DEFAULT_ENV_PREFIX,
+    });
     expect(env).toEqual({ ROLLIPOP_FOO: '1', ROLLIPOP_BAR: '2', ROLLIPOP_BAZ: '3' });
   });
 
@@ -44,7 +52,12 @@ describe('loadEnv', () => {
       '.env.development': ['ROLLIPOP_FOO=1', 'ROLLIPOP_BAR=2', 'ROLLIPOP_BAZ=3'].join('\n'),
     });
 
-    const env = loadEnv({ envDir: '.', envPrefix: DEFAULT_ENV_PREFIX, mode: 'development' });
+    const env = loadEnv({
+      envDir: '.',
+      envFile: DEFAULT_ENV_FILE,
+      envPrefix: DEFAULT_ENV_PREFIX,
+      mode: 'development',
+    });
     expect(env).toEqual({ ROLLIPOP_FOO: '1', ROLLIPOP_BAR: '2', ROLLIPOP_BAZ: '3' });
   });
 
@@ -53,7 +66,12 @@ describe('loadEnv', () => {
       '.env.development.local': ['ROLLIPOP_FOO=1', 'ROLLIPOP_BAR=2', 'ROLLIPOP_BAZ=3'].join('\n'),
     });
 
-    const env = loadEnv({ envDir: '.', envPrefix: DEFAULT_ENV_PREFIX, mode: 'development' });
+    const env = loadEnv({
+      envDir: '.',
+      envFile: DEFAULT_ENV_FILE,
+      envPrefix: DEFAULT_ENV_PREFIX,
+      mode: 'development',
+    });
     expect(env).toEqual({ ROLLIPOP_FOO: '1', ROLLIPOP_BAR: '2', ROLLIPOP_BAZ: '3' });
   });
 
@@ -63,7 +81,12 @@ describe('loadEnv', () => {
       '.env.development.local': ['ROLLIPOP_FOO=4', 'ROLLIPOP_BAR=5'].join('\n'),
     });
 
-    const env = loadEnv({ envDir: '.', envPrefix: DEFAULT_ENV_PREFIX, mode: 'development' });
+    const env = loadEnv({
+      envDir: '.',
+      envFile: DEFAULT_ENV_FILE,
+      envPrefix: DEFAULT_ENV_PREFIX,
+      mode: 'development',
+    });
     expect(env).toEqual({ ROLLIPOP_FOO: '4', ROLLIPOP_BAR: '5', ROLLIPOP_BAZ: '3' });
   });
 
@@ -75,7 +98,44 @@ describe('loadEnv', () => {
       '.env.development.local': ['ROLLIPOP_BAZ=6'].join('\n'),
     });
 
-    const env = loadEnv({ envDir: '.', envPrefix: DEFAULT_ENV_PREFIX, mode: 'development' });
+    const env = loadEnv({
+      envDir: '.',
+      envFile: DEFAULT_ENV_FILE,
+      envPrefix: DEFAULT_ENV_PREFIX,
+      mode: 'development',
+    });
     expect(env).toEqual({ ROLLIPOP_FOO: '7', ROLLIPOP_BAR: '2', ROLLIPOP_BAZ: '6' });
+  });
+
+  describe('with custom envFile basename', () => {
+    it('should resolve files using the custom basename', () => {
+      mockEnvFiles({
+        '.env': ['ROLLIPOP_FOO=ignored'].join('\n'),
+        '.rollipop-env': ['ROLLIPOP_FOO=1', 'ROLLIPOP_BAR=2'].join('\n'),
+        '.rollipop-env.local': ['ROLLIPOP_FOO=3'].join('\n'),
+        '.rollipop-env.development': ['ROLLIPOP_BAR=4'].join('\n'),
+      });
+
+      const env = loadEnv({
+        envDir: '.',
+        envFile: '.rollipop-env',
+        envPrefix: DEFAULT_ENV_PREFIX,
+        mode: 'development',
+      });
+      expect(env).toEqual({ ROLLIPOP_FOO: '3', ROLLIPOP_BAR: '4' });
+    });
+
+    it('should silently skip when no matching files exist', () => {
+      mockEnvFiles({
+        '.env': ['ROLLIPOP_FOO=ignored'].join('\n'),
+      });
+
+      const env = loadEnv({
+        envDir: '.',
+        envFile: '.rollipop-env',
+        envPrefix: DEFAULT_ENV_PREFIX,
+      });
+      expect(env).toEqual({});
+    });
   });
 });

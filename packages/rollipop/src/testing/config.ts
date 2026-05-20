@@ -4,6 +4,7 @@ import type { Config, ResolvedConfig } from '../config';
 import {
   DEFAULT_ASSET_EXTENSIONS,
   DEFAULT_ASSET_REGISTRY_PATH,
+  DEFAULT_ENV_FILE,
   DEFAULT_ENV_PREFIX,
   DEFAULT_HMR_CLIENT_PATH,
   DEFAULT_REACT_NATIVE_GLOBAL_IDENTIFIERS,
@@ -73,6 +74,7 @@ export function createTestConfig(basePath: string): ResolvedConfig {
       status: process.stderr.isTTY ? 'progress' : 'compat',
     },
     envDir: basePath,
+    envFile: DEFAULT_ENV_FILE,
     envPrefix: DEFAULT_ENV_PREFIX,
     runtimeTarget: DEFAULT_RUNTIME_TARGET,
     experimental: {

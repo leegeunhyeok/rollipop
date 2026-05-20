@@ -11,23 +11,25 @@ import { logger } from '../logger';
 export interface LoadEnvOptions {
   envDir: string;
   envPrefix: string;
+  envFile: string;
   mode?: Config['mode'];
 }
 
 export function loadEnv(options: LoadEnvOptions) {
-  const { envDir, envPrefix, mode } = options;
+  const { envDir, envPrefix, envFile, mode } = options;
   invariant(envPrefix.length > 0, '`envPrefix` is required');
+  invariant(envFile.length > 0, '`envFile` is required');
 
   const env: Record<string, string> = {};
   const envFilesToLoad = [
-    `.env`,
-    `.env.local`,
-    mode ? `.env.${mode}` : null,
-    mode ? `.env.${mode}.local` : null,
+    envFile,
+    `${envFile}.local`,
+    mode ? `${envFile}.${mode}` : null,
+    mode ? `${envFile}.${mode}.local` : null,
   ].filter(isNotNil);
 
-  for (const envFile of envFilesToLoad) {
-    const envPath = path.resolve(envDir, envFile);
+  for (const file of envFilesToLoad) {
+    const envPath = path.resolve(envDir, file);
 
     if (!fs.existsSync(envPath)) {
       continue;

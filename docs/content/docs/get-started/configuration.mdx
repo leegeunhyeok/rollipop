@@ -604,6 +604,23 @@ export default defineConfig({
 });
 ```
 
+## envFile
+
+- **Type:** `string`
+- **Default:** `'.env'`
+
+Base name for environment files loaded from [`envDir`](#envdir).
+
+Acts as the basename of the standard four-file resolution: the loader looks for `${envFile}`, `${envFile}.local`, `${envFile}.[mode]`, and `${envFile}.[mode].local`. Override this to use a custom name such as `.rollipop-env` instead of the default `.env`.
+
+Expects a file name (not a path). The lookup directory is [`envDir`](#envdir).
+
+```ts
+export default defineConfig({
+  envFile: '.rollipop-env',
+});
+```
+
 ## envPrefix
 
 - **Type:** `string`

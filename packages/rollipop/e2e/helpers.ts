@@ -6,6 +6,7 @@ import type { OutputChunk } from '@rollipop/rolldown';
 import type { ResolvedConfig } from '../src/config/defaults';
 import type { Config, Polyfill } from '../src/config/types';
 import {
+  DEFAULT_ENV_FILE,
   DEFAULT_ENV_PREFIX,
   DEFAULT_RESOLVER_CONDITION_NAMES,
   DEFAULT_RESOLVER_MAIN_FIELDS,
@@ -38,6 +39,7 @@ export interface TestConfigOptions {
   sourcemapIgnoreList?: Config['sourcemapIgnoreList'];
   sourcemapPathTransform?: Config['sourcemapPathTransform'];
   envDir?: string;
+  envFile?: string;
   envPrefix?: string;
   dangerously_overrideRolldownOptions?: Config['dangerously_overrideRolldownOptions'];
 }
@@ -87,6 +89,7 @@ export function createConfig(fixture: string, options: TestConfigOptions = {}): 
     reporter: undefined,
     terminal: { status: 'none' },
     envDir: options.envDir ?? root,
+    envFile: options.envFile ?? DEFAULT_ENV_FILE,
     envPrefix: options.envPrefix ?? DEFAULT_ENV_PREFIX,
     plugins: options.plugins ?? [],
     sourcemap: options.sourcemap,
