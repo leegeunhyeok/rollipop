@@ -1,0 +1,60 @@
+{
+  "name": "@rollipop/jest-preset",
+  "version": "0.1.0-alpha.0",
+  "homepage": "https://github.com/leegeunhyeok/rollipop#readme",
+  "bugs": {
+    "url": "https://github.com/leegeunhyeok/rollipop/issues"
+  },
+  "license": "MIT",
+  "author": "leegeunhyeok <dev.ghlee@gmail.com> (https://github.com/leegeunhyeok)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leegeunhyeok/rollipop.git",
+    "directory": "packages/jest-preset"
+  },
+  "files": [
+    "dist",
+    "jest-preset.js"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./transformer": {
+      "types": "./dist/transformer.d.ts",
+      "default": "./dist/transformer.js"
+    },
+    "./jest-preset": "./jest-preset.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "prepack": "yarn build",
+    "typecheck": "tsc --noEmit",
+    "build": "vp pack"
+  },
+  "devDependencies": {
+    "rollipop": "workspace:*",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "@react-native/jest-preset": "*",
+    "react": "*",
+    "react-native": "*",
+    "rollipop": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@react-native/jest-preset": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  }
+}

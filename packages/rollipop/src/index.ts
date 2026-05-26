@@ -24,6 +24,9 @@ export * from './core/env';
 // Config
 export * from './config';
 
+// Constants
+export * as Constants from './constants';
+
 // Types
 export type * from './types';
 export type * from './types/hmr';
