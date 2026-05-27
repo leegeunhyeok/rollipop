@@ -13,7 +13,9 @@ export const GLOBAL_IDENTIFIER = 'global';
  * @see {@link https://github.com/facebook/metro/blob/0.81.x/docs/Configuration.md#resolvermainfields}
  */
 export const DEFAULT_RESOLVER_MAIN_FIELDS = ['react-native', 'browser', 'main'];
-export const DEFAULT_RESOLVER_CONDITION_NAMES = ['react-native', 'import', 'require'];
+export const DEFAULT_RESOLVER_ALIAS_FIELDS = [['react-native'], ['browser']];
+// Rolldown adds `import` or `require` per dependency edge.
+export const DEFAULT_RESOLVER_CONDITION_NAMES = ['react-native'];
 
 /**
  * Unlike the Metro bundler configuration, this prioritizes resolving TypeScript and ESM first.
