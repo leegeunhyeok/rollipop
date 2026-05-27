@@ -10,6 +10,7 @@ import path from 'node:path';
 import { isNotNil } from 'es-toolkit';
 import { imageSize } from 'image-size';
 
+import { IMAGE_EXTENSIONS } from '../constants';
 import { DEV_SERVER_ASSET_PATH } from '../server';
 import { md5 } from '../utils/hash';
 
@@ -57,6 +58,7 @@ export interface AssetData extends AssetDataWithoutFiles {
 export type AssetScale = 0.75 | 1 | 1.5 | 2 | 3;
 
 const SCALE_PATTERN = '@(\\d+\\.?\\d*)x';
+const IMAGE_ASSET_TYPES = new Set(IMAGE_EXTENSIONS);
 
 /**
  * key: platform,
@@ -91,6 +93,7 @@ export async function resolveScaledAssets(options: ResolveScaledAssetsOptions): 
   const { projectRoot, assetPath, platform, preferNativePlatform } = options;
   const context = { platform, preferNativePlatform };
   const extension = path.extname(assetPath);
+  const type = extension.substring(1);
   const relativePath = path.relative(projectRoot, assetPath);
   const dirname = path.dirname(assetPath);
   const files = fs.readdirSync(dirname);
@@ -117,7 +120,7 @@ export async function resolveScaledAssets(options: ResolveScaledAssetsOptions): 
   }
 
   const imageData = fs.readFileSync(assetPath);
-  const dimensions = imageSize(imageData);
+  const dimensions = IMAGE_ASSET_TYPES.has(type) ? imageSize(imageData) : undefined;
 
   const filteredScaledAssets = Object.entries(scaledAssets)
     .map(([scale, file]) => ({ scale: parseFloat(scale) as AssetScale, file }))
@@ -135,9 +138,9 @@ export async function resolveScaledAssets(options: ResolveScaledAssetsOptions): 
     __packager_asset: true,
     id: assetPath,
     name: stripedBasename.replace(extension, ''),
-    type: extension.substring(1),
-    width: dimensions.width,
-    height: dimensions.height,
+    type,
+    width: dimensions?.width,
+    height: dimensions?.height,
     files: filteredScaledAssets.files,
     scales: filteredScaledAssets.scales,
     fileSystemLocation: path.dirname(assetPath),
