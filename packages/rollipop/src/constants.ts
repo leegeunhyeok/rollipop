@@ -33,16 +33,13 @@ export const DEFAULT_SOURCE_EXTENSIONS = [
   'json',
 ];
 
+export const DEFAULT_IMAGE_EXTENSIONS = ['bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp'];
+
+export const IMAGE_EXTENSIONS = [...DEFAULT_IMAGE_EXTENSIONS, 'tiff', 'ktx'];
+
 export const DEFAULT_ASSET_EXTENSIONS = [
-  // Image formats
-  'bmp',
-  'gif',
-  'jpg',
-  'jpeg',
-  'png',
-  'psd',
-  'svg',
-  'webp',
+  ...DEFAULT_IMAGE_EXTENSIONS,
+  // Drawable non-image formats
   'xml',
   // Video formats
   'm4v',

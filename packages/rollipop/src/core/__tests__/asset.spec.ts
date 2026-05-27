@@ -272,4 +272,33 @@ describe('resolveScaledAssets', () => {
       );
     });
   });
+
+  describe('when non-image assets are exist', () => {
+    beforeAll(() => {
+      vitest
+        .spyOn(fs, 'readdirSync')
+        .mockImplementation(
+          () => ['FontAwesome.ttf'] as unknown as ReturnType<typeof fs.readdirSync>,
+        );
+    });
+
+    it('should return the asset without image dimensions', async () => {
+      const assets = await resolveScaledAssets({
+        projectRoot: '/root',
+        assetPath: 'FontAwesome.ttf',
+        platform: 'ios',
+        preferNativePlatform: false,
+      });
+
+      expect(assets).toEqual(
+        expect.objectContaining({
+          files: ['FontAwesome.ttf'],
+          scales: [1],
+          type: 'ttf',
+          width: undefined,
+          height: undefined,
+        }),
+      );
+    });
+  });
 });
