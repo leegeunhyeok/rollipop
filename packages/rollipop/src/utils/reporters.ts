@@ -58,6 +58,10 @@ export class ProgressBarStatusReporter implements Reporter {
   update(event: ReportableEvent): void {
     switch (event.type) {
       case 'bundle_build_started':
+        this.progressBar.setCurrent(0);
+        if (this.flags & ProgressFlags.FILE_CHANGED) {
+          this.progressBar.setTotal(0);
+        }
         this.flags |= ProgressFlags.BUILD_IN_PROGRESS;
         this.progressBar.start();
         this.renderManager.start();
@@ -77,10 +81,6 @@ export class ProgressBarStatusReporter implements Reporter {
 
       case 'transform':
         const { id, totalModules, transformedModules } = event;
-        if (this.flags & ProgressFlags.FILE_CHANGED) {
-          logger.debug('Transformed changed file', { id });
-          return;
-        }
         this.renderProgress(id, totalModules, transformedModules);
         break;
 

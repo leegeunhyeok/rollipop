@@ -14,6 +14,7 @@ function reporterPlugin(options?: ReporterPluginOptions): rolldown.Plugin | null
   let transformedModules = 0;
   let cacheHitModules = 0;
   let unknownTotalModules = totalModules === 0;
+  let rebuildPending = false;
 
   function getProcessedModules() {
     return transformedModules + cacheHitModules;
@@ -38,6 +39,11 @@ function reporterPlugin(options?: ReporterPluginOptions): rolldown.Plugin | null
       startedAt = performance.now();
       transformedModules = 0;
       cacheHitModules = 0;
+      if (rebuildPending) {
+        totalModules = 0;
+        unknownTotalModules = false;
+        rebuildPending = false;
+      }
       reporter?.update({ type: 'bundle_build_started' });
     },
     buildEnd(error) {
@@ -71,6 +77,7 @@ function reporterPlugin(options?: ReporterPluginOptions): rolldown.Plugin | null
       reportProgress(id);
     },
     watchChange(id) {
+      rebuildPending = true;
       reporter?.update({ type: 'watch_change', id });
     },
   };
