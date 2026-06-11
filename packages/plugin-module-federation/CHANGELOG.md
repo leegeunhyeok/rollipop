@@ -1,5 +1,15 @@
 # @rollipop/plugin-module-federation
 
+## 1.0.0-alpha.23
+
+### Patch Changes
+
+- 146b656: refactor: use native magic string instead
+- Updated dependencies [812db55]
+- Updated dependencies [790697e]
+- Updated dependencies [b52246e]
+  - rollipop@1.0.0-alpha.23
+
 ## 1.0.0-alpha.22
 
 ### Patch Changes
