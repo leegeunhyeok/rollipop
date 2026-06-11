@@ -1,5 +1,14 @@
 # @rollipop/jest-preset
 
+## 1.0.0-alpha.23
+
+### Patch Changes
+
+- Updated dependencies [812db55]
+- Updated dependencies [790697e]
+- Updated dependencies [b52246e]
+  - rollipop@1.0.0-alpha.23
+
 ## 1.0.0-alpha.22
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # rollipop
 
+## 1.0.0-alpha.23
+
+### Patch Changes
+
+- 812db55: Bump `@rollipop/rolldown` to 1.0.12.
+- 790697e: perf: limit prelude transform to entry module
+- b52246e: Add opt-in MCP diagnostics tools
+
 ## 1.0.0-alpha.22
 
 ### Patch Changes
