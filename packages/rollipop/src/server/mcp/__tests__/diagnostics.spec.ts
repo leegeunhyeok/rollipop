@@ -107,6 +107,7 @@ describe('MCP diagnostics', () => {
       },
     });
     eventBus.emit({ type: 'bundle_build_failed', bundlerId: 'ios-dev', error });
+    eventBus.emit({ type: 'hmr_failed', bundlerId: 'ios-dev', error: new Error('HMR failed') });
     eventBus.emit({
       type: 'client_log',
       bundlerId: 'ios-dev',
@@ -137,6 +138,12 @@ describe('MCP diagnostics', () => {
         level: 'error',
         bundlerId: 'ios-dev',
         error: expect.objectContaining({ message: 'Unexpected token' }),
+      }),
+      expect.objectContaining({
+        source: 'hmr',
+        level: 'error',
+        bundlerId: 'ios-dev',
+        error: expect.objectContaining({ message: 'HMR failed' }),
       }),
     ]);
     expect(appLogDiagnostics.getConsoleLogs()).toEqual([

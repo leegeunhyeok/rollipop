@@ -163,10 +163,10 @@ describe('runtime e2e: HMR', () => {
     expect(newMessages).not.toContain('hmr:reload');
   }, 180_000);
 
-  it('reports a build error via SSE bundle_build_failed and WS hmr:error', async () => {
+  it('reports an HMR error via SSE hmr_failed and WS hmr:error', async () => {
     await prepareClientForHMR();
 
-    const failedPromise = sse.waitFor('bundle_build_failed', undefined, 60_000);
+    const failedPromise = sse.waitFor('hmr_failed', undefined, 60_000);
     const errorPromise = client.waitForMessage('hmr:error', undefined, 60_000);
 
     writeFixtureFile(

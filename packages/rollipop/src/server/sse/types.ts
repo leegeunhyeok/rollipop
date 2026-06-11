@@ -11,6 +11,7 @@ export type SSEBuildEvent =
       bundleFilePath?: string;
     }
   | { type: 'bundle_build_failed'; bundlerId: string; error: string }
+  | { type: 'hmr_failed'; bundlerId: string; error: string }
   | { type: 'watch_change'; bundlerId: string; file: string }
   // Device lifecycle events
   | { type: 'device_connected'; clientId: number }

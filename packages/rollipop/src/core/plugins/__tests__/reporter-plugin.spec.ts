@@ -80,13 +80,13 @@ describe('reporter plugin', () => {
       {
         type: 'transform',
         id: '/App.tsx',
-        totalModules: 1,
+        totalModules: 4722,
         transformedModules: 1,
       },
       {
         type: 'transform',
         id: '/dep.ts',
-        totalModules: 2,
+        totalModules: 4722,
         transformedModules: 2,
       },
       {
@@ -95,6 +95,138 @@ describe('reporter plugin', () => {
         transformedModules: 2,
         cacheHitModules: 0,
         duration: expect.any(Number),
+      },
+    ]);
+  });
+
+  it('counts cache hits in watch rebuild progress', async () => {
+    const events: ReportableEvent[] = [];
+    const plugin = reporter({
+      initialTotalModules: 1255,
+      reporter: {
+        update(event) {
+          events.push(event);
+        },
+      } satisfies Reporter,
+    })!;
+    const buildStart = plugin.buildStart as unknown as () => void;
+    const buildEnd = plugin.buildEnd as unknown as (error?: Error) => void;
+    const transform = plugin.transform as unknown as {
+      handler: (code: string, id: string) => void | Promise<void>;
+    };
+    const transformCacheHit = plugin.transformCacheHit as unknown as (
+      id: string,
+    ) => void | Promise<void>;
+    const watchChange = plugin.watchChange as unknown as (id: string) => void;
+
+    watchChange('/App.tsx');
+    buildStart();
+    await transformCacheHit('/cached.ts');
+    await transform.handler('', '/App.tsx');
+    buildEnd();
+
+    expect(events).toEqual([
+      { type: 'watch_change', id: '/App.tsx' },
+      { type: 'bundle_build_started' },
+      {
+        type: 'transform',
+        id: '/cached.ts',
+        totalModules: 1255,
+        transformedModules: 1,
+      },
+      {
+        type: 'transform',
+        id: '/App.tsx',
+        totalModules: 1255,
+        transformedModules: 2,
+      },
+      {
+        type: 'bundle_build_done',
+        totalModules: 2,
+        transformedModules: 1,
+        cacheHitModules: 1,
+        duration: expect.any(Number),
+      },
+    ]);
+  });
+
+  it('resets progress for hmr transforms that run without a rebuild', async () => {
+    const events: ReportableEvent[] = [];
+    const plugin = reporter({
+      initialTotalModules: 1278,
+      reporter: {
+        update(event) {
+          events.push(event);
+        },
+      } satisfies Reporter,
+    })!;
+    const buildStart = plugin.buildStart as unknown as () => void;
+    const buildEnd = plugin.buildEnd as unknown as (error?: Error) => void;
+    const transform = plugin.transform as unknown as {
+      handler: (code: string, id: string) => void | Promise<void>;
+    };
+    const watchChange = plugin.watchChange as unknown as (id: string) => void;
+
+    buildStart();
+    await transform.handler('', '/entry.ts');
+    buildEnd();
+
+    events.length = 0;
+    watchChange('/App.tsx');
+    await transform.handler('', '/App.tsx');
+
+    expect(events).toEqual([
+      { type: 'watch_change', id: '/App.tsx' },
+      {
+        type: 'transform',
+        id: '/App.tsx',
+        totalModules: 1,
+        transformedModules: 1,
+      },
+    ]);
+  });
+
+  it('resets progress for consecutive hmr transforms', async () => {
+    const events: ReportableEvent[] = [];
+    const plugin = reporter({
+      initialTotalModules: 1278,
+      reporter: {
+        update(event) {
+          events.push(event);
+        },
+      } satisfies Reporter,
+    })!;
+    const buildStart = plugin.buildStart as unknown as () => void;
+    const buildEnd = plugin.buildEnd as unknown as (error?: Error) => void;
+    const transform = plugin.transform as unknown as {
+      handler: (code: string, id: string) => void | Promise<void>;
+    };
+    const watchChange = plugin.watchChange as unknown as (id: string) => void;
+
+    buildStart();
+    await transform.handler('', '/entry.ts');
+    buildEnd();
+
+    events.length = 0;
+    watchChange('/App.tsx');
+    await transform.handler('', '/App.tsx');
+    watchChange('/App.tsx');
+    await transform.handler('', '/App.tsx');
+
+    expect(events).toEqual([
+      { type: 'watch_change', id: '/App.tsx' },
+      {
+        type: 'transform',
+        id: '/App.tsx',
+        totalModules: 1,
+        transformedModules: 1,
+      },
+      { type: 'watch_change', id: '/App.tsx' },
+      {
+        type: 'transform',
+        id: '/App.tsx',
+        totalModules: 1,
+        transformedModules: 1,
       },
     ]);
   });

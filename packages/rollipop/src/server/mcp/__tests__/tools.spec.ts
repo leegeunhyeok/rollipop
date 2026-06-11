@@ -207,9 +207,13 @@ describe('MCP tools', () => {
       data: ['hello'],
     });
     eventBus.emit({ type: 'watch_change', bundlerId: 'ios-dev', id: '/App.tsx' });
+    eventBus.emit({ type: 'hmr_failed', bundlerId: 'ios-dev', error: new Error('HMR failed') });
 
     const result = await resultPromise;
     const events = JSON.parse(result.content[0]!.text);
-    expect(events).toEqual([{ type: 'watch_change', bundlerId: 'ios-dev', file: '/App.tsx' }]);
+    expect(events).toEqual([
+      { type: 'watch_change', bundlerId: 'ios-dev', file: '/App.tsx' },
+      { type: 'hmr_failed', bundlerId: 'ios-dev', error: 'HMR failed' },
+    ]);
   });
 });

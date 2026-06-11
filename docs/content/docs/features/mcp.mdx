@@ -48,10 +48,11 @@ Returns a JSON array of events collected during the listening period. Event type
 
 - `bundle_build_started` / `bundle_build_done` / `bundle_build_failed` — build lifecycle
 - `watch_change` — file change detected
+- `hmr_failed` — HMR update failure
 - `device_connected` / `device_disconnected` — device lifecycle
 - `cache_reset` — cache cleared through the MCP `reset_cache` tool
 
-Bundler-scoped events include `bundlerId` in their JSON payload. This includes build lifecycle events and `watch_change`. Device, server, and cache events omit `bundlerId`.
+Bundler-scoped events include `bundlerId` in their JSON payload. This includes build lifecycle events, `watch_change`, and `hmr_failed`. Device, server, and cache events omit `bundlerId`.
 
 App console logs are not build events. Use the SSE `/sse/client-logs` stream for live HMR-forwarded app logs, or `get_console_logs` for the buffered `client_log` entries captured by Rollipop.
 
@@ -69,7 +70,7 @@ Rollipop MCP stays focused on bundler-facing diagnostics: build state, build log
 
 Use `get_console_logs` for buffered app logs and `clear_console_logs` before a focused repro when older app logs may be noisy. For live streaming, use `/sse/client-logs`.
 
-Build diagnostics and app logs are intentionally separate. Use `build_errors` for Rolldown/plugin warnings, errors, and Rollipop build crashes. Use `get_console_logs` for app logs that the React Native HMR client forwards to Rollipop.
+Build diagnostics and app logs are intentionally separate. Use `build_errors` for Rolldown/plugin warnings, Rollipop build crashes, and HMR update failures. Use `get_console_logs` for app logs that the React Native HMR client forwards to Rollipop.
 
 For CDP debugging, runtime evaluation, runtime exceptions, network inspection, or CPU/heap profiling, use [`agent-cdp`](https://github.com/callstackincubator/agent-cdp) against the Rollipop dev server target. For React component tree inspection and React DevTools profiling, use [`agent-react-devtools`](https://github.com/callstackincubator/agent-react-devtools).
 
@@ -90,11 +91,11 @@ The response is a point-in-time snapshot:
 | `idle`         | Bundler instance created but the first build has not started |
 | `building`     | A build is currently in progress                             |
 | `build-done`   | The most recent build completed successfully                 |
-| `build-failed` | The most recent build (or HMR update) failed                 |
+| `build-failed` | The most recent bundle build failed                          |
 
 Unknown ids return `{ "error": "not found" }`.
 
-Agents can use this as a cheap pull-based alternative to `get_build_events` when they only need the latest state of a known bundler rather than the full event stream.
+Agents can use this as a cheap pull-based alternative to `get_build_events` when they only need the latest build state of a known bundler rather than the full event stream. HMR update failures are emitted as `hmr_failed` events instead of changing the build status.
 
 ## LLM Workflow
 
@@ -102,7 +103,7 @@ An LLM agent can use MCP tools to interact with the bundler:
 
 1. Call `get_build_events` to observe bundler state
 2. Make code changes
-3. Call `get_build_events` again to wait for `bundle_build_done` or `bundle_build_failed` — or call `get_bundler_status` for a single known bundler
+3. Call `get_build_events` again to wait for `bundle_build_done` or `bundle_build_failed` for bundle builds, or `hmr_failed` for HMR update failures
 4. Clear build/app log buffers before focused checks when older diagnostics may be noisy
 5. Use `bundleFilePath` from `bundle_build_done` when bundle-level debugging is needed
 6. If failed, read the error and fix the code

@@ -21,6 +21,7 @@ export function toSSEEvent(event: ServerEvent): SSEBuildEvent | null {
     case 'bundle_build_started':
     case 'bundle_build_done':
     case 'bundle_build_failed':
+    case 'hmr_failed':
     case 'watch_change':
       return reporterEventToSSEEvent(event);
 
@@ -65,6 +66,13 @@ function reporterEventToSSEEvent(event: IdentifiedReportableEvent): SSEBuildEven
     case 'bundle_build_failed':
       return {
         type: 'bundle_build_failed',
+        bundlerId: event.bundlerId,
+        error: stripAnsi(event.error.message),
+      };
+
+    case 'hmr_failed':
+      return {
+        type: 'hmr_failed',
         bundlerId: event.bundlerId,
         error: stripAnsi(event.error.message),
       };

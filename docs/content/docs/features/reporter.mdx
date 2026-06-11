@@ -2,7 +2,7 @@
 title: Reporter
 ---
 
-Reporters allow you to receive and handle build events, progress updates, and client logs from your Rollipop application. This is useful for custom logging, monitoring, or integrating with external tools.
+Reporters allow you to receive and handle build events, HMR failures, progress updates, and client logs from your Rollipop application. This is useful for custom logging, monitoring, or integrating with external tools.
 
 ## Reporter Interface
 
@@ -50,11 +50,25 @@ Emitted when a bundle build completes successfully.
 
 #### `bundle_build_failed`
 
-Emitted when a bundle build fails with an error.
+Emitted when a bundle build fails with an error. HMR update failures are reported as `hmr_failed` instead.
 
 ```ts
 {
   type: 'bundle_build_failed';
+  bundlerId?: string;
+  error: Error;
+}
+```
+
+### HMR Events
+
+#### `hmr_failed`
+
+Emitted when an HMR update fails with an error.
+
+```ts
+{
+  type: 'hmr_failed';
   bundlerId?: string;
   error: Error;
 }
@@ -128,6 +142,12 @@ export class MonitoringReporter implements Reporter {
 
       case 'bundle_build_failed':
         this.sendMetric('build.failed', {
+          error: event.error.message,
+        });
+        break;
+
+      case 'hmr_failed':
+        this.sendMetric('hmr.failed', {
           error: event.error.message,
         });
         break;

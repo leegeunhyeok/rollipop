@@ -46,6 +46,10 @@ export type ReportableEvent =
       error: Error;
     } & OptionalBundlerEvent)
   | ({
+      type: 'hmr_failed';
+      error: Error;
+    } & OptionalBundlerEvent)
+  | ({
       type: 'transform';
       id: string;
       totalModules: number | undefined;

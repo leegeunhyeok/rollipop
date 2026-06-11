@@ -9,7 +9,8 @@ const BLOCK_CHAR = '█';
 export type ProgressBarState =
   | { type: 'idle' }
   | { type: 'running'; moduleId?: string }
-  | { type: 'completed'; duration: number; hasErrors: boolean };
+  | { type: 'completed'; duration: number; hasErrors: boolean }
+  | { type: 'hmr-completed'; count: number; moduleId: string };
 
 export interface RenderContext {
   label: string;
@@ -84,11 +85,25 @@ const completedRenderer: StateRenderer<{
   },
 };
 
+const hmrCompletedRenderer: StateRenderer<{
+  type: 'hmr-completed';
+  count: number;
+  moduleId: string;
+}> = {
+  render(state, context) {
+    const icon = chalk.green('✔');
+    const count = chalk.yellow(`(x${state.count})`);
+    const moduleId = chalk.gray(ellipsisLeft(state.moduleId, context.columns - 4));
+    return `${icon} HMR Updated ${chalk.gray(context.label)} ${count}\n  ${moduleId}`;
+  },
+};
+
 export class ProgressBarRenderer {
   private readonly renderers = {
     idle: idleRenderer,
     running: runningRenderer,
     completed: completedRenderer,
+    'hmr-completed': hmrCompletedRenderer,
   } as const;
 
   render(state: ProgressBarState, context: RenderContext): string {
@@ -121,7 +136,7 @@ export class ProgressBar {
   }
 
   get done(): boolean {
-    return this.state.type === 'completed';
+    return this.state.type === 'completed' || this.state.type === 'hmr-completed';
   }
 
   setCurrent(current: number): this {
@@ -153,6 +168,12 @@ export class ProgressBar {
 
   complete(duration: number, hasErrors = false): this {
     this.state = { type: 'completed', duration, hasErrors };
+    this.stale = true;
+    return this;
+  }
+
+  completeHmr(moduleId: string, count: number): this {
+    this.state = { type: 'hmr-completed', count, moduleId };
     this.stale = true;
     return this;
   }

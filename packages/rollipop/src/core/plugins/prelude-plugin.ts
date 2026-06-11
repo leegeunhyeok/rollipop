@@ -41,6 +41,7 @@ function preludePlugin(options: PreludePluginOptions): rolldown.Plugin | null {
 
         if (moduleInfo && isEntry(moduleInfo.meta)) {
           this.debug(`Prelude plugin found entry ${id}`);
+          this.addWatchFile(id);
           const originSource = fs.readFileSync(id, 'utf-8');
           const modifiedSource = [preludeImportStatements, originSource].join('\n');
 

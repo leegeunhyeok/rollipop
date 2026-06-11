@@ -76,6 +76,7 @@ export async function createDevServer(
       case 'bundle_build_started':
       case 'bundle_build_done':
       case 'bundle_build_failed':
+      case 'hmr_failed':
       case 'build_log':
       case 'build_error':
       case 'transform':

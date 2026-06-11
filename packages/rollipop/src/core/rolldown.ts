@@ -391,6 +391,7 @@ function createStatusReporter(
 
     case 'progress':
       return new ProgressBarStatusReporter(
+        config.root,
         context.id,
         `[${buildOptions.platform}, ${buildOptions.dev ? 'dev' : 'prod'}]`,
         getBuildTotalModules(context.storage, context.id),

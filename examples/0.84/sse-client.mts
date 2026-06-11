@@ -28,6 +28,7 @@ const EVENT_STYLES: Record<SSEEvent['type'], { label: string; color: (s: string)
   bundle_build_started: { label: 'build:start', color: pc.blue },
   bundle_build_done: { label: 'build:done', color: pc.green },
   bundle_build_failed: { label: 'build:fail', color: pc.red },
+  hmr_failed: { label: 'hmr:fail', color: pc.red },
   watch_change: { label: 'watch', color: pc.yellow },
   client_log: { label: 'log', color: pc.cyan },
   device_connected: { label: 'device:on', color: pc.green },

@@ -173,7 +173,7 @@ describe('BundlerPool', () => {
     }
   });
 
-  it('emits build lifecycle events around successful HMR updates', async () => {
+  it('emits only hmr_updates for successful HMR updates', async () => {
     resetPool();
     const eventBus = new ServerEventBus();
     const events: unknown[] = [];
@@ -202,15 +202,45 @@ describe('BundlerPool', () => {
 
     await instance.ensureInitialized;
 
-    expect(instance.status).toBe('build-done');
+    expect(instance.status).toBe('idle');
     expect(events).toEqual([
-      expect.objectContaining({ type: 'bundle_build_started', bundlerId: 'ios-true' }),
       expect.objectContaining({ type: 'hmr_updates', bundlerId: 'ios-true' }),
+    ]);
+  });
+
+  it('emits hmr_failed without build lifecycle events for failed HMR updates', async () => {
+    resetPool();
+    const eventBus = new ServerEventBus();
+    const events: unknown[] = [];
+    eventBus.subscribe((event) => {
+      events.push(event);
+    });
+    const hmrError = new Error('Unexpected token');
+
+    vi.mocked(Bundler).devEngine.mockImplementationOnce(
+      async (_boundConfig, _buildOptions, options) => {
+        return {
+          run: vi.fn(async () => {
+            await options.onHmrUpdates?.(hmrError);
+          }),
+          getBundleState: vi
+            .fn()
+            .mockResolvedValue({ lastFullBuildFailed: false, hasStaleOutput: false }),
+        } as any;
+      },
+    );
+
+    const pool = new BundlerPool(config, serverOptions, eventBus);
+    const instance = pool.get('index.bundle', { platform: 'ios', dev: true });
+
+    await instance.ensureInitialized;
+
+    expect(instance.status).toBe('idle');
+    expect(events).toEqual([
       expect.objectContaining({
-        type: 'bundle_build_done',
+        type: 'hmr_failed',
         bundlerId: 'ios-true',
-        totalModules: 1,
-        transformedModules: 1,
+        error: expect.objectContaining({ message: 'Unexpected token' }),
       }),
     ]);
   });

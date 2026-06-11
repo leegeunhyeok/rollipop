@@ -11,7 +11,7 @@ GET /sse/events
 GET /sse/client-logs
 ```
 
-`/sse/events` streams build, device, server, and cache events. `/sse/client-logs` streams app console logs forwarded by the HMR client.
+`/sse/events` streams build, HMR, device, server, and cache events. `/sse/client-logs` streams app console logs forwarded by the HMR client.
 
 Each endpoint returns a `text/event-stream` response. Each event is formatted as:
 
@@ -52,11 +52,23 @@ Emitted when a bundle build completes successfully.
 
 #### `bundle_build_failed`
 
-Emitted when a bundle build fails.
+Emitted when a bundle build fails. HMR update failures are reported as `hmr_failed` instead.
 
 ```json
 {
   "type": "bundle_build_failed",
+  "bundlerId": "<bundlerId>",
+  "error": "SyntaxError: Unexpected token"
+}
+```
+
+#### `hmr_failed`
+
+Emitted when an HMR update fails.
+
+```json
+{
+  "type": "hmr_failed",
   "bundlerId": "<bundlerId>",
   "error": "SyntaxError: Unexpected token"
 }

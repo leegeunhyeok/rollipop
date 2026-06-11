@@ -119,35 +119,19 @@ export class BundlerDevEngine {
           });
           const normalizedError = normalizeRolldownError(errorOrResult);
           const event: ReportableEvent = {
-            type: 'bundle_build_failed',
+            type: 'hmr_failed',
             error: normalizedError,
           };
-          this._status = 'build-failed';
           this.eventBus.emit({ ...event, bundlerId: this.id });
         } else {
-          const changedFileCount = getChangedFileCount(errorOrResult.changedFiles);
           logger.trace('Detected changed files', {
             bundlerId: this.id,
             changedFiles: errorOrResult.changedFiles,
-          });
-          this._status = 'building';
-          this.eventBus.emit({
-            bundlerId: this.id,
-            type: 'bundle_build_started',
           });
           this.eventBus.emit({
             bundlerId: this.id,
             type: 'hmr_updates',
             updates: errorOrResult.updates,
-          });
-          this._status = 'build-done';
-          this.eventBus.emit({
-            bundlerId: this.id,
-            type: 'bundle_build_done',
-            totalModules: changedFileCount,
-            transformedModules: changedFileCount,
-            cacheHitModules: 0,
-            duration: 0,
           });
         }
       },
@@ -216,17 +200,6 @@ export class BundlerDevEngine {
 
     return this.bundleStore;
   }
-}
-
-function getChangedFileCount(changedFiles: unknown): number {
-  if (Array.isArray(changedFiles)) {
-    return changedFiles.length;
-  }
-  if (changedFiles != null && typeof changedFiles === 'object' && 'size' in changedFiles) {
-    const size = (changedFiles as { size?: unknown }).size;
-    return typeof size === 'number' ? size : 0;
-  }
-  return 0;
 }
 
 export class BundlerPool {

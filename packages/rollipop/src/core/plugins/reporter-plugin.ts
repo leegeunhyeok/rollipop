@@ -9,15 +9,34 @@ export interface ReporterPluginOptions {
 
 function reporterPlugin(options?: ReporterPluginOptions): rolldown.Plugin | null {
   const { reporter, initialTotalModules = 0 } = options ?? {};
+  let lastBuildTotalModules = initialTotalModules;
   let totalModules = initialTotalModules;
   let startedAt = 0;
   let transformedModules = 0;
   let cacheHitModules = 0;
   let unknownTotalModules = totalModules === 0;
-  let rebuildPending = false;
+  let countCacheHitModules = true;
 
   function getProcessedModules() {
     return transformedModules + cacheHitModules;
+  }
+
+  function resetIncrementalProgress() {
+    startedAt = performance.now();
+    transformedModules = 0;
+    cacheHitModules = 0;
+    totalModules = 0;
+    unknownTotalModules = false;
+    countCacheHitModules = false;
+  }
+
+  function resetBuildProgress() {
+    startedAt = performance.now();
+    transformedModules = 0;
+    cacheHitModules = 0;
+    totalModules = lastBuildTotalModules;
+    unknownTotalModules = totalModules === 0;
+    countCacheHitModules = true;
   }
 
   function reportProgress(id: string) {
@@ -36,14 +55,7 @@ function reporterPlugin(options?: ReporterPluginOptions): rolldown.Plugin | null
   return {
     name: 'rollipop:status',
     buildStart() {
-      startedAt = performance.now();
-      transformedModules = 0;
-      cacheHitModules = 0;
-      if (rebuildPending) {
-        totalModules = 0;
-        unknownTotalModules = false;
-        rebuildPending = false;
-      }
+      resetBuildProgress();
       reporter?.update({ type: 'bundle_build_started' });
     },
     buildEnd(error) {
@@ -51,6 +63,7 @@ function reporterPlugin(options?: ReporterPluginOptions): rolldown.Plugin | null
       const processedModules = getProcessedModules();
       if (processedModules !== 0) {
         totalModules = processedModules;
+        lastBuildTotalModules = processedModules;
       }
       unknownTotalModules = false;
       reporter?.update(
@@ -73,11 +86,15 @@ function reporterPlugin(options?: ReporterPluginOptions): rolldown.Plugin | null
       },
     },
     transformCacheHit(id) {
+      if (!countCacheHitModules) {
+        return;
+      }
       ++cacheHitModules;
       reportProgress(id);
     },
     watchChange(id) {
-      rebuildPending = true;
+      // HMR patches can run watchChange -> transform without buildStart.
+      resetIncrementalProgress();
       reporter?.update({ type: 'watch_change', id });
     },
   };

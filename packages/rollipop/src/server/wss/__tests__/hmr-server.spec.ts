@@ -119,7 +119,7 @@ describe('HMRServer', () => {
       });
     });
 
-    it('should receive matching bundler events through the server event bus', async () => {
+    it('should ignore watch_change events until HMR updates are available', async () => {
       const client = createMockClient(1);
       const message = JSON.stringify({
         type: 'hmr:connected',
@@ -135,10 +135,58 @@ describe('HMRServer', () => {
 
       eventBus.emit({ type: 'watch_change', bundlerId: 'test-engine', id: '/index.ts' });
 
-      expect(testable.send).toHaveBeenCalledWith(
-        client,
-        JSON.stringify({ type: 'hmr:update-start' }),
-      );
+      expect(testable.send).not.toHaveBeenCalled();
+    });
+
+    it('should send update-start when matching HMR updates are available', async () => {
+      const client = createMockClient(1);
+      const message = JSON.stringify({
+        type: 'hmr:connected',
+        platform: 'ios',
+        bundleEntry: 'index.bundle',
+      });
+
+      testable.onMessage(client, Buffer.from(message));
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      eventBus.emit({
+        type: 'hmr_updates',
+        bundlerId: 'test-engine',
+        updates: [{ clientId: '1', update: { type: 'Patch', code: 'module.exports = {}' } }],
+      } as any);
+
+      const messages = getSentMessages(testable, client);
+      expect(messages).toContainEqual({ type: 'hmr:update-start' });
+      expect(messages).toContainEqual({ type: 'hmr:update', code: 'module.exports = {}' });
+      expect(messages).toContainEqual({ type: 'hmr:update-done' });
+    });
+
+    it('should send hmr:error for matching hmr_failed events', async () => {
+      const client = createMockClient(1);
+      const message = JSON.stringify({
+        type: 'hmr:connected',
+        platform: 'ios',
+        bundleEntry: 'index.bundle',
+      });
+
+      testable.onMessage(client, Buffer.from(message));
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      eventBus.emit({
+        type: 'hmr_failed',
+        bundlerId: 'test-engine',
+        error: new Error('Unexpected token'),
+      });
+
+      const messages = getSentMessages(testable, client);
+      expect(messages).toContainEqual({
+        type: 'hmr:error',
+        payload: {
+          type: 'BuildError',
+          errors: [{ description: 'Unexpected token' }],
+          message: 'Unexpected token',
+        },
+      });
     });
 
     it('should handle hmr:log message and emit client log event', async () => {

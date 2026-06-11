@@ -13,7 +13,7 @@ export interface BuildLogEntry {
 export interface BuildErrorEntry {
   id: number;
   timestamp: string;
-  source: 'rolldown' | 'build';
+  source: 'rolldown' | 'build' | 'hmr';
   level: 'warn' | 'error';
   bundlerId?: string;
   log?: BuildDiagnosticLog;
@@ -58,6 +58,15 @@ export class BuildDiagnostics {
         case 'bundle_build_failed':
           this.pushBuildError({
             source: 'build',
+            level: 'error',
+            bundlerId: event.bundlerId,
+            error: serializeError(event.error),
+          });
+          break;
+
+        case 'hmr_failed':
+          this.pushBuildError({
+            source: 'hmr',
             level: 'error',
             bundlerId: event.bundlerId,
             error: serializeError(event.error),

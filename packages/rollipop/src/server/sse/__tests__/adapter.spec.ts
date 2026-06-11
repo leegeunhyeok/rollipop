@@ -52,6 +52,20 @@ describe('toSSEEvent', () => {
     });
   });
 
+  it('should serialize Error to string for hmr_failed', () => {
+    const event: IdentifiedReportableEvent = {
+      type: 'hmr_failed',
+      bundlerId,
+      error: new Error('SyntaxError: Unexpected token'),
+    };
+
+    expect(toSSEEvent(event)).toEqual({
+      type: 'hmr_failed',
+      bundlerId: 'ios-true',
+      error: 'SyntaxError: Unexpected token',
+    });
+  });
+
   it('should return null for transform events', () => {
     const event: IdentifiedReportableEvent = {
       type: 'transform',

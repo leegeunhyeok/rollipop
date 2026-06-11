@@ -72,14 +72,7 @@ export class HMRServer extends WebSocketServer {
             void this.handleUpdates(client, event.updates);
             break;
 
-          case 'watch_change':
-            this.send(
-              client,
-              JSON.stringify({ type: 'hmr:update-start' } satisfies HMRServerMessage),
-            );
-            break;
-
-          case 'bundle_build_failed':
+          case 'hmr_failed':
             this.sendBuildFailed(client, event.error);
             break;
         }
@@ -137,7 +130,14 @@ export class HMRServer extends WebSocketServer {
       updatesCount: updates.length,
     });
 
-    for (const clientUpdate of updates) {
+    const actionableUpdates = updates.filter((clientUpdate) => clientUpdate.update.type !== 'Noop');
+    if (actionableUpdates.length === 0) {
+      return;
+    }
+
+    this.send(client, JSON.stringify({ type: 'hmr:update-start' } satisfies HMRServerMessage));
+
+    for (const clientUpdate of actionableUpdates) {
       const update = clientUpdate.update;
       switch (update.type) {
         case 'Patch':
@@ -149,7 +149,6 @@ export class HMRServer extends WebSocketServer {
           break;
 
         case 'Noop':
-          this.logger.warn(`Client ${clientUpdate.clientId} received noop update`);
           break;
       }
     }

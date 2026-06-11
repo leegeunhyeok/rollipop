@@ -85,13 +85,20 @@ describe('SSEEventPublisher', () => {
         duration: 1500,
       });
       publisher.publish({ type: 'watch_change', bundlerId: 'ios-true', file: 'src/App.tsx' });
+      publisher.publish({
+        type: 'hmr_failed',
+        bundlerId: 'ios-true',
+        error: 'SyntaxError: Unexpected token',
+      });
 
-      expect(res.chunks).toHaveLength(2);
+      expect(res.chunks).toHaveLength(3);
       expect(res.chunks[0]).toContain('event: bundle_build_done');
       expect(res.chunks[0]).toContain('"totalModules":42');
       expect(res.chunks[0]).toContain('"cacheHitModules":12');
       expect(res.chunks[1]).toContain('event: watch_change');
       expect(res.chunks[1]).toContain('"file":"src/App.tsx"');
+      expect(res.chunks[2]).toContain('event: hmr_failed');
+      expect(res.chunks[2]).toContain('"error":"SyntaxError: Unexpected token"');
     });
   });
 });
