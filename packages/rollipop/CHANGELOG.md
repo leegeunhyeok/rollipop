@@ -1,5 +1,12 @@
 # rollipop
 
+## 1.0.0-alpha.24
+
+### Patch Changes
+
+- 162fed1: Resolve bundle entry file paths before building.
+- 96636bc: Run the app entry through a virtual entry module.
+
 ## 1.0.0-alpha.23
 
 ### Patch Changes
