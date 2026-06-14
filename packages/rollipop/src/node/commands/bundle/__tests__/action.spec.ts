@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { afterEach, describe, expect, it, vi } from 'vite-plus/test';
 
 const rollipop = vi.hoisted(() => ({
@@ -41,6 +43,8 @@ describe('bundle command action', () => {
         sourcemapOutfile: 'dist/index.android.bundle.map',
       }),
     );
+
+    expect(config.entry).toBe(path.resolve(process.cwd(), 'index.js'));
   });
 
   it('does not enable sourcemaps when sourcemap-output is omitted', async () => {
