@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import * as Rollipop from '../../../index';
 import { logger } from '../../logger';
 import type { CommandAction } from '../../types';
@@ -22,7 +24,7 @@ export const action: CommandAction<BundleCommandArgs> = async function (options)
   }
 
   if (options.entryFile) {
-    config.entry = options.entryFile;
+    config.entry = path.resolve(cwd, options.entryFile);
   }
 
   await Rollipop.runBuild(config, {
