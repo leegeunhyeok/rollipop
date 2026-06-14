@@ -8,8 +8,8 @@ import { invariant, isNotNil, merge } from 'es-toolkit';
 import { asLiteral, iife, nodeEnvironment } from '../common/code';
 import { isDebugEnabled } from '../common/env';
 import { Polyfill, type ResolvedConfig, type RollipopReactNativeWorkletsConfig } from '../config';
-import { ROLLIPOP_VIRTUAL_ENTRY_ID } from '../constants';
 import { applyOverrideRolldownOptions } from '../config/compose-override';
+import { ROLLIPOP_VIRTUAL_ENTRY_ID } from '../constants';
 import { getGlobalVariables } from '../internal/react-native';
 import type { BuildDiagnosticLog } from '../types';
 import { ResolvedBuildOptions } from '../utils/build-options';
@@ -231,7 +231,8 @@ export async function resolveRolldownOptions(
   };
 
   const outputOptions: rolldown.OutputOptions = {
-    format: 'esm',
+    // MARK - rollipop: Use Rollipop's custom webpack-like module format.
+    format: 'rollipop',
     file: buildOptions.outfile,
     banner: rolldownBanner,
     footer: rolldownFooter,
